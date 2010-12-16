@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OpenL Rules Mapping Test Plug-in
+Bundle-SymbolicName: org.openl.rules.mapping.dev.modified.test
+Bundle-Version: 5.7.4
+Bundle-Vendor: OpenL
+Require-Bundle: org.openl.rules.mapping.dev.modified
