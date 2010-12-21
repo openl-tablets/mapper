@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozer.sourceforge.net"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+  <mapping map-id="map-wo-required">
+    <class-a>org.openl.rules.mapping.data.Source</class-a>
+    <class-b>org.openl.rules.mapping.data.Dest</class-b>
+    
+    <field>
+      <a>stringField</a>
+      <b>stringField</b>
+    </field>
+    
+    <field>
+      <a>intField</a>
+      <b>intField</b>
+    </field>
+  </mapping>
+
+  <mapping map-id="map-w-required">
+    <class-a>org.openl.rules.mapping.data.Source</class-a>
+    <class-b>org.openl.rules.mapping.data.Dest</class-b>
+    
+    <field>
+      <a required="false">stringField</a>
+      <b required="true">stringField</b>
+    </field>
+    
+    <field>
+      <a required="true">intField</a>
+      <b required="true">intField</b>
+    </field>
+  </mapping>
+
+</mappings>

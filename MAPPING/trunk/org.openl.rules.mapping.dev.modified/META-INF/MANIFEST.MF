@@ -3,5 +3,11 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OpenL Rules Mapping Modified Plug-in
 Bundle-SymbolicName: org.openl.rules.mapping.dev.modified
 Bundle-Version: 5.7.4
+Bundle-ClassPath: bin/
 Require-Bundle: org.openl.rules.mapping.lib;visibility:=reexport
-Export-Package: org.dozer
+Export-Package: org.dozer,
+ org.dozer.fieldmap,
+ org.dozer.loader,
+ org.dozer.loader.api,
+ org.dozer.loader.xml,
+ org.dozer.propertydescriptor
