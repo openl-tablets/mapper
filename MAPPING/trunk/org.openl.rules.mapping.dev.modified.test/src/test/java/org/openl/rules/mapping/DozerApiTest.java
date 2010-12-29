@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.openl.rules.mapping.data.Dest;
 import org.openl.rules.mapping.data.Source;
 
-public class DozerAPITest {
+public class DozerApiTest {
 
     private DozerBeanMapper mapper;
 
