@@ -15,6 +15,9 @@
  */
 package org.dozer.loader;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
 import org.dozer.classmap.ClassMap;
@@ -29,14 +32,13 @@ import org.dozer.fieldmap.CustomGetSetMethodFieldMap;
 import org.dozer.fieldmap.DozerField;
 import org.dozer.fieldmap.ExcludeFieldMap;
 import org.dozer.fieldmap.FieldMap;
+import org.dozer.fieldmap.FieldMapUtils;
 import org.dozer.fieldmap.GenericFieldMap;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.fieldmap.MapFieldMap;
+import org.dozer.fieldmap.MultiSourceFieldMap;
 import org.dozer.util.DozerConstants;
 import org.dozer.util.MappingUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Builder API for achivieng the same effect as custom Xml mappings. Is intended
@@ -142,7 +144,7 @@ public class DozerBuilder {
             return classA(type);
         }
 
-        public ClassDefinitionBuilder classA(Class type) {
+        public ClassDefinitionBuilder classA(Class<?> type) {
             DozerClass classDefinition = new DozerClass();
             classDefinition.setName(type.getName());
             classMap.setSrcClass(classDefinition);
@@ -154,7 +156,7 @@ public class DozerBuilder {
             return classB(type);
         }
 
-        public ClassDefinitionBuilder classB(Class type) {
+        public ClassDefinitionBuilder classB(Class<?> type) {
             DozerClass classDefinition = new DozerClass();
             classDefinition.setName(type.getName());
             classMap.setDestClass(classDefinition);
@@ -218,21 +220,16 @@ public class DozerBuilder {
             ClassMap classMap = fieldMap.getClassMap();
             classMap.addFieldMapping(fieldMap);
         }
-
     }
 
     public static class FieldMappingBuilder implements FieldBuider {
 
         private ClassMap classMap;
-        private DozerField srcField;
+        private List<DozerField> src = new ArrayList<DozerField>();
         private DozerField destField;
         private MappingDirection type;
         private RelationshipType relationshipType;
         private boolean removeOrphans;
-        private HintContainer srcHintContainer;
-        private HintContainer destHintContainer;
-        private HintContainer srcDeepIndexHintContainer;
-        private HintContainer destDeepIndexHintContainer;
         private boolean copyByReference;
         private String mapId;
         private String customConverter;
@@ -250,7 +247,7 @@ public class DozerBuilder {
 
         public FieldDefinitionBuilder a(String name, String type) {
             DozerField field = DozerBuilder.prepareField(name, type);
-            this.srcField = field;
+            this.src.add(field);
             return new FieldDefinitionBuilder(field);
         }
 
@@ -276,34 +273,6 @@ public class DozerBuilder {
 
         public FieldMappingBuilder removeOrphans(boolean value) {
             this.removeOrphans = value;
-            return this;
-        }
-
-        public FieldMappingBuilder srcHintContainer(String hint) {
-            HintContainer hintContainer = new HintContainer();
-            hintContainer.setHintName(hint);
-            this.srcHintContainer = hintContainer;
-            return this;
-        }
-
-        public FieldMappingBuilder destHintContainer(String hint) {
-            HintContainer hintContainer = new HintContainer();
-            hintContainer.setHintName(hint);
-            this.destHintContainer = hintContainer;
-            return this;
-        }
-
-        public FieldMappingBuilder srcDeepIndexHintContainer(String hint) {
-            HintContainer hintContainer = new HintContainer();
-            hintContainer.setHintName(hint);
-            this.srcDeepIndexHintContainer = hintContainer;
-            return this;
-        }
-
-        public FieldMappingBuilder destDeepIndexHintContainer(String hint) {
-            HintContainer hintContainer = new HintContainer();
-            hintContainer.setHintName(hint);
-            this.destDeepIndexHintContainer = hintContainer;
             return this;
         }
 
@@ -340,25 +309,29 @@ public class DozerBuilder {
         public void build() {
             // TODO Check Map to Map mapping
             FieldMap result;
-            if (srcField.isMapTypeCustomGetterSetterField() || destField.isMapTypeCustomGetterSetterField() || classMap
-                .isSrcClassMapTypeCustomGetterSetter() || classMap.isDestClassMapTypeCustomGetterSetter()) {
-                result = new MapFieldMap(classMap);
-            } else if (srcField.isCustomGetterSetterField() || destField.isCustomGetterSetterField()) {
-                result = new CustomGetSetMethodFieldMap(classMap);
+
+            if (src.size() > 1) {
+                result = new MultiSourceFieldMap(classMap);
+                ((MultiSourceFieldMap) result).setSrc(src);
             } else {
-                result = new GenericFieldMap(classMap);
+                DozerField srcField = src.get(0);
+
+                if (srcField.isMapTypeCustomGetterSetterField() || destField.isMapTypeCustomGetterSetterField() || classMap
+                    .isSrcClassMapTypeCustomGetterSetter() || classMap.isDestClassMapTypeCustomGetterSetter()) {
+                    result = new MapFieldMap(classMap);
+                } else if (srcField.isCustomGetterSetterField() || destField.isCustomGetterSetterField()) {
+                    result = new CustomGetSetMethodFieldMap(classMap);
+                } else {
+                    result = new GenericFieldMap(classMap);
+                }
+
+                result.setSrcField(srcField);
             }
 
-            result.setSrcField(srcField);
             result.setDestField(destField);
             result.setType(type);
             result.setRelationshipType(relationshipType);
             result.setRemoveOrphans(removeOrphans);
-
-            result.setSrcHintContainer(srcHintContainer);
-            result.setDestHintContainer(destHintContainer);
-            result.setSrcDeepIndexHintContainer(srcDeepIndexHintContainer);
-            result.setDestDeepIndexHintContainer(destDeepIndexHintContainer);
 
             if (copyByReferenceSet) {
                 result.setCopyByReference(copyByReference);
@@ -371,7 +344,6 @@ public class DozerBuilder {
 
             classMap.addFieldMapping(result);
         }
-
     }
 
     public static class FieldDefinitionBuilder {
@@ -412,19 +384,38 @@ public class DozerBuilder {
         public void accessible(boolean b) {
             field.setAccessible(b);
         }
-        
+
         public void required(boolean b) {
             field.setRequired(b);
         }
-        
+
         public void defaultValue(Object attribute) {
             field.setDefaultValue(attribute);
+        }
+
+        public void hint(Class<?>... types) {
+            HintContainer hintContainer = FieldMapUtils.hint(types);
+            field.setHintContainer(hintContainer);
+        }
+
+        public void hint(String types) {
+            HintContainer hintContainer = FieldMapUtils.hint(types);
+            field.setHintContainer(hintContainer);
+        }
+
+        public void deepHint(Class<?>... types) {
+            HintContainer hintContainer = FieldMapUtils.hint(types);
+            field.setDeepIndexHintContainer(hintContainer);
+        }
+
+        public void deepHint(String types) {
+            HintContainer hintContainer = FieldMapUtils.hint(types);
+            field.setHintContainer(hintContainer);
         }
 
         public DozerField build() {
             return field;
         }
-
     }
 
     private static DozerField prepareField(String name, String type) {

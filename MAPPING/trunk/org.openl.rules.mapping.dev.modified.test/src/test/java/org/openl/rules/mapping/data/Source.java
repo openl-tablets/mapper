@@ -5,6 +5,9 @@ public class Source {
     private String stringField;
     private int intField;
 
+    public Source() {
+    }
+
     public Source(String stringField, int intField) {
         this.stringField = stringField;
         this.intField = intField;

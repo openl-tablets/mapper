@@ -17,86 +17,113 @@
 package org.dozer.loader.api;
 
 import org.dozer.loader.DozerBuilder;
+import org.dozer.util.ReflectionUtils;
 
 /**
  * @author Dmitry Buzdin
  */
 public class FieldDefinition {
 
-  private String value;
+    private String value;
 
-  private boolean accessible;
-  private String createMethod;
-  private String key;
-  private String mapGetMethod;
-  private String mapSetMethod;
-  private String getMethod;
-  private String setMethod;
-  private boolean required;
-  private Object defaultValue;
-
-  public FieldDefinition(String value) {
-    this.value = value;
-  }
-
-  public void build(DozerBuilder.FieldDefinitionBuilder builder) {
-    builder.accessible(this.accessible);
-    builder.createMethod(this.createMethod);
-
-    builder.key(this.key);
-    builder.mapGetMethod(this.mapGetMethod);
-    builder.mapSetMethod(this.mapSetMethod);
-
-    builder.theGetMethod(this.getMethod);
-    builder.theSetMethod(this.setMethod);
+    private boolean accessible;
+    private String createMethod;
+    private String key;
+    private String mapGetMethod;
+    private String mapSetMethod;
+    private String getMethod;
+    private String setMethod;
+    private boolean required;
+    private Object defaultValue;
     
-    builder.required(this.required);
-    builder.defaultValue(this.defaultValue);
-  }
-  
-  public FieldDefinition defaultValue(Object value) {
-      this.defaultValue = value;
-      return this;
-  }
+    private String hint;
+    private String deepHint;
 
-  public FieldDefinition required(boolean value) {
-      this.required = value;
-      return this;
-  }
-  
-  public FieldDefinition accessible(boolean value) {
-    this.accessible = value;
-    return this;
-  }
+    public FieldDefinition(String value) {
+        this.value = value;
+    }
 
-  public FieldDefinition createMethod(String method) {
-    this.createMethod = method;
-    return this;
-  }
+    public void build(DozerBuilder.FieldDefinitionBuilder builder) {
+        builder.accessible(this.accessible);
+        builder.createMethod(this.createMethod);
 
-  public FieldDefinition mapKey(String key) {
-    this.key = key;
-    return this;
-  }
+        builder.key(this.key);
+        builder.mapGetMethod(this.mapGetMethod);
+        builder.mapSetMethod(this.mapSetMethod);
 
-  public FieldDefinition mapMethods(String getMethod, String setMethod) {
-    this.mapGetMethod = getMethod;
-    this.mapSetMethod = setMethod;
-    return this;
-  }
+        builder.theGetMethod(this.getMethod);
+        builder.theSetMethod(this.setMethod);
 
-  public FieldDefinition getMethod(String getMethod) {
-    this.getMethod = getMethod;
-    return this;
-  }
+        builder.required(this.required);
+        builder.defaultValue(this.defaultValue);
 
-  public FieldDefinition setMethod(String setMethod) {
-    this.setMethod = setMethod;
-    return this;
-  }  
+        builder.hint(this.hint);
+        builder.deepHint(this.deepHint);
+    }
 
-  public String resolve() {
-    return value;
-  }
+    public FieldDefinition defaultValue(Object value) {
+        this.defaultValue = value;
+        return this;
+    }
+
+    public FieldDefinition required(boolean value) {
+        this.required = value;
+        return this;
+    }
+
+    public FieldDefinition accessible(boolean value) {
+        this.accessible = value;
+        return this;
+    }
+
+    public FieldDefinition createMethod(String method) {
+        this.createMethod = method;
+        return this;
+    }
+
+    public FieldDefinition mapKey(String key) {
+        this.key = key;
+        return this;
+    }
+
+    public FieldDefinition mapMethods(String getMethod, String setMethod) {
+        this.mapGetMethod = getMethod;
+        this.mapSetMethod = setMethod;
+        return this;
+    }
+
+    public FieldDefinition getMethod(String getMethod) {
+        this.getMethod = getMethod;
+        return this;
+    }
+
+    public FieldDefinition setMethod(String setMethod) {
+        this.setMethod = setMethod;
+        return this;
+    }
+    
+    public FieldDefinition hint(final Class<?>... types) {
+        this.hint = ReflectionUtils.mergeTypeNames(types);
+        return this;
+    }
+
+    public FieldDefinition deepHint(final Class<?>... types) {
+        this.deepHint = ReflectionUtils.mergeTypeNames(types);
+        return this;
+    }
+
+    public FieldDefinition hint(String types) {
+        this.hint = types;
+        return this;
+    }
+
+    public FieldDefinition deepHint(String types) {
+        this.deepHint = types;
+        return this;
+    }
+
+    public String resolve() {
+        return value;
+    }
 
 }

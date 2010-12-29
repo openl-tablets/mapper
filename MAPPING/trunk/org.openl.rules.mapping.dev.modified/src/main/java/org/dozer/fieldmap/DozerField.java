@@ -17,6 +17,7 @@ package org.dozer.fieldmap;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.dozer.util.DozerConstants;
 
 /**
  * Only intended for internal use.
@@ -43,6 +44,8 @@ public class DozerField {
     private int index = -1;
     private boolean required;
     private Object defaultValue;
+    private HintContainer hintContainer;
+    private HintContainer deepIndexHintContainer;
 
     public DozerField(String name, String type) {
         this.type = type;
@@ -157,12 +160,32 @@ public class DozerField {
         this.defaultValue = defaultValue;
     }
 
+    public HintContainer getHintContainer() {
+        return hintContainer;
+    }
+
+    public void setHintContainer(HintContainer hintContainer) {
+        this.hintContainer = hintContainer;
+    }
+
+    public HintContainer getDeepIndexHintContainer() {
+        return deepIndexHintContainer;
+    }
+
+    public void setDeepIndexHintContainer(HintContainer deepIndexHintContainer) {
+        this.deepIndexHintContainer = deepIndexHintContainer;
+    }
+
     public boolean isCustomGetterSetterField() {
         return getTheGetMethod() != null || getTheSetMethod() != null;
     }
 
     public boolean isMapTypeCustomGetterSetterField() {
         return getMapGetMethod() != null || getMapSetMethod() != null;
+    }
+    
+    public boolean isSelfReferenced() {
+        return getName().equals(DozerConstants.SELF_KEYWORD);
     }
 
     @Override
@@ -171,19 +194,22 @@ public class DozerField {
     }
 
     public DozerField copyOf() {
-    DozerField copy = new DozerField(name, type);
-    copy.setDateFormat(dateFormat);
-    copy.setTheGetMethod(theGetMethod);
-    copy.setTheSetMethod(theSetMethod);
-    copy.setKey(key);
-    copy.setMapSetMethod(mapSetMethod);
-    copy.setMapGetMethod(mapGetMethod);
-    copy.setAccessible(accessible);
-    copy.setCreateMethod(createMethod);
-    copy.setIndexed(indexed);
-    copy.setIndex(index);
-    copy.setRequired(required);
-    copy.setDefaultValue(defaultValue);
-    return copy;
-  }
+        DozerField copy = new DozerField(name, type);
+        copy.setDateFormat(dateFormat);
+        copy.setTheGetMethod(theGetMethod);
+        copy.setTheSetMethod(theSetMethod);
+        copy.setKey(key);
+        copy.setMapSetMethod(mapSetMethod);
+        copy.setMapGetMethod(mapGetMethod);
+        copy.setAccessible(accessible);
+        copy.setCreateMethod(createMethod);
+        copy.setIndexed(indexed);
+        copy.setIndex(index);
+        copy.setRequired(required);
+        copy.setDefaultValue(defaultValue);
+        copy.setHintContainer(hintContainer);
+        copy.setDeepIndexHintContainer(deepIndexHintContainer);
+        
+        return copy;
+    }
 }

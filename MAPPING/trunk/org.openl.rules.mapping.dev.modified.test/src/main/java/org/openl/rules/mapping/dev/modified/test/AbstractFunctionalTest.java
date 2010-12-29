@@ -11,13 +11,10 @@ import org.junit.Before;
 
 public abstract class AbstractFunctionalTest {
 
-    protected Mapper mapper;
-
     @Before
     public void setUp() throws Exception {
         System.setProperty("log4j.debug", "true");
         System.setProperty(DozerConstants.DEBUG_SYS_PROP, "true");
-        mapper = new DozerBeanMapper();
     }
 
     protected Mapper getMapper(String... mappingFiles) {

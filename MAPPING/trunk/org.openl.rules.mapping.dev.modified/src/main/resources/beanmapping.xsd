@@ -202,7 +202,9 @@
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="t:a" />
+				<choice minOccurs="1" maxOccurs="unbounded">
+					<element ref="t:a" minOccurs="1" maxOccurs="unbounded" />
+				</choice>
 				<element ref="t:b" />
 				<element ref="t:a-hint" minOccurs="0" />
 				<element ref="t:b-hint" minOccurs="0" />
