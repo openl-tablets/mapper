@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
 import org.dozer.DozerBeanMapper;
 import org.dozer.MappingException;
+import org.dozer.fieldmap.FieldMappingCondition;
 import org.dozer.loader.api.BeanMappingBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -418,6 +419,82 @@ public class DozerApiTest {
         
         assertEquals("10;some string", source1.getStringField());
         assertEquals(10, source1.getIntField());
+    }
+    
+    @Test
+    public void test12() {
+     
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+            protected void configure() {
+                mapping(
+                    Source.class, 
+                    Dest.class 
+                )
+                .fields(
+                    field("stringField"),
+                    field("stringField").required(true),
+                    condition("org.openl.rules.mapping.data.FalseMappingCondition")
+                );
+            }
+        };
+
+        mapper.addMapping(builder);
+
+        Source source = new Source("some string", 10);
+        Dest dest = new Dest("another string value", 5);
+        
+        mapper.map(source, dest);
+
+        assertEquals("another string value", dest.getStringField());
+        assertEquals(10, dest.getIntField());
+        
+        mapper.map(dest, source);
+
+        assertEquals("some string", source.getStringField());
+        assertEquals(10, source.getIntField());
+    }
+
+    @Test
+    public void test13() {
+     
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+            protected void configure() {
+                mapping(
+                    Source.class, 
+                    Dest.class 
+                )
+                .fields(
+                    field("stringField"),
+                    field("stringField").required(true),
+                    conditionId("false-condition-id")
+                );
+            }
+        };
+
+        Map<String, FieldMappingCondition> mappingConditionsWithId = new HashMap<String, FieldMappingCondition>();
+        mappingConditionsWithId.put("false-condition-id", new FieldMappingCondition() {
+
+            public boolean mapField(Object sourceFieldValue, Object destFieldValue, Class<?> sourceType,
+                Class<?> destType) {
+                return "another string value".equals(sourceFieldValue);
+            }
+        });
+
+        mapper.setMappingConditionsWithId(mappingConditionsWithId);
+        mapper.addMapping(builder);
+
+        Source source = new Source("some string", 10);
+        Dest dest = new Dest("another string value", 5);
+        
+        mapper.map(source, dest);
+
+        assertEquals("another string value", dest.getStringField());
+        assertEquals(10, dest.getIntField());
+        
+        mapper.map(dest, source);
+
+        assertEquals("another string value", source.getStringField());
+        assertEquals(10, source.getIntField());
     }
 
 }

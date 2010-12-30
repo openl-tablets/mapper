@@ -9,7 +9,7 @@ package org.dozer.fieldmap;
  * @author Alexey Gamanovich
  * 
  */
-public interface FieldMapCondition {
+public interface FieldMappingCondition {
 
     boolean mapField(Object sourceFieldValue, Object destFieldValue, Class<?> sourceType, Class<?> destType);
 

@@ -160,8 +160,8 @@ public class MultiSourceFieldMap extends FieldMap {
             getCustomConverter()).append("relationshipType", getRelationshipType()).append("removeOrphans",
             isRemoveOrphans()).append("mapId", getMapId()).append("copyByReference", isCopyByReference()).append(
             "copyByReferenceOveridden", isCopyByReferenceOveridden()).append("srcTypeHint", getSrcHintContainer())
-            .append("destTypeHint", getDestHintContainer()).append("mapCondition", getMapCondition()).append(
-                "mapConditionId", getMapConditionId()).toString();
+            .append("destTypeHint", getDestHintContainer()).append("mapCondition", getMappingCondition()).append(
+                "mapConditionId", getMappingConditionId()).toString();
     }
 
 }

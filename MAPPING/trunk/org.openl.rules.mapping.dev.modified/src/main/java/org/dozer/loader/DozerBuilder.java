@@ -237,6 +237,9 @@ public class DozerBuilder {
         private String customConverterParam;
         private boolean copyByReferenceSet;
 
+        private String mappingCondition;
+        private String mappingConditionId;
+        
         public FieldMappingBuilder(ClassMap classMap) {
             this.classMap = classMap;
         }
@@ -305,6 +308,16 @@ public class DozerBuilder {
             this.customConverterParam = attribute;
             return this;
         }
+        
+        public FieldMappingBuilder mappingCondition(String typeName) {
+            this.mappingCondition = typeName;
+            return this;
+        }
+
+        public FieldMappingBuilder mappingConditionId(String attribute) {
+            this.mappingConditionId = attribute;
+            return this;
+        }
 
         public void build() {
             // TODO Check Map to Map mapping
@@ -341,6 +354,8 @@ public class DozerBuilder {
             result.setCustomConverter(customConverter);
             result.setCustomConverterId(customConverterId);
             result.setCustomConverterParam(customConverterParam);
+            result.setMappingCondition(mappingCondition);
+            result.setMappingConditionId(mappingConditionId);
 
             classMap.addFieldMapping(result);
         }

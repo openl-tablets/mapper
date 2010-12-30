@@ -24,6 +24,7 @@ import org.dozer.classmap.MappingFileData;
 import org.dozer.config.GlobalSettings;
 import org.dozer.event.DozerEventManager;
 import org.dozer.factory.DestBeanCreator;
+import org.dozer.fieldmap.FieldMappingCondition;
 import org.dozer.loader.CustomMappingsLoader;
 import org.dozer.loader.LoadMappingsResult;
 import org.dozer.loader.api.BeanMappingBuilder;
@@ -73,6 +74,9 @@ public class DozerBeanMapper implements Mapper {
     private final List<MappingFileData> builderMappings = new ArrayList<MappingFileData>();
     private final Map<String, CustomConverter> customConvertersWithId = new HashMap<String, CustomConverter>();
     private List<? extends DozerEventListener> eventListeners = new ArrayList<DozerEventListener>();
+    
+    private final List<FieldMappingCondition> mappingConditions = new ArrayList<FieldMappingCondition>();
+    private final Map<String, FieldMappingCondition> mappingConditionsWithId = new HashMap<String, FieldMappingCondition>();
 
     private CustomFieldMapper customFieldMapper;
 
@@ -165,6 +169,20 @@ public class DozerBeanMapper implements Mapper {
         return Collections.unmodifiableMap(customConvertersWithId);
     }
 
+    public void setMappingConditions(List<FieldMappingCondition> mappingConditions) {
+        checkIfInitialized();
+        this.mappingConditions.clear();
+        this.mappingConditions.addAll(mappingConditions);
+    }
+    
+    public List<FieldMappingCondition> getMappingConditions() {
+        return Collections.unmodifiableList(mappingConditions);
+    }
+
+    public Map<String, FieldMappingCondition> getMappingConditionsWithId() {
+        return Collections.unmodifiableMap(mappingConditionsWithId);
+    }
+
     private void init() {
         DozerInitializer.getInstance().init();
 
@@ -200,7 +218,8 @@ public class DozerBeanMapper implements Mapper {
         }
 
         Mapper processor = new MappingProcessor(customMappings, globalConfiguration, cacheManager, statsMgr,
-            customConverters, eventManager, getCustomFieldMapper(), customConvertersWithId);
+            customConverters, eventManager, getCustomFieldMapper(), customConvertersWithId, mappingConditions, 
+            mappingConditionsWithId);
 
         // If statistics are enabled, then Proxy the processor with a statistics
         // interceptor
@@ -258,6 +277,12 @@ public class DozerBeanMapper implements Mapper {
         checkIfInitialized();
         this.customConvertersWithId.clear();
         this.customConvertersWithId.putAll(customConvertersWithId);
+    }
+    
+    public void setMappingConditionsWithId(Map<String, FieldMappingCondition> mappingConditionsWithId) {
+        checkIfInitialized();
+        this.mappingConditionsWithId.clear();
+        this.mappingConditionsWithId.putAll(mappingConditionsWithId);
     }
 
     private void checkIfInitialized() {

@@ -59,8 +59,8 @@ public abstract class FieldMap implements Cloneable {
     private String customConverterParam;
     private RelationshipType relationshipType;
     private boolean removeOrphans;
-    private String mapCondition;
-    private String mapConditionId;
+    private String mappingCondition;
+    private String mappingConditionId;
 
     // For Caching Purposes
     private final ConcurrentMap<Class<?>, DozerPropertyDescriptor> srcPropertyDescriptorMap = new ConcurrentHashMap<Class<?>, DozerPropertyDescriptor>();
@@ -469,7 +469,7 @@ public abstract class FieldMap implements Cloneable {
             "relationshipType", relationshipType).append("removeOrphans", removeOrphans).append("mapId", mapId).append(
             "copyByReference", copyByReference).append("copyByReferenceOveridden", copyByReferenceOveridden).append(
             "srcTypeHint", getSrcHintContainer()).append("destTypeHint", getDestHintContainer()).append("mapCondition",
-            mapCondition).append("mapConditionId", mapConditionId).toString();
+            mappingCondition).append("mapConditionId", mappingConditionId).toString();
     }
 
     public String getCustomConverterParam() {
@@ -480,20 +480,20 @@ public abstract class FieldMap implements Cloneable {
         this.customConverterParam = customConverterParam;
     }
 
-    public String getMapCondition() {
-        return mapCondition;
+    public String getMappingCondition() {
+        return mappingCondition;
     }
 
-    public void setMapCondition(String mapCondition) {
-        this.mapCondition = mapCondition;
+    public void setMappingCondition(String mapCondition) {
+        this.mappingCondition = mapCondition;
     }
 
-    public String getMapConditionId() {
-        return mapConditionId;
+    public String getMappingConditionId() {
+        return mappingConditionId;
     }
 
-    public void setMapConditionId(String mapConditionId) {
-        this.mapConditionId = mapConditionId;
+    public void setMappingConditionId(String mapConditionId) {
+        this.mappingConditionId = mapConditionId;
     }
 
     protected ConcurrentMap<Class<?>, DozerPropertyDescriptor> getSrcPropertyDescriptorMap() {

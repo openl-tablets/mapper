@@ -64,6 +64,22 @@ public class FieldsMappingOptions extends TypeMappingOptions {
         };
     }
 
+    public static FieldsMappingOption condition(final String type) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.mappingCondition(type);
+            }
+        };
+    }
+
+    public static FieldsMappingOption conditionId(final String id) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.mappingConditionId(id);
+            }
+        };
+    }
+
     public static FieldsMappingOption useMapId(final String mapId) {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {

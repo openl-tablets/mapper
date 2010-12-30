@@ -54,6 +54,7 @@ import org.dozer.factory.DestBeanCreator;
 import org.dozer.fieldmap.CustomGetSetMethodFieldMap;
 import org.dozer.fieldmap.ExcludeFieldMap;
 import org.dozer.fieldmap.FieldMap;
+import org.dozer.fieldmap.FieldMappingCondition;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.fieldmap.MapFieldMap;
 import org.dozer.fieldmap.MultiSourceFieldMap;
@@ -94,6 +95,9 @@ public class MappingProcessor implements Mapper {
     private final EventManager eventMgr;
     private final CustomFieldMapper customFieldMapper;
 
+    private final List<FieldMappingCondition> conditionObjects;
+    private final Map<String, FieldMappingCondition> conditionObjectsWithId;
+    
     private final MappedFieldsTracker mappedFields = new MappedFieldsTracker();
 
     private final Cache converterByDestTypeCache;
@@ -102,7 +106,9 @@ public class MappingProcessor implements Mapper {
 
     protected MappingProcessor(ClassMappings classMappings, Configuration globalConfiguration, CacheManager cacheMgr,
         StatisticsManager statsMgr, List<CustomConverter> customConverterObjects, DozerEventManager eventManager,
-        CustomFieldMapper customFieldMapper, Map<String, CustomConverter> customConverterObjectsWithId) {
+        CustomFieldMapper customFieldMapper, Map<String, CustomConverter> customConverterObjectsWithId, 
+        List<FieldMappingCondition> conditionObjects, Map<String, FieldMappingCondition> conditionObjectsWithId) {
+        
         this.classMappings = classMappings;
         this.globalConfiguration = globalConfiguration;
         this.statsMgr = statsMgr;
@@ -112,6 +118,8 @@ public class MappingProcessor implements Mapper {
         this.converterByDestTypeCache = cacheMgr.getCache(DozerCacheType.CONVERTER_BY_DEST_TYPE.name());
         this.superTypeCache = cacheMgr.getCache(DozerCacheType.SUPER_TYPE_CHECK.name());
         this.customConverterObjectsWithId = customConverterObjectsWithId;
+        this.conditionObjects = conditionObjects;
+        this.conditionObjectsWithId = conditionObjectsWithId;
     }
 
     /* Mapper Interface Implementation */
@@ -329,6 +337,30 @@ public class MappingProcessor implements Mapper {
         // recurse the object as normal
         // 1770440 - fdg - Using multiple instances of CustomConverter
         Object destFieldValue;
+        
+        boolean mapField = true;
+        if (!MappingUtils.isBlankOrNull(fieldMapping.getMappingConditionId())) {
+            // check condition using condition id
+            if (conditionObjectsWithId != null && conditionObjectsWithId.containsKey(fieldMapping.getMappingConditionId())) {
+                Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping.getSrcFieldType(srcObj.getClass());
+                FieldMappingCondition conditionInstance = conditionObjectsWithId.get(fieldMapping.getMappingConditionId());
+                Object existingValue = getExistingValue(fieldMapping, destObj, destFieldType);
+                mapField = evaluateConditionInstance(conditionInstance, srcFieldClass, srcFieldValue, destFieldType, existingValue);
+            } else {
+                throw new MappingException("Mapping condition instance not found with id:" + fieldMapping.getMappingConditionId());
+            }
+        } else if (!MappingUtils.isBlankOrNull(fieldMapping.getMappingCondition())) {
+            Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping.getSrcFieldType(srcObj.getClass());
+            Class<?> conditionClass = MappingUtils.loadClass(fieldMapping.getMappingCondition());
+            Object existingValue = getExistingValue(fieldMapping, destObj, destFieldType);
+            mapField = evaluateCondition(conditionClass, srcFieldClass, srcFieldValue, destFieldType, existingValue, fieldMapping);
+        }
+
+        // If mapping condition have returned false value skip current field mapping
+        if (!mapField) {
+            return;
+        }
+        
         if (!MappingUtils.isBlankOrNull(fieldMapping.getCustomConverterId())) {
             if (customConverterObjectsWithId != null && customConverterObjectsWithId.containsKey(fieldMapping
                 .getCustomConverterId())) {
@@ -359,6 +391,35 @@ public class MappingProcessor implements Mapper {
                 .getSrcFieldName(), fieldMapping.getDestFieldName(), srcFieldValue, destFieldValue, fieldMapping
                 .getClassMap().getMapId()));
         }
+    }
+
+    private boolean evaluateConditionInstance(FieldMappingCondition conditionInstance, Class<?> srcFieldClass, Object srcFieldValue,
+        Class<?> destFieldType, Object destFieldValue) {
+        return conditionInstance.mapField(srcFieldValue, destFieldValue, srcFieldClass, destFieldType);
+    }
+    
+    private boolean evaluateCondition(Class<?> conditionClass, Class<?> srcFieldClass, Object srcFieldValue,
+        Class<?> destFieldType, Object destFieldValue, FieldMap fieldMapping) {
+
+        FieldMappingCondition conditionInstance = null;
+
+        if (conditionObjects != null) {
+            for (FieldMappingCondition conditionObject : conditionObjects) {
+                if (conditionObject.getClass().isAssignableFrom(conditionClass)) {
+                    // we have a match
+                    conditionInstance = conditionObject;
+                }
+            }
+        }
+        // if converter object instances were not injected, then create new
+        // instance
+        // of the converter for each conversion
+        // TODO : Should we really create it each time?
+        if (conditionInstance == null) {
+            conditionInstance = (FieldMappingCondition) ReflectionUtils.newInstance(conditionClass);
+        }
+
+        return evaluateConditionInstance(conditionInstance, srcFieldClass, srcFieldValue, destFieldType, destFieldValue);
     }
 
     private Object mapOrRecurseObject(Object srcObj, Object srcFieldValue, Class<?> destFieldType, FieldMap fieldMap,
@@ -954,10 +1015,6 @@ public class MappingProcessor implements Mapper {
         }
     }
 
-    private void writeDestinationValue() {
-
-    }
-
     private Object mapUsingCustomConverterInstance(CustomConverter converterInstance, Class<?> srcFieldClass,
         Object srcFieldValue, Class<?> destFieldClass, Object existingDestFieldValue, FieldMap fieldMap,
         boolean topLevel) {
@@ -1012,10 +1069,9 @@ public class MappingProcessor implements Mapper {
         return result;
     }
 
-    // TODO: possibly extract this to a separate class
-
     private Object mapUsingCustomConverter(Class<?> customConverterClass, Class<?> srcFieldClass, Object srcFieldValue,
         Class<?> destFieldClass, Object existingDestFieldValue, FieldMap fieldMap, boolean topLevel) {
+
         CustomConverter converterInstance = null;
         // search our injected customconverters for a match
         if (customConverterObjects != null) {

@@ -313,8 +313,8 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
             "destination field", dest).append("type", getType()).append("customConverter", getCustomConverter())
             .append("relationshipType", getRelationshipType()).append("removeOrphans", isRemoveOrphans()).append(
                 "mapId", getMapId()).append("copyByReference", isCopyByReference()).append("copyByReferenceOveridden",
-                isCopyByReferenceOveridden()).append("mapCondition", getMapCondition()).append("mapConditionId",
-                getMapConditionId()).toString();
+                isCopyByReferenceOveridden()).append("mappingCondition", getMappingCondition()).append("mappingConditionId",
+                getMappingConditionId()).toString();
     }
 
     @Override
