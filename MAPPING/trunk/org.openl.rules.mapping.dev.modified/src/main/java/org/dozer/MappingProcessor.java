@@ -177,12 +177,11 @@ public class MappingProcessor implements Mapper {
             // Check to see if custom converter has been specified for this
             // mapping
             // combination. If so, just use it.
-            Class<?> converterClass = MappingUtils.findCustomConverter(converterByDestTypeCache, classMap
+            CustomConverter converter = MappingUtils.findCustomConverter(converterByDestTypeCache, customConverterObjects, classMap
                 .getCustomConverters(), srcObj.getClass(), destType);
 
-            if (converterClass != null) {
-                return (T) mapUsingCustomConverter(converterClass, srcObj.getClass(), srcObj, destType, result, null,
-                    true);
+            if (converter != null) {
+                return (T) mapUsingCustomConverterInstance(converter,  srcObj.getClass(), srcObj, destType, result, null, true);
             }
 
             if (result == null) {
@@ -221,10 +220,10 @@ public class MappingProcessor implements Mapper {
 
         // Check to see if custom converter has been specified for this mapping
         // combination. If so, just use it.
-        Class<?> converterClass = MappingUtils.findCustomConverter(converterByDestTypeCache, classMap
+        CustomConverter converter = MappingUtils.findCustomConverter(converterByDestTypeCache, customConverterObjects, classMap
             .getCustomConverters(), srcClass, destClass);
-        if (converterClass != null) {
-            mapUsingCustomConverter(converterClass, srcClass, srcObj, destClass, destObj, null, true);
+        if (converter != null) {
+            mapUsingCustomConverterInstance(converter, srcClass, srcObj, destClass, destObj, null, true);
             return;
         }
 
@@ -380,8 +379,11 @@ public class MappingProcessor implements Mapper {
         } else {
             Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping
                 .getSrcFieldType(srcObj.getClass());
-            destFieldValue = mapUsingCustomConverter(MappingUtils.loadClass(fieldMapping.getCustomConverter()),
-                srcFieldClass, srcFieldValue, destFieldType, destObj, fieldMapping, false);
+            Class<?> converterClass = MappingUtils.loadClass(fieldMapping.getCustomConverter());
+            
+            // get dest value using user defined converter for current field map
+            destFieldValue = mapUsingCustomConverter(converterClass, srcFieldClass, srcFieldValue, destFieldType,
+                destObj, fieldMapping, false);
         }
 
         writeDestinationValue(destObj, destFieldValue, fieldMapping, srcObj, fieldMapping.getDestFieldDefaultValue());
@@ -426,13 +428,13 @@ public class MappingProcessor implements Mapper {
         Object destObj) {
         Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMap.getSrcFieldType(srcObj
             .getClass());
-        Class<?> converterClass = MappingUtils.determineCustomConverter(fieldMap, converterByDestTypeCache, fieldMap
+        CustomConverter converter = MappingUtils.determineCustomConverter(fieldMap, converterByDestTypeCache, customConverterObjects, fieldMap
             .getClassMap().getCustomConverters(), srcFieldClass, destFieldType);
 
         // 1-2007 mht: Invoke custom converter even if the src value is null.
         // #1563795
-        if (converterClass != null) {
-            return mapUsingCustomConverter(converterClass, srcFieldClass, srcFieldValue, destFieldType, destObj,
+        if (converter != null) {
+            return mapUsingCustomConverterInstance(converter, srcFieldClass, srcFieldValue, destFieldType, destObj,
                 fieldMap, false);
         }
 
@@ -721,13 +723,13 @@ public class MappingProcessor implements Mapper {
                         .throwMappingException("<field type=\"iterate\"> must have a source or destination type hint");
                 }
                 // check for custom converters
-                Class<?> converterClass = MappingUtils.findCustomConverter(converterByDestTypeCache, fieldMapping
+                CustomConverter converter = MappingUtils.findCustomConverter(converterByDestTypeCache, customConverterObjects, fieldMapping
                     .getClassMap().getCustomConverters(), value.getClass(), fieldMapping.getDestHintContainer()
                     .getHint());
 
-                if (converterClass != null) {
+                if (converter != null) {
                     Class<?> srcFieldClass = srcFieldValue.getClass();
-                    value = mapUsingCustomConverter(converterClass, srcFieldClass, value, fieldMapping
+                    value = mapUsingCustomConverterInstance(converter, srcFieldClass, value, fieldMapping
                         .getDestHintContainer().getHint(), null, fieldMapping, false);
                 } else {
                     Object alreadyMappedValue = mappedFields.getMappedValue(value, fieldMapping.getDestHintContainer()
@@ -1072,23 +1074,9 @@ public class MappingProcessor implements Mapper {
     private Object mapUsingCustomConverter(Class<?> customConverterClass, Class<?> srcFieldClass, Object srcFieldValue,
         Class<?> destFieldClass, Object existingDestFieldValue, FieldMap fieldMap, boolean topLevel) {
 
-        CustomConverter converterInstance = null;
-        // search our injected customconverters for a match
-        if (customConverterObjects != null) {
-            for (CustomConverter customConverterObject : customConverterObjects) {
-                if (customConverterObject.getClass().isAssignableFrom(customConverterClass)) {
-                    // we have a match
-                    converterInstance = customConverterObject;
-                }
-            }
-        }
-        // if converter object instances were not injected, then create new
-        // instance
-        // of the converter for each conversion
-        // TODO : Should we really create it each time?
-        if (converterInstance == null) {
-            converterInstance = (CustomConverter) ReflectionUtils.newInstance(customConverterClass);
-        }
+        CustomConverter converterInstance = MappingUtils.findCustomConverterByClass(customConverterClass,
+            customConverterObjects);
+
         return mapUsingCustomConverterInstance(converterInstance, srcFieldClass, srcFieldValue, destFieldClass,
             existingDestFieldValue, fieldMap, topLevel);
     }

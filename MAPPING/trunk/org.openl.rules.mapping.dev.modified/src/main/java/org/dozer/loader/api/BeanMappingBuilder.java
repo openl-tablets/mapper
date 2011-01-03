@@ -23,7 +23,7 @@ import org.dozer.util.DozerConstants;
 /**
  * @author Dmitry Buzdin
  */
-public abstract class BeanMappingBuilder extends FieldsMappingOptions {
+public abstract class BeanMappingBuilder extends MappingOptions {
 
     private DozerBuilder dozerBuilder;
 
@@ -34,6 +34,16 @@ public abstract class BeanMappingBuilder extends FieldsMappingOptions {
         dozerBuilder = new DozerBuilder();
         configure();
         return dozerBuilder.build();
+    }
+    
+    public BeanMappingBuilder config(ConfigurationMappingOption... configMappingOption) {
+        DozerBuilder.ConfigurationBuilder configBuilder = dozerBuilder.configuration();
+        
+        for (ConfigurationMappingOption option : configMappingOption) {
+            option.apply(configBuilder);
+        }
+        
+        return this;
     }
 
     public TypeMappingBuilder mapping(String typeA, String typeB, TypeMappingOption... typeMappingOption) {

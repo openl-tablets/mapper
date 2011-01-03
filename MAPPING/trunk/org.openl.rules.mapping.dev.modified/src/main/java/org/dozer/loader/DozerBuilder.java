@@ -28,6 +28,8 @@ import org.dozer.classmap.MappingDirection;
 import org.dozer.classmap.MappingFileData;
 import org.dozer.classmap.RelationshipType;
 import org.dozer.converters.CustomConverterDescription;
+import org.dozer.converters.InstanceCustomConverterDescription;
+import org.dozer.converters.JavaClassCustomConverterDescription;
 import org.dozer.fieldmap.CustomGetSetMethodFieldMap;
 import org.dozer.fieldmap.DozerField;
 import org.dozer.fieldmap.ExcludeFieldMap;
@@ -239,7 +241,7 @@ public class DozerBuilder {
 
         private String mappingCondition;
         private String mappingConditionId;
-        
+
         public FieldMappingBuilder(ClassMap classMap) {
             this.classMap = classMap;
         }
@@ -308,7 +310,7 @@ public class DozerBuilder {
             this.customConverterParam = attribute;
             return this;
         }
-        
+
         public FieldMappingBuilder mappingCondition(String typeName) {
             this.mappingCondition = typeName;
             return this;
@@ -554,14 +556,24 @@ public class DozerBuilder {
         }
 
         public CustomConverterBuilder customConverter(String type) {
-            Class<?> aClass = MappingUtils.loadClass(type);
+            Class<? extends CustomConverter> aClass = (Class<? extends CustomConverter>) MappingUtils.loadClass(type);
             return customConverter(aClass);
         }
 
         // TODO Constraint with Generic
-        public CustomConverterBuilder customConverter(Class type) {
-            converterDescription = new CustomConverterDescription();
-            converterDescription.setType(type);
+        public CustomConverterBuilder customConverter(Class<? extends CustomConverter> type) {
+            converterDescription = new JavaClassCustomConverterDescription();
+            ((JavaClassCustomConverterDescription) converterDescription).setType(type);
+            return customConverter(converterDescription);
+        }
+
+        public CustomConverterBuilder customConverter(CustomConverter customConverter) {
+            converterDescription = new InstanceCustomConverterDescription();
+            ((InstanceCustomConverterDescription) converterDescription).setInstance(customConverter);
+            return customConverter(converterDescription);
+        }
+
+        private CustomConverterBuilder customConverter(CustomConverterDescription converterDescription) {
             configuration.getCustomConverters().addConverter(converterDescription);
             return new CustomConverterBuilder(converterDescription);
         }
@@ -602,7 +614,7 @@ public class DozerBuilder {
             return classA(aClass);
         }
 
-        public CustomConverterBuilder classA(Class type) {
+        public CustomConverterBuilder classA(Class<?> type) {
             converterDescription.setClassA(type);
             return this;
         }
@@ -612,7 +624,7 @@ public class DozerBuilder {
             return classB(aClass);
         }
 
-        public CustomConverterBuilder classB(Class type) {
+        public CustomConverterBuilder classB(Class<?> type) {
             converterDescription.setClassB(type);
             return this;
         }

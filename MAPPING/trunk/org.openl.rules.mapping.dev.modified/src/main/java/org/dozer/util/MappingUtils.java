@@ -15,20 +15,7 @@
  */
 package org.dozer.util;
 
-import org.apache.commons.lang.StringUtils;
-import org.dozer.MappingException;
-import org.dozer.cache.Cache;
-import org.dozer.classmap.ClassMap;
-import org.dozer.classmap.Configuration;
-import org.dozer.classmap.CopyByReferenceContainer;
-import org.dozer.classmap.DozerClass;
-import org.dozer.config.BeanContainer;
-import org.dozer.converters.CustomConverterContainer;
-import org.dozer.fieldmap.DozerField;
-import org.dozer.fieldmap.FieldMap;
-import org.dozer.fieldmap.FieldMapUtils;
-import org.dozer.fieldmap.MultiFieldsExcludeFieldMap;
-import org.dozer.fieldmap.MultiSourceFieldMap;
+import static org.dozer.util.DozerConstants.BASE_CLASS;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -42,7 +29,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.dozer.util.DozerConstants.BASE_CLASS;
+import org.apache.commons.lang.StringUtils;
+import org.dozer.CustomConverter;
+import org.dozer.MappingException;
+import org.dozer.cache.Cache;
+import org.dozer.cache.CacheKeyFactory;
+import org.dozer.classmap.ClassMap;
+import org.dozer.classmap.Configuration;
+import org.dozer.classmap.CopyByReferenceContainer;
+import org.dozer.classmap.DozerClass;
+import org.dozer.config.BeanContainer;
+import org.dozer.converters.CustomConverterContainer;
+import org.dozer.converters.CustomConverterDescription;
+import org.dozer.converters.InstanceCustomConverterDescription;
+import org.dozer.converters.JavaClassCustomConverterDescription;
+import org.dozer.fieldmap.DozerField;
+import org.dozer.fieldmap.FieldMap;
+import org.dozer.fieldmap.FieldMapUtils;
+import org.dozer.fieldmap.MultiFieldsExcludeFieldMap;
+import org.dozer.fieldmap.MultiSourceFieldMap;
 
 /**
  * Internal class that provides various mapping utilities used throughout the
@@ -131,17 +136,85 @@ public final class MappingUtils {
         return buf.toString();
     }
 
-    public static Class<?> findCustomConverter(Cache converterByDestTypeCache,
+    public static CustomConverter findCustomConverterByClass(Class<?> customConverterClass,
+        List<CustomConverter> externalConverters) {
+
+        CustomConverter converterInstance = null;
+        // search among injected customconverters for a match
+        if (externalConverters != null) {
+            for (CustomConverter customConverterObject : externalConverters) {
+                if (customConverterObject.getClass().isAssignableFrom(customConverterClass)) {
+                    // we have a match
+                    converterInstance = customConverterObject;
+                }
+            }
+        }
+        // if converter object instances were not injected, then create new
+        // instance
+        // of the converter for each conversion
+        // TODO : Should we really create it each time?
+        if (converterInstance == null) {
+            converterInstance = (CustomConverter) ReflectionUtils.newInstance(customConverterClass);
+        }
+
+        return converterInstance;
+    }
+
+    /**
+     * Finds custom converter for specified classes. The implementation of this
+     * method finds converters in the following order:<br/>
+     * <ol>
+     * <li>looks up converter in cache;</li>
+     * <li>looks up converter in defined converters container</li>
+     * <li>looks up converter in defined converters container</li>
+     * <li>looks up converter among external converters</li>
+     * 
+     * If appropriate converter not found <code>null</code> will be returned.
+     * 
+     * @param cache
+     * @param externalConverters
+     * @param customConverterContainer
+     * @param srcClass
+     * @param destClass
+     * @return
+     */
+    public static CustomConverter findCustomConverter(Cache cache, List<CustomConverter> externalConverters,
         CustomConverterContainer customConverterContainer, Class<?> srcClass, Class<?> destClass) {
+
+        // check that converters container is defined
         if (customConverterContainer == null) {
             return null;
         }
 
-        return customConverterContainer.getCustomConverter(srcClass, destClass, converterByDestTypeCache);
+        // Check cache first
+        Object cacheKey = CacheKeyFactory.createKey(destClass, srcClass);
+        if (cache.containsKey(cacheKey)) {
+            return (CustomConverter) cache.get(cacheKey);
+        }
+
+        // check converters container
+        CustomConverter converterInstance = null;
+        CustomConverterDescription description = customConverterContainer.getCustomConverter(srcClass, destClass);
+        if (description != null) {
+            if (description instanceof InstanceCustomConverterDescription) {
+                converterInstance = ((InstanceCustomConverterDescription) description).getInstance();
+            } else {
+                Class<?> customConverterClass = ((JavaClassCustomConverterDescription) description).getType();
+                converterInstance = findCustomConverterByClass(customConverterClass, externalConverters);
+            }
+        }
+
+        // put appropriate info into cache
+        cache.put(cacheKey, converterInstance);
+
+        return converterInstance;
     }
 
-    public static Class<?> determineCustomConverter(FieldMap fieldMap, Cache converterByDestTypeCache,
-        CustomConverterContainer customConverterContainer, Class<?> srcClass, Class<?> destClass) {
+    public static CustomConverter determineCustomConverter(FieldMap fieldMap, Cache converterByDestTypeCache,
+        List<CustomConverter> customConverterObjects, CustomConverterContainer customConverterContainer,
+        Class<?> srcClass, Class<?> destClass) {
+
+        // check that converters container is defined
         if (customConverterContainer == null) {
             return null;
         }
@@ -161,11 +234,12 @@ public final class MappingUtils {
             }
         }
 
-        return findCustomConverter(converterByDestTypeCache, customConverterContainer, srcClass, destClass);
+        return findCustomConverter(converterByDestTypeCache, customConverterObjects, customConverterContainer,
+            srcClass, destClass);
     }
 
     public static void reverseFields(FieldMap source, FieldMap reversed) {
-        
+
         // in case of multi-source field mapping we should use custom
         // implementation of exclude field map
         //
