@@ -1,4 +1,4 @@
-package org.openl.rules.mapping.data;
+package org.openl.rules.mapping.data.condition;
 
 import org.dozer.fieldmap.FieldMappingCondition;
 

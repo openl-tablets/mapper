@@ -562,6 +562,8 @@ public class MappingProcessor implements Mapper {
             Class<? extends Object> targetClass;
             if (fieldMap.getDestHintContainer() != null && fieldMap.getDestHintContainer().getHint() != null) {
                 targetClass = fieldMap.getDestHintContainer().getHint();
+            } else if (destFieldType.isArray()) {
+                targetClass = destFieldType.getComponentType();
             } else {
                 targetClass = destFieldType;
             }

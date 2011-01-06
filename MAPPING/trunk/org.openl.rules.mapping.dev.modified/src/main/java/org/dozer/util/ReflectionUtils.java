@@ -105,17 +105,15 @@ public final class ReflectionUtils {
         while (toks.hasMoreTokens()) {
             String aFieldName = toks.nextToken();
             String theFieldName = aFieldName;
-            int collectionIndex = -1;
+            String indexExpression = null;
 
             if (aFieldName.contains("[")) {
                 theFieldName = aFieldName.substring(0, aFieldName.indexOf("["));
-                collectionIndex = Integer.parseInt(aFieldName.substring(aFieldName.indexOf("[") + 1, aFieldName
-                    .indexOf("]")));
+                indexExpression = aFieldName.substring(aFieldName.indexOf("[") + 1, aFieldName.indexOf("]"));
             }
 
-            PropertyDescriptor propDescriptor = findPropertyDescriptor(latestClass, theFieldName,
-                deepIndexHintContainer);
-            DeepHierarchyElement r = new DeepHierarchyElement(propDescriptor, collectionIndex);
+            PropertyDescriptor propDescriptor = findPropertyDescriptor(latestClass, theFieldName, deepIndexHintContainer);
+            DeepHierarchyElement r = new DeepHierarchyElement(propDescriptor, indexExpression);
 
             if (propDescriptor == null) {
                 MappingUtils

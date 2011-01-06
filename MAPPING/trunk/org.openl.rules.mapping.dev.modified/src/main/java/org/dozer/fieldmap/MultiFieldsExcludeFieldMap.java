@@ -64,7 +64,7 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
     }
 
     @Override
-    public int getDestFieldIndex() {
+    public String getDestFieldIndex() {
         throw new UnsupportedOperationException();
     }
 
@@ -182,7 +182,7 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
     }
 
     @Override
-    public int getSrcFieldIndex() {
+    public String getSrcFieldIndex() {
         throw new UnsupportedOperationException();
     }
 

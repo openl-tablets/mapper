@@ -229,11 +229,11 @@ public abstract class FieldMap implements Cloneable {
         return srcField.isIndexed();
     }
 
-    public int getSrcFieldIndex() {
+    public String getSrcFieldIndex() {
         return srcField.getIndex();
     }
 
-    public int getDestFieldIndex() {
+    public String getDestFieldIndex() {
         return destField.getIndex();
     }
 

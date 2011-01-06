@@ -84,7 +84,7 @@ public class MultiSourceFieldMap extends FieldMap {
     }
 
     @Override
-    public int getSrcFieldIndex() {
+    public String getSrcFieldIndex() {
         throw new UnsupportedOperationException();
     }
 

@@ -17,11 +17,8 @@ package org.dozer.propertydescriptor;
 
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.dozer.classmap.ClassMap;
 import org.dozer.fieldmap.DozerField;
-import static org.dozer.fieldmap.FieldMapUtils.*;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.util.DozerConstants;
 import org.dozer.util.MappingUtils;
@@ -56,7 +53,7 @@ public class PropertyDescriptorFactory {
 
     public static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz, String theGetMethod,
         String theSetMethod, String mapGetMethod, String mapSetMethod, boolean isAccessible, boolean isIndexed,
-        int index, String name, String key, boolean isSelfReferencing, String oppositeFieldName,
+        String index, String name, String key, boolean isSelfReferencing, String oppositeFieldName,
         HintContainer srcDeepIndexHintContainer, HintContainer destDeepIndexHintContainer, String beanFactory) {
 
         DozerPropertyDescriptor desc;

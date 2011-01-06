@@ -41,7 +41,7 @@ public class DozerField {
     private boolean accessible;
     private String createMethod;
     private boolean indexed;
-    private int index = -1;
+    private String index;
     private boolean required;
     private Object defaultValue;
     private HintContainer hintContainer;
@@ -124,11 +124,11 @@ public class DozerField {
         this.createMethod = createMethod;
     }
 
-    public int getIndex() {
+    public String getIndex() {
         return index;
     }
 
-    public void setIndex(int index) {
+    public void setIndex(String index) {
         this.index = index;
     }
 

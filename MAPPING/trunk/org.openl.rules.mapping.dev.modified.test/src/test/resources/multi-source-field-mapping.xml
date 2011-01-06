@@ -7,7 +7,7 @@
     <class-a>org.openl.rules.mapping.data.Source</class-a>
     <class-b>org.openl.rules.mapping.data.Dest</class-b>
     
-    <field type="one-way" custom-converter="org.openl.rules.mapping.data.ArrayToStringCustomConverter">
+    <field type="one-way" custom-converter="org.openl.rules.mapping.data.converter.ArrayToStringCustomConverter">
       <a>stringField</a>
       <a>intField</a>
       <b>stringField</b>
@@ -23,7 +23,7 @@
     <class-a>org.openl.rules.mapping.data.Source</class-a>
     <class-b>org.openl.rules.mapping.data.Dest</class-b>
     
-    <field type="one-way" custom-converter="org.openl.rules.mapping.data.ArrayToStringCustomConverter">
+    <field type="one-way" custom-converter="org.openl.rules.mapping.data.converter.ArrayToStringCustomConverter">
       <a>stringField</a>
       <a>intField</a>
       <b>stringField</b>

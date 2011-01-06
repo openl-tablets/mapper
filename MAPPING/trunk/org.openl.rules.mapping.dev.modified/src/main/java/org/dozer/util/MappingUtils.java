@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
 import org.dozer.MappingException;
@@ -287,26 +288,6 @@ public final class MappingUtils {
         }
     }
 
-    public static Object getIndexedValue(Object collection, int index) {
-        Object result = null;
-        if (collection instanceof Object[]) {
-            Object[] x = (Object[]) collection;
-            if (index < x.length) {
-                return x[index];
-            }
-        } else if (collection instanceof Collection) {
-            Collection<?> x = (Collection<?>) collection;
-            if (index < x.size()) {
-                Iterator<?> iter = x.iterator();
-                for (int i = 0; i < index; i++) {
-                    iter.next();
-                }
-                result = iter.next();
-            }
-        }
-        return result;
-    }
-
     public static void applyGlobalCopyByReference(Configuration globalConfig, FieldMap fieldMap, ClassMap classMap) {
         CopyByReferenceContainer copyByReferenceContainer = globalConfig.getCopyByReferences();
         String destFieldTypeName = null;
@@ -344,6 +325,47 @@ public final class MappingUtils {
         String className = clazz.getName();
         return className.contains(DozerConstants.CGLIB_ID) || className.startsWith(DozerConstants.JAVASSIST_PACKAGE) || className
             .contains(DozerConstants.JAVASSIST_NAME);
+    }
+    
+    public static Object getXPathIndexedValue(Object object, String index) {
+        JXPathContext context = JXPathContext.newContext(object);
+        context.setLenient(true);
+        return context.getValue(index);
+    }
+    
+    public static Object getCollectionIndexedValue(Object collection, int index) {
+        Object result = null;
+        if (collection instanceof Object[]) {
+            Object[] x = (Object[]) collection;
+            if (index < x.length) {
+                return x[index];
+            }
+        } else if (collection instanceof Collection) {
+            Collection<?> x = (Collection<?>) collection;
+            if (index < x.size()) {
+                Iterator<?> iter = x.iterator();
+                for (int i = 0; i < index; i++) {
+                    iter.next();
+                }
+                result = iter.next();
+            }
+        }
+        return result;
+    }
+
+    public static boolean isSimpleCollectionIndex(String index) {
+        try {
+            Integer.parseInt(index);
+            return true;
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+        
+        return false;
+    }
+    
+    public static int getCollectionIndex(String index) {
+        return Integer.parseInt(index) - 1;
     }
 
     public static Object prepareIndexedCollection(Class<?> collectionType, Object existingCollection,

@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openl.rules.mapping.data.Dest;
 import org.openl.rules.mapping.data.Source;
-import org.openl.rules.mapping.data.ToStringCustomConverter;
+import org.openl.rules.mapping.data.converter.ToStringCustomConverter;
 
 public class DozerApiTest {
 
@@ -434,7 +434,7 @@ public class DozerApiTest {
                 .fields(
                     field("stringField"),
                     field("stringField").required(true),
-                    condition("org.openl.rules.mapping.data.FalseMappingCondition")
+                    condition("org.openl.rules.mapping.data.condition.FalseMappingCondition")
                 );
             }
         };
