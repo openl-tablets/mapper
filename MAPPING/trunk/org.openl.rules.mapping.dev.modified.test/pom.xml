@@ -9,7 +9,7 @@
     </parent>
     <groupId>org.openl.rules</groupId>
     <artifactId>org.openl.rules.mapping.dev.modified.test</artifactId>
-    <name>Openl - Rules - Mapping - Test</name>
+    <name>Dozer Mapping - Modified - Test</name>
     <description/>
     <build>
 

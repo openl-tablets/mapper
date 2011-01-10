@@ -10,8 +10,10 @@
 
     <groupId>org.openl.rules</groupId>
     <artifactId>org.openl.rules.mapping.dev.modified</artifactId>
-    <name>Openl - Rules - Mapping - Modified</name>
-    <description/>
+    <name>Dozer Mapping - Modified</name>
+    <description>
+        The customization of the Dozer's framework.
+    </description>
 
     <build>
 
