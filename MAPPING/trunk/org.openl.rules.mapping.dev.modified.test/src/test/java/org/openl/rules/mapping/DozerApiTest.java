@@ -584,4 +584,189 @@ public class DozerApiTest {
         assertEquals(10, dest.getIntField());
     }
 
+    @Test
+    public void test16() {
+
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+            protected void configure() {
+                mapping(
+                    Source.class, 
+                    Dest.class, 
+                    wildcard(false)
+                )
+                .fields(
+                    field(""),
+                    field("stringField").required(true).defaultValue("default value"),
+                    fieldOneWay()
+                );
+            }
+        };
+
+        mapper.addMapping(builder);
+
+        Source source = new Source(null, 10);
+        Dest dest = mapper.map(source, Dest.class);
+
+        assertEquals("default value", dest.getStringField());
+        assertEquals(0, dest.getIntField());
+    }
+
+    @Test(expected = MappingException.class)
+    public void test17() {
+
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+            protected void configure() {
+                mapping(
+                    Source.class, 
+                    Dest.class, 
+                    wildcard(false)
+                )
+                .fields(
+                    field(""),
+                    field("stringField").required(true).defaultValue("default value")
+                );
+            }
+        };
+
+        mapper.addMapping(builder);
+        
+        Source source = new Source(null, 10);
+        mapper.map(source, Dest.class);
+    }
+
+    @Test
+    public void test18() {
+
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+            protected void configure() {
+                mapping(
+                    Source.class, 
+                    Dest.class 
+                )
+                .fields(
+                    field(""),
+                    field("stringField").required(true).defaultValue("default value"),
+                    fieldOneWay(),
+                    customConverterId("testConverter")
+                );
+            }
+        };
+
+        Map<String, CustomConverter> customConvertersWithId = new HashMap<String, CustomConverter>();
+        customConvertersWithId.put("testConverter", new CustomConverter() {
+
+            public Object convert(Object existingDestinationFieldValue, Object sourceFieldValue,
+                Class<?> destinationClass, Class<?> sourceClass) {
+
+                if (sourceFieldValue != null) {
+                    throw new IllegalArgumentException();
+                }
+                
+                return "converter string value";
+            }
+        });
+
+        mapper.setCustomConvertersWithId(customConvertersWithId);
+        mapper.addMapping(builder);
+
+        Source source = new Source(null, 10);
+        Dest dest = mapper.map(source, Dest.class);
+
+        assertEquals("converter string value", dest.getStringField());
+        assertEquals(10, dest.getIntField());
+    }
+    
+    @Test(expected = MappingException.class)
+    public void test19() {
+
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+            protected void configure() {
+                mapping(
+                    Source.class, 
+                    Dest.class 
+                )
+                .fields(
+                    field("stringField").required(true).defaultValue("default value"),
+                    field("")
+                );
+            }
+        };
+
+        mapper.addMapping(builder);
+        
+        Source source = new Source(null, 10);
+        mapper.map(source, Dest.class);
+    }
+    
+    @Test
+    public void test20() {
+
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+            protected void configure() {
+                mapping(
+                    Source.class, 
+                    Dest.class,
+                    wildcard(false)
+                )
+                .fields(
+                    field(""),
+                    field("stringField").defaultValue("default value"),
+                    fieldOneWay()
+                );
+            }
+        };
+
+        mapper.addMapping(builder);
+
+        Source source = new Source(null, 10);
+        Dest dest = mapper.map(source, Dest.class);
+        assertEquals("default value", dest.getStringField());
+        
+        Source source1 = mapper.map(dest, Source.class);
+        assertEquals(null, source1.getStringField());
+    }
+    
+    @Test
+    public void test21() {
+     
+        BeanMappingBuilder builder = new BeanMappingBuilder() {
+            protected void configure() {
+                config(
+                )
+                .mapping(
+                    Source.class, 
+                    Dest.class
+                )
+                .fields(
+                    field(""),
+                    field("stringField").required(true),
+                    conditionId("false-condition-id"),
+                    fieldOneWay()
+                );
+            }
+        };
+
+        Map<String, FieldMappingCondition> mappingConditionsWithId = new HashMap<String, FieldMappingCondition>();
+        mappingConditionsWithId.put("false-condition-id", new FieldMappingCondition() {
+
+            public boolean mapField(Object sourceFieldValue, Object destFieldValue, Class<?> sourceType,
+                Class<?> destType) {
+                return false;
+            }
+        });
+
+        mapper.setMappingConditionsWithId(mappingConditionsWithId);
+        mapper.addMapping(builder);
+
+        Source source = new Source("some string", 10);
+        Dest dest = mapper.map(source, Dest.class);
+        
+        assertEquals(null, dest.getStringField());
+        assertEquals(10, dest.getIntField());
+        
+        mapper.map(dest, source);
+
+        assertEquals("some string", source.getStringField());
+        assertEquals(10, source.getIntField());
+    }
 }

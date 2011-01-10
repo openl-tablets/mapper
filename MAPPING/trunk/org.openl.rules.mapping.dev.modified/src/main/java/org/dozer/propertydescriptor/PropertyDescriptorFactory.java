@@ -44,10 +44,15 @@ public class PropertyDescriptorFactory {
         return new MultiFieldsPropertyDescriptor(propertyDescriptors);
     }
 
-    private static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz, ClassMap classMap, DozerField dest) {
-        return getPropertyDescriptor(clazz, dest.getTheGetMethod(), dest.getTheSetMethod(), dest.getMapGetMethod(),
-            dest.getMapSetMethod(), dest.isAccessible(), dest.isIndexed(), dest.getIndex(), dest.getName(), dest
-                .getKey(), dest.isSelfReferenced(), dest.getName(), dest.getHintContainer(), dest
+    public static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz, ClassMap classMap, DozerField field) {
+
+        if (MappingUtils.isBlankOrNull(field.getName())) {
+            return new EmptyFieldPropertyDescriptor();
+        }
+        
+        return getPropertyDescriptor(clazz, field.getTheGetMethod(), field.getTheSetMethod(), field.getMapGetMethod(),
+            field.getMapSetMethod(), field.isAccessible(), field.isIndexed(), field.getIndex(), field.getName(), field
+                .getKey(), field.isSelfReferenced(), field.getName(), field.getHintContainer(), field
                 .getDeepIndexHintContainer(), classMap.getDestClassBeanFactory());
     }
 

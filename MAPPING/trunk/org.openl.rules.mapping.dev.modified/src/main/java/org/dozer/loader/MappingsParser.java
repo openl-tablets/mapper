@@ -20,6 +20,7 @@ import org.dozer.classmap.ClassMap;
 import org.dozer.classmap.ClassMappings;
 import org.dozer.classmap.Configuration;
 import org.dozer.classmap.MappingDirection;
+import org.dozer.fieldmap.EmptySourceFieldMap;
 import org.dozer.fieldmap.ExcludeFieldMap;
 import org.dozer.fieldmap.FieldMap;
 import org.dozer.fieldmap.GenericFieldMap;
@@ -103,6 +104,10 @@ public final class MappingsParser {
 
                         if (fieldMap instanceof MultiSourceFieldMap && !MappingDirection.ONE_WAY.equals(fieldMap.getType())) {
                            MappingUtils.throwMappingException("n to 1 field mapping type should be one way");
+                        }
+                        
+                        if (fieldMap instanceof EmptySourceFieldMap && !MappingDirection.ONE_WAY.equals(fieldMap.getType())) {
+                            MappingUtils.throwMappingException("Empty source field mapping type should be one way");
                         }
                         
                         // If we are dealing with a Map data type, transform the

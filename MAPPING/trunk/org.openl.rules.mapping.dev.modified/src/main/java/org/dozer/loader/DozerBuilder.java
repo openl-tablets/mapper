@@ -32,6 +32,7 @@ import org.dozer.converters.InstanceCustomConverterDescription;
 import org.dozer.converters.JavaClassCustomConverterDescription;
 import org.dozer.fieldmap.CustomGetSetMethodFieldMap;
 import org.dozer.fieldmap.DozerField;
+import org.dozer.fieldmap.EmptySourceFieldMap;
 import org.dozer.fieldmap.ExcludeFieldMap;
 import org.dozer.fieldmap.FieldMap;
 import org.dozer.fieldmap.FieldMapUtils;
@@ -336,6 +337,8 @@ public class DozerBuilder {
                     result = new MapFieldMap(classMap);
                 } else if (srcField.isCustomGetterSetterField() || destField.isCustomGetterSetterField()) {
                     result = new CustomGetSetMethodFieldMap(classMap);
+                } else if (MappingUtils.isBlankOrNull(srcField.getName())) {
+                    result = new EmptySourceFieldMap(classMap);
                 } else {
                     result = new GenericFieldMap(classMap);
                 }

@@ -124,7 +124,7 @@ public class XpathFieldsMappingTest extends AbstractFunctionalTest {
         XpathDest result = mapper.map(source, XpathDest.class, "map3");
 
         assertNotNull(result);
-        assertNull("inner-inner1.field1", result.getField1());
+        assertNull(result.getField1());
     }
     
     @Test(expected = MappingException.class)

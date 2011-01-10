@@ -371,10 +371,10 @@ public abstract class FieldMap implements Cloneable {
     }
 
     public void validate() {
-        if (srcField == null) {
+        if (srcField == null || MappingUtils.isBlankOrNull(srcField.getName())) {
             MappingUtils.throwMappingException("src field must be specified");
         }
-        if (destField == null) {
+        if (destField == null || MappingUtils.isBlankOrNull(destField.getName())) {
             MappingUtils.throwMappingException("dest field must be specified");
         }
     }

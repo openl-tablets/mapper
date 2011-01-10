@@ -17,11 +17,11 @@ import org.dozer.util.MappingUtils;
  */
 public class MultiSourceFieldMap extends FieldMap {
 
+    private List<DozerField> src;
+
     public MultiSourceFieldMap(ClassMap classMap) {
         super(classMap);
     }
-
-    private List<DozerField> src;
 
     public List<DozerField> getSrc() {
         return src;

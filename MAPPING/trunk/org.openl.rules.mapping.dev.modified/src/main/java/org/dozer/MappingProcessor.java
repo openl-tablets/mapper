@@ -1023,12 +1023,16 @@ public class MappingProcessor implements Mapper {
         Object srcFieldValue, Class<?> destFieldClass, Object existingDestFieldValue, FieldMap fieldMap,
         boolean topLevel) {
 
+        // skip original implementation to obtain the following: custom
+        // converter should process null source value as usual
+        //
+/*
         // 1792048 - If map-null = "false" and src value is null, then don't
         // even invoke custom converter
         if (srcFieldValue == null && !fieldMap.isDestMapNull()) {
             return null;
         }
-
+*/
         long start = System.currentTimeMillis();
 
         if (converterInstance instanceof MapperAware) {
