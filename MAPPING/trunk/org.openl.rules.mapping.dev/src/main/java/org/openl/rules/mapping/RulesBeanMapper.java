@@ -9,12 +9,18 @@ package org.openl.rules.mapping;
  */
 public class RulesBeanMapper implements Mapper {
 
-    public <T> T map(Object source, Class<T> destination) {
-        return null;
+    private MappingProcessor mappingProcessor;
+
+    public RulesBeanMapper(Class<?> instanceClass, Object instance) {
+        this.mappingProcessor = new MappingProcessor(instanceClass, instance);
+    }
+
+    public <T> T map(Object source, Class<T> destinationClass) {
+        return mappingProcessor.map(source, destinationClass);
     }
 
     public void map(Object source, Object destination) {
-
+        mappingProcessor.map(source, destination);
     }
 
 }

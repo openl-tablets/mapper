@@ -70,7 +70,7 @@ public class DozerApiTest {
         BeanMappingBuilder builder = new BeanMappingBuilder() {
             protected void configure() {
                 mapping(Source.class, Dest.class, wildcard(false), oneWay()).fields(
-                    multi(field("intField"), field("stringField")),
+                    multi("intField", "stringField"),
                     field("stringField").required(true).defaultValue("default value"),
                     customConverterId("testConverter"));
             }
@@ -118,7 +118,7 @@ public class DozerApiTest {
                     wildcard(false)
                 )
                 .fields(
-                    multi(field("intField"), field("stringField")),
+                    multi("intField", "stringField"),
                     field("stringField").required(true).defaultValue("default value")
                 );
             }
@@ -143,7 +143,7 @@ public class DozerApiTest {
                     oneWay()
                 )
                 .fields(
-                    multi(field("intField"), field("stringField")),
+                    multi("intField", "stringField"),
                     field("stringField").required(true).defaultValue("default value"));
             }
         };
@@ -166,7 +166,7 @@ public class DozerApiTest {
                     wildcard(false)
                 )
                 .fields(
-                    multi(field("intField"), field("stringField")),
+                    multi("intField", "stringField"),
                     field("stringField").required(true).defaultValue("default value"),
                     fieldOneWay());
             }
@@ -190,7 +190,7 @@ public class DozerApiTest {
                     wildcard(false)
                 )
                 .fields(
-                    multi(field("intField"), field("stringField")),
+                    multi("intField", "stringField"),
                     field("stringField").required(true).defaultValue("default value"),
                     fieldOneWay(),
                     customConverterId("testConverter")
@@ -241,7 +241,7 @@ public class DozerApiTest {
                     oneWay()
                 )
                 .fields(
-                    multi(field("intField"), field("stringField")),
+                    multi("intField", "stringField"),
                     field("stringField").required(true).defaultValue("default value"),
                     customConverterId("testConverter")
                 );
@@ -290,7 +290,7 @@ public class DozerApiTest {
                     wildcard(false)
                 )
                 .fields(
-                    multi(field("intField"), field("stringField")),
+                    multi("intField", "stringField"),
                     field("stringField").required(true).defaultValue("default value"),
                     customConverterId("testConverter")
                 );
@@ -323,7 +323,7 @@ public class DozerApiTest {
                     wildcard(false)
                 )
                 .fields(
-                    multi(field("intField"), field("stringField")),
+                    multi("intField", "stringField"),
                     field("stringField").required(true),
                     customConverterId("testConverter"),
                     fieldOneWay()
@@ -378,7 +378,7 @@ public class DozerApiTest {
                     Dest.class 
                 )
                 .fields(
-                    multi(field("intField"), field("stringField")),
+                    multi("intField", "stringField"),
                     field("stringField").required(true),
                     customConverterId("testConverter"),
                     fieldOneWay()
@@ -769,4 +769,51 @@ public class DozerApiTest {
         assertEquals("some string", source.getStringField());
         assertEquals(10, source.getIntField());
     }
+    
+    @Test
+    public void test22() {
+
+        final CustomConverter customConverter = new CustomConverter() {
+            public Object convert(Object existingDestinationFieldValue, Object sourceFieldValue,
+                Class<?> destinationClass, Class<?> sourceClass) {
+                return "converter's string value";
+            }
+        };
+
+        BeanMappingBuilder builder1 = new BeanMappingBuilder() {
+            protected void configure() {
+                config(
+                    defaultCustomConverter(customConverter, 
+                    String.class, 
+                    String.class)
+                );
+            }
+        };
+
+        BeanMappingBuilder builder2 = new BeanMappingBuilder() {
+            protected void configure() {
+                mapping(
+                    Source.class, 
+                    Dest.class 
+                )
+                .fields(
+                    field("stringField"),
+                    field("stringField").required(true),
+                    customConverter(ToStringCustomConverter.class)
+                );
+            }
+        };
+
+        mapper.addMapping(builder1);
+        mapper.addMapping(builder2);
+
+        Source source = new Source("some string", 10);
+        Dest dest = new Dest("another string value", 5);
+        
+        mapper.map(source, dest);
+
+        assertEquals("some string", dest.getStringField());
+        assertEquals(10, dest.getIntField());
+    }
+
 }

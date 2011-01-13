@@ -3,26 +3,39 @@ package org.openl.rules.mapping.definition;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A bean that holds all required information about one way mapping for a single
+ * bean map.
+ */
 public class BeanMap {
 
-    private Class<?> classA;
-    private Class<?> classB;
+    private Class<?> srcClass;
+    private Class<?> destClass;
+    private String destBeanFactory;
     private List<FieldMap> fieldMappings = new ArrayList<FieldMap>();
 
-    public Class<?> getClassA() {
-        return classA;
+    public Class<?> getSrcClass() {
+        return srcClass;
     }
 
-    public void setClassA(Class<?> classA) {
-        this.classA = classA;
+    public void setSrcClass(Class<?> srcClass) {
+        this.srcClass = srcClass;
     }
 
-    public Class<?> getClassB() {
-        return classB;
+    public Class<?> getDestClass() {
+        return destClass;
     }
 
-    public void setClassB(Class<?> classB) {
-        this.classB = classB;
+    public void setDestClass(Class<?> destClass) {
+        this.destClass = destClass;
+    }
+    
+    public String getDestBeanFactory() {
+        return destBeanFactory;
+    }
+
+    public void setDestBeanFactory(String destBeanFactory) {
+        this.destBeanFactory = destBeanFactory;
     }
 
     public List<FieldMap> getFieldMappings() {

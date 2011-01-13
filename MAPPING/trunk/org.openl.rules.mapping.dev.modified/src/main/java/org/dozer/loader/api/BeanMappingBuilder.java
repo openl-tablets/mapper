@@ -98,7 +98,18 @@ public abstract class BeanMappingBuilder extends MappingOptions {
         return new FieldDefinition(name);
     }
 
-    public FieldDefinition[] multi(FieldDefinition... definitions) {
+    public FieldDefinition[] multi(String... names) {
+        if (names == null) {
+            return new FieldDefinition[0];
+        }
+
+        FieldDefinition[] definitions = new FieldDefinition[names.length];
+        
+        for (int i = 0; i < names.length; i++) {
+            String name = names[i];
+            definitions[i] = new FieldDefinition(name);
+        }
+
         return definitions;
     }
     

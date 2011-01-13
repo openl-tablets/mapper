@@ -1,4 +1,4 @@
-package org.openl.rules.mapping.definition;
+package org.openl.rules.mapping;
 
 /**
  * The class that holds all information about a single field mapping definition.
@@ -7,7 +7,7 @@ public class Mapping {
 
     private Class<?> classA;
     private Class<?> classB;
-    private String fieldA;
+    private String[] fieldA;
     private String fieldB;
     private String convertMethodAB;
     private String convertMethodBA;
@@ -40,11 +40,11 @@ public class Mapping {
         this.classB = classB;
     }
 
-    public String getFieldA() {
+    public String[] getFieldA() {
         return fieldA;
     }
 
-    public void setFieldA(String fieldA) {
+    public void setFieldA(String[] fieldA) {
         this.fieldA = fieldA;
     }
 

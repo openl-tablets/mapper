@@ -2,9 +2,16 @@ package org.openl.rules.mapping.definition;
 
 public class BeanMapKeyFactory {
 
+    /**
+     * Creates string key using classes information.
+     * 
+     * @param srcClass source class
+     * @param destClass destination class
+     * @return string key
+     */
     public static String createKey(Class<?> srcClass, Class<?> destClass) {
 
-        StringBuilder result = new StringBuilder(140);
+        StringBuilder result = new StringBuilder();
         result.append("SRC-CLASS->");
         result.append(srcClass.getName());
         result.append(" DST-CLASS->");

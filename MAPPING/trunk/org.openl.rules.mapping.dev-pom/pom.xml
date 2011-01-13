@@ -104,6 +104,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.openl.rules</groupId>
+                <artifactId>org.openl.rules</artifactId>
+                <version>${version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>net.sf.dozer</groupId>
                 <artifactId>dozer</artifactId>
                 <version>5.3.1</version>

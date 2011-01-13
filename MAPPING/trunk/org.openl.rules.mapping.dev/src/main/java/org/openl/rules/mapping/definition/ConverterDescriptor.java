@@ -16,7 +16,7 @@ public class ConverterDescriptor {
         return converterId;
     }
 
-    public CustomConverter getInstance() {
+    public CustomConverter getCustomConverter() {
         return instance;
     }
 }
