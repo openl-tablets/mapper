@@ -14,6 +14,19 @@
     <description>
         OpenL based mapping tool.
     </description>
+    
+    <build>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </testResource>
+        </testResources>
+    </build>
 
     <dependencies>
 
