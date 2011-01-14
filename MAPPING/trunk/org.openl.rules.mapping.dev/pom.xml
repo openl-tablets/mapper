@@ -30,7 +30,7 @@
 
     <dependencies>
 
-         <dependency>
+        <dependency>
             <groupId>org.openl.rules</groupId>
             <artifactId>org.openl.rules</artifactId>
         </dependency>
@@ -49,6 +49,14 @@
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
         </dependency>
+        
+        <dependency>
+            <groupId>easypo</groupId>
+            <artifactId>easypo</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/easypo.jar</systemPath>    
+        </dependency> 
 
     </dependencies>
 
