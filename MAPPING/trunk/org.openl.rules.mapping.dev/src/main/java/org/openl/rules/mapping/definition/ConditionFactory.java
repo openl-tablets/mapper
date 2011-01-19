@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.dozer.CustomConverter;
 import org.dozer.fieldmap.FieldMappingCondition;
+import org.openl.rules.mapping.RulesMappingException;
 
 public class ConditionFactory {
 
@@ -61,6 +62,11 @@ public class ConditionFactory {
                     Class<?>[] parameterTypes = new Class<?>[] { srcClass, destClass };
 
                     Method conditionMethod = MethodUtils.getMatchingAccessibleMethod(instanceClass, condition, parameterTypes);
+
+                    if (conditionMethod == null) {
+                        throw new RulesMappingException(String.format("Cannot find convert method: \"%s(%s, %s)\"",
+                            conditionMethod, srcClass.getName(), destClass.getName()));
+                    }
 
                     Object srcValue = args[0];
                     Object destValue = args[1];

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dozer.loader.api.FieldsMappingOption;
-import org.dozer.loader.api.FieldsMappingOptions;
+import org.dozer.loader.api.MappingOptions;
 
 public class FieldMappingOptionsBuilder {
 
@@ -14,17 +14,17 @@ public class FieldMappingOptionsBuilder {
     }
 
     public FieldMappingOptionsBuilder oneWay() {
-        options.add(FieldsMappingOptions.fieldOneWay());
+        options.add(MappingOptions.fieldOneWay());
         return this;
     }
 
     public FieldMappingOptionsBuilder customConverterId(String converterId) {
-        options.add(FieldsMappingOptions.customConverterId(converterId));
+        options.add(MappingOptions.customConverterId(converterId));
         return this;
     }
 
     public FieldMappingOptionsBuilder conditionId(String conditionId) {
-        options.add(FieldsMappingOptions.conditionId(conditionId));
+        options.add(MappingOptions.conditionId(conditionId));
         return this;
     }
 

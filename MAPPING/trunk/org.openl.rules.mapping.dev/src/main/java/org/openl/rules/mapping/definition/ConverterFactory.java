@@ -7,6 +7,7 @@ import java.lang.reflect.Proxy;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.dozer.CustomConverter;
+import org.openl.rules.mapping.RulesMappingException;
 
 public class ConverterFactory {
 
@@ -62,6 +63,11 @@ public class ConverterFactory {
 
                     Method convertMethod = MethodUtils.getMatchingAccessibleMethod(instanceClass, convertMethodName,
                         parameterTypes);
+                    
+                    if (convertMethod == null) {
+                        throw new RulesMappingException(String.format("Cannot find convert method: \"%s(%s, %s)\"",
+                            convertMethodName, srcClass.getName(), destClass.getName()));
+                    }
 
                     Object destValue = args[0];
                     Object srcValue = args[1];

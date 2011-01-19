@@ -62,11 +62,11 @@ public class CustomConverterContainer {
     }
 
     private CustomConverterDescription findConverter(Class<?> src, Class<?> dest) {
-        // Otherwise, loop through custom converters and look for a match. Also,
-        // store the result in the cache
+        // Otherwise, loop through custom converters and look for a match. 
+        //
         for (CustomConverterDescription customConverter : converters) {
-            final Class<?> classA = customConverter.getClassA();
-            final Class<?> classB = customConverter.getClassB();
+            final Class<?> classA = ClassUtils.primitiveToWrapper(customConverter.getClassA());
+            final Class<?> classB = ClassUtils.primitiveToWrapper(customConverter.getClassB());
 
             // we check to see if the destination class is the same as classA
             // defined in the converter mapping xml.

@@ -10,13 +10,25 @@ import org.dozer.loader.api.BeanMappingBuilder;
 public class DozerBuilder {
 
     private DozerMappingBuilder mappingBuilder = new DozerMappingBuilder();
+    private DozerConfigBuilder configBuilder = new DozerConfigBuilder();
 
     public DozerMappingBuilder mappingBuilder() {
         return mappingBuilder;
     }
+    
+    public DozerConfigBuilder configBuilder() {
+        return configBuilder;
+    }
 
     public DozerBeanMapper buildMapper() {
         DozerBeanMapper mapper = new DozerBeanMapper();
+
+        DozerConfigContainer configContainer = configBuilder.build();
+
+        for (BeanMappingBuilder config : configContainer.getMappingBuilders()) {
+            mapper.addMapping(config);
+        }
+
         DozerMappingsContainer mappingsContainer = mappingBuilder.build();
 
         mapper.setCustomConvertersWithId(mappingsContainer.getConverters());

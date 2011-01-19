@@ -13,6 +13,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
 import org.dozer.fieldmap.FieldMappingCondition;
+import org.openl.rules.mapping.Converter;
 import org.openl.rules.mapping.Mapping;
 import org.openl.rules.mapping.RulesMappingException;
 import org.openl.rules.mapping.definition.BeanMap;
@@ -21,23 +22,32 @@ import org.openl.rules.mapping.definition.ConditionDescriptor;
 import org.openl.rules.mapping.definition.ConditionFactory;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
 import org.openl.rules.mapping.definition.ConverterFactory;
+import org.openl.rules.mapping.definition.ConverterIdFactory;
 import org.openl.rules.mapping.definition.FieldMap;
 import org.openl.rules.mapping.definition.MappingIdFactory;
 
 public class RulesMappingsLoader {
-    
+
     private Class<?> instanceClass;
     private Object instance;
-    
+
+    private Map<String, ConverterDescriptor> customConvertersMap = new HashMap<String, ConverterDescriptor>();
+
     public RulesMappingsLoader(Class<?> instanceClass, Object instance) {
         this.instanceClass = instanceClass;
         this.instance = instance;
     }
 
     public Collection<BeanMap> loadMappings() {
-        List<Mapping> mappings = findMappings(instanceClass, instance);
+        List<Mapping> mappings = findDeclarations(instanceClass, instance, Mapping.class);
 
         return processMappings(mappings);
+    }
+
+    public Collection<ConverterDescriptor> loadDefaultConverters() {
+        List<Converter> defaultConverters = findDeclarations(instanceClass, instance, Converter.class);
+
+        return processDefaultConverters(defaultConverters);
     }
 
     /**
@@ -45,60 +55,62 @@ public class RulesMappingsLoader {
      * 
      * @param instanceClass class definition
      * @param instance instance object
+     * @param declarationType declaration type to find
      * @return list of mapping definitions
      */
-    private List<Mapping> findMappings(Class<?> instanceClass, Object instance) {
+    @SuppressWarnings("unchecked")
+    private <T> List<T> findDeclarations(Class<?> instanceClass, Object instance, Class<T> declarationType) {
 
-        List<Mapping> mappings = new ArrayList<Mapping>();
+        List<T> declarations = new ArrayList<T>();
 
-        // We use instance class definition to obtain list of mapping
-        // declarations.
+        // We use instance class definition to obtain list of declarations.
         //
-        Collection<Method> declarations = findMappingDeclarations(instanceClass);
+        Collection<Method> methods = findDeclarationMethods(instanceClass, declarationType);
 
-        for (Method declaration : declarations) {
-            Mapping[] mappingsArray;
+        for (Method method : methods) {
+            T[] declarationsArray;
 
             try {
                 // Invoke method to obtain mappings.
                 //
-                mappingsArray = (Mapping[]) declaration.invoke(instance, new Object[0]);
+                declarationsArray = (T[]) method.invoke(instance, new Object[0]);
             } catch (Exception e) {
-                throw new RulesMappingException("Cannot load mappings", e);
+                throw new RulesMappingException("Cannot load declarations", e);
             }
 
             // Add loaded mapping to result collection.
             //
-            mappings.addAll(Arrays.asList(mappingsArray));
+            declarations.addAll(Arrays.asList(declarationsArray));
         }
 
-        return mappings;
+        return declarations;
     }
 
     /**
      * Finds mapping declarations using class definition of the OpenL Rules
      * project. Current method implementation uses assumption that methods which
-     * provide mapping definitions return {@link Mapping}[] type and doesn't
-     * have parameters.
+     * provide definitions returns array of declarations and doesn't have
+     * parameters.
      * 
      * @param instanceClass class definition
+     * @param declarationType declaration type
      * @return list of methods what returns mapping definitions
      */
-    private Collection<Method> findMappingDeclarations(Class<?> instanceClass) {
+    private Collection<Method> findDeclarationMethods(Class<?> instanceClass, final Class<?> declarationType) {
 
         Method[] methods = instanceClass.getMethods();
 
         Predicate predicate = new Predicate() {
             public boolean evaluate(Object arg0) {
                 Method method = (Method) arg0;
-                return method.getReturnType().isArray() && method.getReturnType().getComponentType() == Mapping.class;
+                return method.getReturnType().isArray() && method.getReturnType().getComponentType() == declarationType;
             }
         };
 
-        Collection<Method> mappingDeclarations = new ArrayList<Method>();
-        CollectionUtils.select(Arrays.asList(methods), predicate, mappingDeclarations);
+        Collection<Method> declarations = new ArrayList<Method>();
+        CollectionUtils.select(Arrays.asList(methods), predicate, declarations);
 
-        return mappingDeclarations;
+        return declarations;
     }
 
     /**
@@ -144,12 +156,31 @@ public class RulesMappingsLoader {
                 // Create reversed mapping
                 //
                 Mapping reversedMapping = reverseMapping(mapping);
-                reversedBeanMapping.getFieldMappings().add(
-                    createFieldMap(reversedBeanMapping, reversedMapping));
+                reversedBeanMapping.getFieldMappings().add(createFieldMap(reversedBeanMapping, reversedMapping));
             }
         }
 
         return beanMappings.values();
+    }
+
+    private Collection<ConverterDescriptor> processDefaultConverters(List<Converter> defaultConverters) {
+        List<ConverterDescriptor> descriptors = new ArrayList<ConverterDescriptor>();
+
+        for (Converter converter : defaultConverters) {
+            String id = ConverterIdFactory.createConverterId(converter);
+            ConverterDescriptor customConverter = null;
+
+            if (customConvertersMap.containsKey(id)) {
+                customConverter = customConvertersMap.get(id);
+            } else {
+                customConverter = createConverterDescriptor(id, converter.getConvertMethod(), converter.getClassA(),
+                    converter.getClassB());
+            }
+
+            descriptors.add(customConverter);
+        }
+
+        return descriptors;
     }
 
     /**
@@ -247,14 +278,14 @@ public class RulesMappingsLoader {
         fieldMapping.setBeanMap(beanMap);
 
         if (!StringUtils.isBlank(mapping.getConvertMethodAB())) {
-            String converterId = createConverterId(mapping);
+            String converterId = ConverterIdFactory.createConverterId(mapping);
             ConverterDescriptor converterDescriptor = createConverterDescriptor(converterId, mapping
-                .getConvertMethodAB());
+                .getConvertMethodAB(), mapping.getClassA(), mapping.getClassB());
             fieldMapping.setConverter(converterDescriptor);
         }
 
         if (!StringUtils.isBlank(mapping.getConditionAB())) {
-            String conditionId = createConditionId(mapping);
+            String conditionId = MappingIdFactory.createMappingId(mapping);
             ConditionDescriptor conditionDescriptor = createConditionDescriptor(conditionId, mapping.getConditionAB());
             fieldMapping.setCondition(conditionDescriptor);
         }
@@ -262,17 +293,14 @@ public class RulesMappingsLoader {
         return fieldMapping;
     }
 
-    private String createConverterId(Mapping mapping) {
-        return MappingIdFactory.createMappingId(mapping);
-    }
+    private ConverterDescriptor createConverterDescriptor(String converterId, String convertMethod, Class<?> srcType,
+        Class<?> destType) {
+        if (customConvertersMap.containsKey(converterId)) {
+            return customConvertersMap.get(converterId);
+        }
 
-    private ConverterDescriptor createConverterDescriptor(String converterId, String convertMethod) {
         CustomConverter converter = ConverterFactory.createConverter(convertMethod, instanceClass, instance);
-        return new ConverterDescriptor(converterId, converter);
-    }
-
-    private String createConditionId(Mapping mapping) {
-        return MappingIdFactory.createMappingId(mapping);
+        return new ConverterDescriptor(converterId, converter, srcType, destType);
     }
 
     private ConditionDescriptor createConditionDescriptor(String conditionId, String conditionMethod) {

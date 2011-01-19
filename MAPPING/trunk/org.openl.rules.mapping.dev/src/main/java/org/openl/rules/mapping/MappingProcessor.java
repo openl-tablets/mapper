@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.dozer.DozerBeanMapper;
 import org.dozer.MappingException;
 import org.openl.rules.mapping.definition.BeanMap;
+import org.openl.rules.mapping.definition.ConverterDescriptor;
 import org.openl.rules.mapping.loader.RulesMappingsLoader;
 import org.openl.rules.mapping.loader.dozer.DozerBuilder;
 
@@ -34,6 +35,13 @@ class MappingProcessor {
     }
 
     private void init() {
+        
+        Collection<ConverterDescriptor> defaultConverters = mappingsLoader.loadDefaultConverters();
+        
+        for (ConverterDescriptor converter : defaultConverters) {
+            dozerBuilder.configBuilder().defaultConverter(converter);
+        }
+        
         Collection<BeanMap> mappings = mappingsLoader.loadMappings();
 
         for (BeanMap mapping : mappings) {

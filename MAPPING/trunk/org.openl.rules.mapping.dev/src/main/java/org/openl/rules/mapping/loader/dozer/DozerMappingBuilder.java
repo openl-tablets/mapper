@@ -69,7 +69,7 @@ public class DozerMappingBuilder {
                 }
 
                 mappingsContainer.getConverters().put(fieldsMapping.getConverter().getConverterId(),
-                    fieldsMapping.getConverter().getCustomConverter());
+                    fieldsMapping.getConverter().getInstance());
             }
         }
 

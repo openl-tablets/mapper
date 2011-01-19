@@ -8,6 +8,7 @@ public class PurchaseOrderTO {
     private Date datetime;
     private CustomerTO customer;
     private List<LineItemTO> lineItems;
+    private boolean hasSingleLineItem;
 
     public Date getDatetime() {
         return datetime;
@@ -33,4 +34,12 @@ public class PurchaseOrderTO {
         this.lineItems = lineItems;
     }
 
+    public boolean isHasSingleLineItem() {
+        return hasSingleLineItem;
+    }
+
+    public void setHasSingleLineItem(boolean hasSingleLineItem) {
+        this.hasSingleLineItem = hasSingleLineItem;
+    }
+    
 }
