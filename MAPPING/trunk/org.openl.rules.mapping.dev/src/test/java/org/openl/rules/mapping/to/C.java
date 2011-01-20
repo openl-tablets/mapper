@@ -3,16 +3,16 @@ package org.openl.rules.mapping.to;
 import java.util.List;
 
 public class C {
-    private String s;
+    private String aString;
     private B b;
-    private List y;
+    private List aList;
 
-    public String getS() {
-        return s;
+    public String getAString() {
+        return aString;
     }
 
-    public void setS(String s) {
-        this.s = s;
+    public void setAString(String string) {
+        aString = string;
     }
 
     public B getB() {
@@ -23,12 +23,12 @@ public class C {
         this.b = b;
     }
 
-    public List getY() {
-        return y;
+    public List getAList() {
+        return aList;
     }
 
-    public void setY(List y) {
-        this.y = y;
+    public void setAList(List list) {
+        aList = list;
     }
 
 }

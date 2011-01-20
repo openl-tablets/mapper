@@ -25,6 +25,16 @@ public class FieldDefinitionBuilder {
         return this;
     }
     
+    public FieldDefinitionBuilder hint(String hint) {
+        fieldDefinition.hint(hint);
+        return this;
+    }
+
+    public FieldDefinitionBuilder deepHint(String hint) {
+        fieldDefinition.deepHint(hint);
+        return this;
+    }
+
     public FieldDefinition build() {
         return fieldDefinition;
     }

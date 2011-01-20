@@ -1,23 +1,23 @@
 package org.openl.rules.mapping.to;
 
 public class B {
-    private Integer second;
-    private String first;
+    private Integer anInteger;
+    private String aString;
 
-    public Integer getSecond() {
-        return second;
+    public Integer getAnInteger() {
+        return anInteger;
     }
 
-    public void setSecond(Integer second) {
-        this.second = second;
+    public void setAnInteger(Integer anIneger) {
+        this.anInteger = anIneger;
     }
 
-    public String getFirst() {
-        return first;
+    public String getAString() {
+        return aString;
     }
 
-    public void setFirst(String first) {
-        this.first = first;
+    public void setAString(String string) {
+        aString = string;
     }
 
 }

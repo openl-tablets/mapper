@@ -1,14 +1,14 @@
 package org.openl.rules.mapping.to;
 
 public class D {
-    private int i;
+    private int anInt;
 
-    public int getI() {
-        return i;
+    public int getAnInt() {
+        return anInt;
     }
 
-    public void setI(int i) {
-        this.i = i;
+    public void setAnInt(int anInt) {
+        this.anInt = anInt;
     }
 
 }

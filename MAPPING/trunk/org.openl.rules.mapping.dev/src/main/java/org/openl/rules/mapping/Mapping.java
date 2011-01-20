@@ -19,6 +19,10 @@ public class Mapping {
     private String fieldBCreateMethod;
     private String fieldADefaultValue;
     private String fieldBDefaultValue;
+    private Class<?>[][] fieldAHint;
+    private Class<?>[] fieldBHint;
+    private Class<?>[] fieldAType;
+    private Class<?> fieldBType; 
     private boolean fieldARequired;
     private boolean fieldBRequired;
     private String conditionAB;
@@ -168,4 +172,36 @@ public class Mapping {
         this.conditionBA = conditionBA;
     }
 
+    public Class<?>[][] getFieldAHint() {
+        return fieldAHint;
+    }
+
+    public void setFieldAHint(Class<?>[][] fieldAHint) {
+        this.fieldAHint = fieldAHint;
+    }
+
+    public Class<?>[] getFieldBHint() {
+        return fieldBHint;
+    }
+
+    public void setFieldBHint(Class<?>[] fieldBHint) {
+        this.fieldBHint = fieldBHint;
+    }
+
+    public Class<?>[] getFieldAType() {
+        return fieldAType;
+    }
+
+    public void setFieldAType(Class<?>[] fieldAType) {
+        this.fieldAType = fieldAType;
+    }
+
+    public Class<?> getFieldBType() {
+        return fieldBType;
+    }
+
+    public void setFieldBType(Class<?> fieldBType) {
+        this.fieldBType = fieldBType;
+    }
+    
 }

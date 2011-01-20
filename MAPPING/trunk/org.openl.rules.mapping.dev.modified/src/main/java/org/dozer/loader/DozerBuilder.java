@@ -430,7 +430,7 @@ public class DozerBuilder {
 
         public void deepHint(String types) {
             HintContainer hintContainer = FieldMapUtils.hint(types);
-            field.setHintContainer(hintContainer);
+            field.setDeepIndexHintContainer(hintContainer);
         }
 
         public DozerField build() {

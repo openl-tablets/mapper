@@ -13,9 +13,10 @@ public class FieldMap {
     private boolean mapNulls;
     private boolean mapEmptyStrings;
     private boolean required;
-
-    // ????
-    private BeanMap beanMap;
+    private Class<?>[][] srcHint;
+    private Class<?>[] destHint;
+    private Class<?>[] srcType;
+    private Class<?> destType;
     private ConverterDescriptor converter;
     private ConditionDescriptor condition;
 
@@ -75,14 +76,6 @@ public class FieldMap {
         this.required = required;
     }
 
-    public BeanMap getBeanMap() {
-        return beanMap;
-    }
-
-    public void setBeanMap(BeanMap beanMap) {
-        this.beanMap = beanMap;
-    }
-
     public ConverterDescriptor getConverter() {
         return converter;
     }
@@ -99,4 +92,36 @@ public class FieldMap {
         this.condition = condition;
     }
 
+    public Class<?>[][] getSrcHint() {
+        return srcHint;
+    }
+
+    public void setSrcHint(Class<?>[][] srcHint) {
+        this.srcHint = srcHint;
+    }
+
+    public Class<?>[] getDestHint() {
+        return destHint;
+    }
+
+    public void setDestHint(Class<?>[] destHint) {
+        this.destHint = destHint;
+    }
+
+    public Class<?>[] getSrcType() {
+        return srcType;
+    }
+
+    public void setSrcType(Class<?>[] srcType) {
+        this.srcType = srcType;
+    }
+
+    public Class<?> getDestType() {
+        return destType;
+    }
+
+    public void setDestType(Class<?> destType) {
+        this.destType = destType;
+    }
+    
 }

@@ -20,9 +20,9 @@ public class OneToOneMappingsTest {
         RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
-        a.setA("string");
-        a.setB(10);
-        a.setX(new String[] { "x", null, "y" });
+        a.setAString("string");
+        a.setAnInteger(10);
+        a.setAStringArray(new String[] { "x", null, "y" });
 
         C c = mapper.map(a, C.class);
 
@@ -34,15 +34,15 @@ public class OneToOneMappingsTest {
 
         E e = mapper.map(f, E.class);
 
-        assertEquals(10, e.getD().getI());
+        assertEquals(10, e.getD().getAnInt());
 
         B b = new B();
-        b.setFirst("string");
+        b.setAString("string");
         A a2 = new A();
         mapper.map(b, a2);
 
         B b1 = mapper.map(a2, B.class);
-        assertEquals("string", b1.getFirst());
+        assertEquals("string", b1.getAString());
     }
 
 }

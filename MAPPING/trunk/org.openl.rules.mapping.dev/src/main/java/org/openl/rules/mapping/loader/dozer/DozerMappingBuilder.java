@@ -98,7 +98,18 @@ public class DozerMappingBuilder {
         if (src.length > 1) {
             FieldDefinition[] definitions = new FieldDefinition[src.length];
             for (int i = 0; i < src.length; i++) {
-                definitions[i] = new FieldDefinition(src[i]);
+                FieldDefinitionBuilder fieldDefBuilder = new FieldDefinitionBuilder(src[i]);
+
+                if (fieldMap.getSrcHint() != null && fieldMap.getSrcHint()[i] != null) {
+                    Class<?>[] fieldHint = fieldMap.getSrcHint()[i];
+                    fieldDefBuilder.deepHint(getHint(fieldHint));
+                }
+                
+                if(fieldMap.getSrcType() != null && fieldMap.getSrcType().length != 0 && fieldMap.getSrcType()[i] != null) {
+                    fieldDefBuilder.hint(getHint(fieldMap.getSrcType()));
+                }
+                
+                definitions[i] = fieldDefBuilder.build();
             }
             fieldsMapping.setSrc(definitions);
         } else {
@@ -107,6 +118,14 @@ public class DozerMappingBuilder {
                 fieldName = src[0];
             }
             FieldDefinitionBuilder fieldDefBuilder = new FieldDefinitionBuilder(fieldName);
+            if (fieldMap.getSrcHint() != null && fieldMap.getSrcHint()[0] != null) {
+                Class<?>[] fieldHint = fieldMap.getSrcHint()[0];
+                fieldDefBuilder.deepHint(getHint(fieldHint));
+            }
+            if (fieldMap.getSrcType() != null && fieldMap.getSrcType()[0] != null) {
+                fieldDefBuilder.hint(getHint(fieldMap.getSrcType()[0]));
+            }
+            
             fieldsMapping.setSrc(new FieldDefinition[] { fieldDefBuilder.build() });
         }
 
@@ -114,9 +133,14 @@ public class DozerMappingBuilder {
         fieldDefBuilder.required(fieldMap.isRequired());
         fieldDefBuilder.defaultValue(fieldMap.getDefaultValue());
         fieldDefBuilder.createMethod(fieldMap.getCreateMethod());
-        
-        fieldsMapping.setDest(fieldDefBuilder.build());
-        
+
+        if (fieldMap.getDestHint() != null) {
+            fieldDefBuilder.deepHint(getHint(fieldMap.getDestHint()));
+        }
+        if (fieldMap.getDestType() != null) {
+            fieldDefBuilder.hint(getHint(fieldMap.getDestType()));
+        }
+
         FieldMappingOptionsBuilder optionsBuilder = new FieldMappingOptionsBuilder();
         if (fieldMap.getConverter() != null) {
             optionsBuilder.customConverterId(fieldMap.getConverter().getConverterId());
@@ -127,9 +151,23 @@ public class DozerMappingBuilder {
             fieldsMapping.setCondition(fieldMap.getCondition());
         }
         
+        fieldsMapping.setDest(fieldDefBuilder.build());
         fieldsMapping.setOptions(optionsBuilder.build());
         
         return fieldsMapping;
+    }
+    
+    private String getHint(Class<?>... types) {
+        String[] names = new String[types.length];
+        for (int i = 0; i < types.length; i++) {
+            if (types[i] == null) {
+                names[i] = "";
+            } else {
+                names[i] = types[i].getName();
+            }
+        }
+
+        return StringUtils.join(names, ",");
     }
 
     /**

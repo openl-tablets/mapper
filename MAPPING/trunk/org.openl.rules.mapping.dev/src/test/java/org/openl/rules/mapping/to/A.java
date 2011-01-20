@@ -1,32 +1,32 @@
 package org.openl.rules.mapping.to;
 
 public class A {
-    private String a;
-    private Integer b;
-    private String[] x;
+    private String aString;
+    private Integer anInteger;
+    private String[] aStringArray;
 
-    public String getA() {
-        return a;
+    public String getAString() {
+        return aString;
     }
 
-    public void setA(String a) {
-        this.a = a;
+    public void setAString(String string) {
+        aString = string;
     }
 
-    public Integer getB() {
-        return b;
+    public Integer getAnInteger() {
+        return anInteger;
     }
 
-    public void setB(Integer b) {
-        this.b = b;
+    public void setAnInteger(Integer anInteger) {
+        this.anInteger = anInteger;
     }
 
-    public String[] getX() {
-        return x;
+    public String[] getAStringArray() {
+        return aStringArray;
     }
 
-    public void setX(String[] x) {
-        this.x = x;
+    public void setAStringArray(String[] anStringArray) {
+        this.aStringArray = anStringArray;
     }
 
 }

@@ -15,6 +15,10 @@
  */
 package org.dozer.propertydescriptor;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.Collection;
+
 import org.apache.commons.jxpath.JXPathContext;
 import org.dozer.MappingException;
 import org.dozer.factory.BeanCreationDirective;
@@ -28,12 +32,6 @@ import org.dozer.util.ReflectionUtils;
 import org.dozer.util.TypeResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * 
@@ -199,7 +197,6 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
         // are null
         Object parentObj = destObj;
         int hierarchyLength = hierarchy.length - 1;
-        int hintIndex = 0;
 
         for (int i = 0; i < hierarchyLength; i++) {
             DeepHierarchyElement hierarchyElement = hierarchy[i];
@@ -240,9 +237,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                         if (genericType != null) {
                             collectionEntryType = genericType;
                         } else {
-                            collectionEntryType = fieldMap.getDestDeepIndexHintContainer().getHint(hintIndex);
-                            // hint index is used to handle multiple hints
-                            hintIndex += 1;
+                            collectionEntryType = fieldMap.getDestDeepIndexHintContainer().getHint(i);
                         }
 
                         o = MappingUtils.prepareIndexedCollection(clazz, null, DestBeanCreator
@@ -280,8 +275,13 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                 int collectionIndex = MappingUtils.getCollectionIndex(index);
 
                 if (currentSize < collectionIndex + 1) {
+                    
+                    Class<?> componentType = pd.getPropertyType().getComponentType();
+                    if (componentType == null) {
+                        componentType = fieldMap.getDestDeepIndexHintContainer().getHint(i); 
+                    }
                     value = MappingUtils.prepareIndexedCollection(pd.getPropertyType(), value, DestBeanCreator
-                        .create(pd.getPropertyType().getComponentType()), collectionIndex);
+                        .create(componentType), collectionIndex);
                     ReflectionUtils.invoke(pd.getWriteMethod(), parentObj, new Object[] { value });
                 }
             }

@@ -126,6 +126,9 @@ public class RulesMappingsLoader {
         Map<String, BeanMap> beanMappings = new HashMap<String, BeanMap>();
 
         for (Mapping mapping : mappings) {
+            
+            normalizeMapping(mapping); 
+            
             Class<?> classA = mapping.getClassA();
             Class<?> classB = mapping.getClassB();
             // Find appropriate bean map for current field map.
@@ -161,6 +164,29 @@ public class RulesMappingsLoader {
         }
 
         return beanMappings.values();
+    }
+
+    private void normalizeMapping(Mapping mapping) {
+        mapping.setFieldAHint(getHint(mapping.getFieldAHint(), mapping.getFieldA()));
+    }
+
+    private Class<?>[][] getHint(Class<?>[][] fieldAHint, String[] field) {
+     
+        if (field == null || field.length == 0 || fieldAHint == null) {
+            return null;
+        }
+        
+        if (field.length > 1) {
+            return fieldAHint;
+        }
+        
+        Class<?>[][] hint = new Class<?>[1][fieldAHint.length];
+        
+        for (int i = 0; i < fieldAHint.length; i++) {
+            hint[0][i] = fieldAHint[i][0];
+        }
+        
+        return hint;
     }
 
     private Collection<ConverterDescriptor> processDefaultConverters(List<Converter> defaultConverters) {
@@ -258,6 +284,19 @@ public class RulesMappingsLoader {
         reversedMapping.setConditionAB(mapping.getConditionBA());
         reversedMapping.setConditionBA(mapping.getConditionAB());
 
+        if (mapping.getFieldBType() != null) {
+            reversedMapping.setFieldAType(new Class<?>[] { mapping.getFieldBType() });
+        }
+        if (mapping.getFieldAType() != null && mapping.getFieldAType()[0] != null) {
+            reversedMapping.setFieldBType(mapping.getFieldAType()[0]);
+        }
+        if (mapping.getFieldBHint() != null) {
+            reversedMapping.setFieldAHint(new Class<?>[][] { mapping.getFieldBHint() });
+        }
+        if (mapping.getFieldAHint() != null && mapping.getFieldAHint()[0] != null) {
+            reversedMapping.setFieldBHint(mapping.getFieldAHint()[0]);
+        }
+
         return reversedMapping;
     }
 
@@ -275,7 +314,11 @@ public class RulesMappingsLoader {
         fieldMapping.setRequired(mapping.isFieldBRequired());
         fieldMapping.setDefaultValue(mapping.getFieldBDefaultValue());
         fieldMapping.setCreateMethod(mapping.getFieldBCreateMethod());
-        fieldMapping.setBeanMap(beanMap);
+        
+        fieldMapping.setSrcHint(mapping.getFieldAHint());
+        fieldMapping.setDestHint(mapping.getFieldBHint());
+        fieldMapping.setSrcType(mapping.getFieldAType());
+        fieldMapping.setDestType(mapping.getFieldBType());
 
         if (!StringUtils.isBlank(mapping.getConvertMethodAB())) {
             String converterId = ConverterIdFactory.createConverterId(mapping);
