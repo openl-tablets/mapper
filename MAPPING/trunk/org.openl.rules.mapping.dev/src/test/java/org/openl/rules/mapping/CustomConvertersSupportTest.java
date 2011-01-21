@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 
 import org.junit.Test;
+import org.openl.rules.mapping.to.A;
+import org.openl.rules.mapping.to.C;
 import org.openl.rules.mapping.to.xmlbeans.PurchaseOrderTO;
 import org.openuri.easypo.Customer;
 import org.openuri.easypo.LineItem;
@@ -82,6 +84,27 @@ public class CustomConvertersSupportTest {
         result = mapper.map(purchaseOrder, PurchaseOrderTO.class);
         
         assertEquals(false, result.isHasSingleLineItem());
+    }
+    
+
+    @Test
+    public void converterReusageTest() {
+
+        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConverterReuseTest.xlsx");
+        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        A a = new A();
+        a.setAString("100");
+        a.setAnInteger(10);
+
+        C c = mapper.map(a, C.class);
+        assertEquals("10", c.getB().getAString());
+        assertEquals(Integer.valueOf(100), c.getB().getAnInteger());
+
+        A a1 = mapper.map(c, A.class);
+        
+        assertEquals("100", a1.getAString());
+        assertEquals(Integer.valueOf(10), a1.getAnInteger());
     }
 
 }

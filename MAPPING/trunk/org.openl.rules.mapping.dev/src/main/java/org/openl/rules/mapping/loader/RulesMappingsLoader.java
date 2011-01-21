@@ -383,7 +383,7 @@ public class RulesMappingsLoader {
         fieldMapping.setDestType(mapping.getFieldBType());
 
         if (!StringUtils.isBlank(mapping.getConvertMethodAB())) {
-            String converterId = ConverterIdFactory.createConverterId(mapping);
+            String converterId = MappingIdFactory.createMappingId(mapping);
             ConverterDescriptor converterDescriptor = createConverterDescriptor(converterId, mapping
                 .getConvertMethodAB(), mapping.getClassA(), mapping.getClassB());
             fieldMapping.setConverter(converterDescriptor);
@@ -400,9 +400,11 @@ public class RulesMappingsLoader {
 
     private ConverterDescriptor createConverterDescriptor(String converterId, String convertMethod, Class<?> srcType,
         Class<?> destType) {
-        if (customConvertersMap.containsKey(converterId)) {
-            return customConvertersMap.get(converterId);
-        }
+// TODO: add custom converters cache to decrease proxy objects usage
+//        
+//        if (customConvertersMap.containsKey(converterId)) {
+//            return customConvertersMap.get(converterId);
+//        }
 
         CustomConverter converter = ConverterFactory.createConverter(convertMethod, instanceClass, instance);
         return new ConverterDescriptor(converterId, converter, srcType, destType);
