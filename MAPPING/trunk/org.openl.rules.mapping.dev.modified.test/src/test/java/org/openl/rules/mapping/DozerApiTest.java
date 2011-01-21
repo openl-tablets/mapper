@@ -418,7 +418,7 @@ public class DozerApiTest {
         
         Source source1 = mapper.map(dest, Source.class);
         
-        assertEquals("10;some string", source1.getStringField());
+        assertEquals(null, source1.getStringField());
         assertEquals(10, source1.getIntField());
     }
     

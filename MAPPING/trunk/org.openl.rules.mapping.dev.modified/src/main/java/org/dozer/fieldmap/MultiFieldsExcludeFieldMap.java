@@ -132,7 +132,7 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
         DozerPropertyDescriptor result = getSrcPropertyDescriptorMap().get(runtimeSrcClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeSrcClass,
-                getClassMap(), getSrc());
+                getClassMap(), getSrc(), getDestField());
             getSrcPropertyDescriptorMap().putIfAbsent(runtimeSrcClass, descriptor);
             result = descriptor;
         }
@@ -144,7 +144,7 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
         DozerPropertyDescriptor result = getDestPropertyDescriptorMap().get(runtimeDestClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeDestClass,
-                getClassMap(), getDest());
+                getClassMap(), getDest(), null);
             getDestPropertyDescriptorMap().putIfAbsent(runtimeDestClass, descriptor);
             result = descriptor;
         }

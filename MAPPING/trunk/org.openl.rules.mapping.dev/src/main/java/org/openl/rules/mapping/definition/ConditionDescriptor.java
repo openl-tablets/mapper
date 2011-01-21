@@ -1,5 +1,7 @@
 package org.openl.rules.mapping.definition;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.dozer.fieldmap.FieldMappingCondition;
 
 public class ConditionDescriptor {
@@ -18,6 +20,12 @@ public class ConditionDescriptor {
 
     public FieldMappingCondition getFieldMappingCondition() {
         return condition;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("conditionId", conditionId).append(
+            "condition", condition).toString();
     }
 
 }

@@ -3,6 +3,9 @@ package org.openl.rules.mapping.definition;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * A bean that holds all required information about one way mapping for a single
  * bean map.
@@ -29,7 +32,7 @@ public class BeanMap {
     public void setDestClass(Class<?> destClass) {
         this.destClass = destClass;
     }
-    
+
     public String getDestBeanFactory() {
         return destBeanFactory;
     }
@@ -46,4 +49,9 @@ public class BeanMap {
         this.fieldMappings = fieldMappings;
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("srcClass", srcClass).append(
+            "destClass", destClass).append("destBeanFactory", destBeanFactory).toString();
+    }
 }

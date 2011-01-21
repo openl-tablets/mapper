@@ -8,7 +8,6 @@ import org.dozer.loader.api.BeanMappingBuilder;
 import org.dozer.loader.api.FieldDefinition;
 import org.dozer.loader.api.FieldsMappingOption;
 import org.dozer.loader.api.TypeMappingBuilder;
-import org.openl.rules.mapping.RulesMappingException;
 import org.openl.rules.mapping.definition.BeanMap;
 import org.openl.rules.mapping.definition.ConditionDescriptor;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
@@ -53,23 +52,17 @@ public class DozerMappingBuilder {
         //
         for (FieldsMapping fieldsMapping : fieldsMappings) {
             if (fieldsMapping.getCondition() != null) {
-                if (mappingsContainer.getConditions().containsKey(fieldsMapping.getCondition().getConditionId())) {
-                    throw new RulesMappingException(String.format("Duplicate condition with '%s' ID is found",
-                        fieldsMapping.getCondition().getConditionId()));
+                if (!mappingsContainer.getConditions().containsKey(fieldsMapping.getCondition().getConditionId())) {
+                    mappingsContainer.getConditions().put(fieldsMapping.getCondition().getConditionId(),
+                        fieldsMapping.getCondition().getFieldMappingCondition());
                 }
-
-                mappingsContainer.getConditions().put(fieldsMapping.getCondition().getConditionId(),
-                    fieldsMapping.getCondition().getFieldMappingCondition());
             }
             
             if (fieldsMapping.getConverter() != null) {
-                if (mappingsContainer.getConverters().containsKey(fieldsMapping.getConverter().getConverterId())) {
-                    throw new RulesMappingException(String.format("Duplicate custom converter with '%s' ID is found",
-                        fieldsMapping.getConverter().getConverterId()));
+                if (!mappingsContainer.getConverters().containsKey(fieldsMapping.getConverter().getConverterId())) {
+                    mappingsContainer.getConverters().put(fieldsMapping.getConverter().getConverterId(),
+                        fieldsMapping.getConverter().getInstance());
                 }
-
-                mappingsContainer.getConverters().put(fieldsMapping.getConverter().getConverterId(),
-                    fieldsMapping.getConverter().getInstance());
             }
         }
 

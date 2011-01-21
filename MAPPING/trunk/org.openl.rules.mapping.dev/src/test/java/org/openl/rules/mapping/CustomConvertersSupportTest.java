@@ -16,7 +16,7 @@ public class CustomConvertersSupportTest {
 
     @Test
     public void defaultConverterTest1() {
-        File source = new File("src/test/resources/org/openl/rules/mapping/DefaultCustomConvertersTest.xlsx");
+        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/DefaultCustomConvertersTest.xlsx");
         RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
@@ -51,7 +51,7 @@ public class CustomConvertersSupportTest {
     
     @Test
     public void customConverterTest1() {
-        File source = new File("src/test/resources/org/openl/rules/mapping/CustomConvertersTest.xlsx");
+        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConvertersTest.xlsx");
         RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();

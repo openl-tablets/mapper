@@ -46,8 +46,24 @@ public class MultiSourceFieldMap extends FieldMap {
         DozerPropertyDescriptor result = getSrcPropertyDescriptorMap().get(runtimeSrcClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeSrcClass,
-                getClassMap(), getSrc());
+                getClassMap(), getSrc(), getDestField());
             getSrcPropertyDescriptorMap().putIfAbsent(runtimeSrcClass, descriptor);
+            result = descriptor;
+        }
+        return result;
+    }
+    
+    @Override
+    protected DozerPropertyDescriptor getDestPropertyDescriptor(Class<?> runtimeDestClass) {
+        DozerPropertyDescriptor result = getDestPropertyDescriptorMap().get(runtimeDestClass);
+        if (result == null) {
+            DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeDestClass,
+                getDestFieldTheGetMethod(), getDestFieldTheSetMethod(), getDestFieldMapGetMethod(),
+                getDestFieldMapSetMethod(), isDestFieldAccessible(), isDestFieldIndexed(), getDestFieldIndex(),
+                getDestFieldName(), getDestFieldKey(), isDestSelfReferencing(), getSrcFieldName(),
+                null, getDestDeepIndexHintContainer(), getClassMap().getDestClassBeanFactory());
+
+            getDestPropertyDescriptorMap().putIfAbsent(runtimeDestClass, descriptor);
             result = descriptor;
         }
         return result;

@@ -94,7 +94,7 @@ public final class MappingsParser {
 
             if (classMap.getFieldMaps() != null) {
                 Object[] fms = classMap.getFieldMaps().toArray();
-                // iterate through the fields and see wether or not they should
+                // iterate through the fields and see whether or not they should
                 // be mapped
                 // one way class mappings we do not need to add any fields
                 if (!MappingDirection.ONE_WAY.equals(classMap.getType())) {

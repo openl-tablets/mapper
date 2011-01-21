@@ -1,5 +1,8 @@
 package org.openl.rules.mapping;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 /**
  * The class that holds all information about a single field mapping definition.
  */
@@ -22,7 +25,7 @@ public class Mapping {
     private Class<?>[][] fieldAHint;
     private Class<?>[] fieldBHint;
     private Class<?>[] fieldAType;
-    private Class<?> fieldBType; 
+    private Class<?> fieldBType;
     private boolean fieldARequired;
     private boolean fieldBRequired;
     private String conditionAB;
@@ -203,5 +206,18 @@ public class Mapping {
     public void setFieldBType(Class<?> fieldBType) {
         this.fieldBType = fieldBType;
     }
-    
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("classA", classA).append("classB",
+            classB).append("fieldA", fieldA).append("fieldB", fieldB).append("convertMethodAB", convertMethodAB)
+            .append("convertMethodBA", convertMethodBA).append("oneWay", oneWay).append("mapNulls", mapNulls).append(
+                "classABeanFactory", classABeanFactory).append("classBBeanFactory", classBBeanFactory).append(
+                "fieldACreateMethod", fieldACreateMethod).append("fieldBCreateMethod", fieldBCreateMethod).append(
+                "fieldADefaultValue", fieldADefaultValue).append("fieldBDefaultValue", fieldBDefaultValue).append(
+                "fieldAHint", fieldAHint).append("fieldBHint", fieldBHint).append("fieldAType", fieldAType).append(
+                "fieldBType", fieldBType).append("fieldARequired", fieldARequired).append("fieldBRequired",
+                fieldBRequired).append("conditionAB", conditionAB).append("conditionBA", conditionBA).toString();
+    }
+
 }

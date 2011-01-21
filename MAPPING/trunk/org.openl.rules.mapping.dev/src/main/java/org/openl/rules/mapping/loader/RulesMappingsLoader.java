@@ -166,11 +166,73 @@ public class RulesMappingsLoader {
         return beanMappings.values();
     }
 
+    /**
+     * Helper method that makes several actions with loaded mappings to remove
+     * OpenL data loading specific.
+     * 
+     * @param mapping mapping object
+     */
     private void normalizeMapping(Mapping mapping) {
-        mapping.setFieldAHint(getHint(mapping.getFieldAHint(), mapping.getFieldA()));
+        Class<?>[][] fieldAHint = getAHint(mapping.getFieldAHint(), mapping.getFieldA());
+    
+        if (fieldAHint != null) {
+            for (int i = 0; i < fieldAHint.length; i++) {
+                Class<?>[] element = fieldAHint[i];
+                if (isEmpty(element)) {
+                    fieldAHint[i] = null;
+                }
+            }
+        }
+        
+        if (mapping.getFieldA() != null) {
+            fieldAHint = resizeHintIfRequired(fieldAHint, mapping.getFieldA().length);
+        }
+        
+        mapping.setFieldAHint(fieldAHint);
+        
+        Class<?>[] fieldBHint = mapping.getFieldBHint();
+        if (isEmpty(fieldBHint)) {
+            mapping.setFieldBHint(null);
+        }
+        
+        Class<?>[] fieldAType = mapping.getFieldAType();
+        if (isEmpty(fieldAType)) {
+            mapping.setFieldAType(null);
+        }
+    }
+    
+    private Class<?>[][] resizeHintIfRequired(Class<?>[][] existedHint, int size) {
+        if (existedHint == null || size < 1) {
+            return null;
+        }
+
+        if (existedHint.length != size) {
+            Class<?>[][] newHint = new Class<?>[size][];
+            for (int i = 0; i < existedHint.length; i++) {
+                newHint[i] = existedHint[i];
+            }
+
+            return newHint;
+        }
+        
+        return existedHint;
+    } 
+    
+    private boolean isEmpty(Class<?>[] array) {
+        if (array == null || array.length == 0) {
+            return true;
+        }
+
+        for (Class<?> element : array) {
+            if (element != null) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
-    private Class<?>[][] getHint(Class<?>[][] fieldAHint, String[] field) {
+    private Class<?>[][] getAHint(Class<?>[][] fieldAHint, String[] field) {
      
         if (field == null || field.length == 0 || fieldAHint == null) {
             return null;

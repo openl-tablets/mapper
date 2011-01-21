@@ -15,6 +15,11 @@
  */
 package org.dozer.fieldmap;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.dozer.classmap.ClassMap;
@@ -25,12 +30,9 @@ import org.dozer.propertydescriptor.GetterSetterPropertyDescriptor;
 import org.dozer.propertydescriptor.PropertyDescriptorFactory;
 import org.dozer.util.DozerConstants;
 import org.dozer.util.MappingUtils;
+import org.dozer.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Method;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Internal class that represents a field mapping definition. Holds all of the
@@ -106,12 +108,20 @@ public abstract class FieldMap implements Cloneable {
 
     public Class<?> getDestFieldType(Class<?> runtimeDestClass) {
         Class<?> result = null;
-        if (isDestFieldIndexed()) {
-            HintContainer hintContainer = destField.getHintContainer();
-            result = hintContainer != null ? hintContainer.getHint() : null;
-        }
         if (result == null) {
             result = getDestPropertyDescriptor(runtimeDestClass).getPropertyType();
+        }
+        if (isDestFieldIndexed()) {
+            HintContainer hintContainer = destField.getHintContainer();
+//            result = hintContainer != null ? hintContainer.getHint() : null;
+            
+            if (hintContainer != null) {
+                result = hintContainer.getHint();
+            } else if (result.isArray() || (Collection.class.isAssignableFrom(result) && ReflectionUtils.determineGenericsType(result) != null)) {
+                result = result.getComponentType();
+            } else {
+                result = Object.class;
+            }
         }
         return result;
     }
@@ -402,7 +412,7 @@ public abstract class FieldMap implements Cloneable {
                 getDestFieldTheGetMethod(), getDestFieldTheSetMethod(), getDestFieldMapGetMethod(),
                 getDestFieldMapSetMethod(), isDestFieldAccessible(), isDestFieldIndexed(), getDestFieldIndex(),
                 getDestFieldName(), getDestFieldKey(), isDestSelfReferencing(), getSrcFieldName(),
-                null, getDestDeepIndexHintContainer(), classMap.getDestClassBeanFactory());
+                getSrcDeepIndexHintContainer(), getDestDeepIndexHintContainer(), classMap.getDestClassBeanFactory());
 
             this.destPropertyDescriptorMap.putIfAbsent(runtimeDestClass, descriptor);
             result = descriptor;

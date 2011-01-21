@@ -16,7 +16,7 @@ public class FieldMapUtils {
     public static String getFieldName(List<DozerField> fields) {
         String name = StringUtils.EMPTY;
         for (DozerField field: fields) {
-            name = StringUtils.join(new Object[]{name, field.getName()}, ",");
+            name = StringUtils.join(new Object[]{field.getName()}, ",");
         }
         
         return name;

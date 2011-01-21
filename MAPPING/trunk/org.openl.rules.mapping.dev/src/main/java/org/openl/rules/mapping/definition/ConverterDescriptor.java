@@ -1,5 +1,7 @@
 package org.openl.rules.mapping.definition;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.dozer.CustomConverter;
 
 public class ConverterDescriptor {
@@ -30,6 +32,12 @@ public class ConverterDescriptor {
 
     public Class<?> getDestType() {
         return destType;
+    }
+    
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("converterId", converterId).append(
+            "instance", instance).append("srcType", srcType).append("destType", destType).toString();
     }
     
 }

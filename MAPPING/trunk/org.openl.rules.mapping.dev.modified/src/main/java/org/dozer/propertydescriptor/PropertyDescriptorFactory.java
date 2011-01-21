@@ -34,26 +34,26 @@ public class PropertyDescriptorFactory {
     private PropertyDescriptorFactory() {
     }
 
-    public static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz, ClassMap classMap, List<DozerField> fields) {
-        DozerPropertyDescriptor[] propertyDescriptors = new DozerPropertyDescriptor[fields.size()];
+    public static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz, ClassMap classMap, List<DozerField> srcFields, DozerField dest) {
+        DozerPropertyDescriptor[] propertyDescriptors = new DozerPropertyDescriptor[srcFields.size()];
 
-        for (int i = 0; i < fields.size(); i++) {
-            propertyDescriptors[i] = getPropertyDescriptor(clazz, classMap, fields.get(i));
+        for (int i = 0; i < srcFields.size(); i++) {
+            propertyDescriptors[i] = getPropertyDescriptor(clazz, classMap, srcFields.get(i), dest);
         }
 
         return new MultiFieldsPropertyDescriptor(propertyDescriptors);
     }
 
-    public static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz, ClassMap classMap, DozerField field) {
+    public static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz, ClassMap classMap, DozerField src, DozerField dest) {
 
-        if (MappingUtils.isBlankOrNull(field.getName())) {
+        if (MappingUtils.isBlankOrNull(src.getName())) {
             return new EmptyFieldPropertyDescriptor();
         }
         
-        return getPropertyDescriptor(clazz, field.getTheGetMethod(), field.getTheSetMethod(), field.getMapGetMethod(),
-            field.getMapSetMethod(), field.isAccessible(), field.isIndexed(), field.getIndex(), field.getName(), field
-                .getKey(), field.isSelfReferenced(), field.getName(), field.getHintContainer(), field
-                .getDeepIndexHintContainer(), classMap.getDestClassBeanFactory());
+        return getPropertyDescriptor(clazz, src.getTheGetMethod(), src.getTheSetMethod(), src.getMapGetMethod(),
+            src.getMapSetMethod(), src.isAccessible(), src.isIndexed(), src.getIndex(), src.getName(), src
+                .getKey(), src.isSelfReferenced(), src.getName(),  src.getDeepIndexHintContainer(), 
+                dest != null ? dest.getDeepIndexHintContainer() : null, classMap.getDestClassBeanFactory());
     }
 
     public static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz, String theGetMethod,

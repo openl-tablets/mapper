@@ -13,7 +13,7 @@ public class FieldMappingConditionsTest {
     @Test
     public void indexedListsWithoutGenericTypeTest() {
 
-        File source = new File("src/test/resources/org/openl/rules/mapping/FieldMappingConditionsTest.xlsx");
+        File source = new File("src/test/resources/org/openl/rules/mapping/conditions/FieldMappingConditionsTest.xlsx");
         RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
