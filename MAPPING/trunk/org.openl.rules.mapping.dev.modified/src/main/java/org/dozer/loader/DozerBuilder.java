@@ -458,15 +458,20 @@ public class DozerBuilder {
     }
 
     private static boolean isIndexed(String fieldName) {
-        return (fieldName != null) && (fieldName.matches(".+\\[.+\\]$"));
+        return (fieldName != null) && (fieldName.matches(".+\\[.+?\\]"));
     }
 
     static String getFieldNameOfIndexedField(String fieldName) {
-        return fieldName == null ? null : fieldName.replaceAll("\\[.+\\]$", "");
+        if (fieldName == null) {
+            return null;
+        }
+
+        return fieldName.substring(0, fieldName.lastIndexOf("["));
     }
 
     private static String getIndexOfIndexedField(String fieldName) {
-        return fieldName.replaceAll(".*\\[", "").replaceAll("\\]", "");
+        return fieldName.substring(fieldName.lastIndexOf("[") + 1, fieldName.lastIndexOf("]"));
+//        return fieldName.replaceAll(".*\\[", "").replaceAll("\\]", "");
     }
 
     public static class ClassDefinitionBuilder {

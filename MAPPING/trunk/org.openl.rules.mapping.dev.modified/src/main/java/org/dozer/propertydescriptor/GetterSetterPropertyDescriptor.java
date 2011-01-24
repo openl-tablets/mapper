@@ -132,7 +132,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
         for (int i = 0; i < hierarchyLength; i++) {
             DeepHierarchyElement hierarchyElement = hierarchy[i];
             PropertyDescriptor pd = hierarchyElement.getPropDescriptor();
-            
+
             // If any fields in the deep hierarchy are indexed, get actual value
             // within the collection at the specified index
             //
@@ -144,9 +144,12 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                     int collectionIndex = MappingUtils.getCollectionIndex(hierarchyElement.getIndex());
                     hierarchyValue = MappingUtils.getCollectionIndexedValue(bean, collectionIndex);
                 } else {
-                    // We should provide right xpath's context and expression to obtain field
-                    // value. In current state the right context is parent object of hierarchy element
-                    // and the expression is concatenation of current field name and hierarchy element index value. 
+                    // We should provide right xpath's context and expression to
+                    // obtain field
+                    // value. In current state the right context is parent
+                    // object of hierarchy element
+                    // and the expression is concatenation of current field name
+                    // and hierarchy element index value.
                     //
                     String expression = String.format("%s[%s]", pd.getName(), hierarchyElement.getIndex());
                     hierarchyValue = MappingUtils.getXPathIndexedValue(parentObj, expression);
@@ -154,15 +157,16 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
             } else {
                 hierarchyValue = ReflectionUtils.invoke(pd.getReadMethod(), parentObj, null);
             }
-            
-            // if one of hierarchy element value is null we stop further 
-            // field path processing. 
+
+            // if one of hierarchy element value is null we stop further
+            // field path processing.
             //
             if (hierarchyValue == null) {
                 return null;
             }
 
-            // For the last element in hierarchy we skip this step to obtain right 
+            // For the last element in hierarchy we skip this step to obtain
+            // right
             // parent object for further processing.
             //
             if (i != hierarchyLength - 1) {
@@ -171,9 +175,10 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
         }
 
         // At current state we processed field path and have the last field
-        // value. We should check that field path is indexed ([] operator 
-        // at the end of field path) or not. If it is true we should evaluate 
-        // index expression and return value; otherwise - just return the last field value. 
+        // value. We should check that field path is indexed ([] operator
+        // at the end of field path) or not. If it is true we should evaluate
+        // index expression and return value; otherwise - just return the last
+        // field value.
         //
         if (isIndexed) {
             if (MappingUtils.isSimpleCollectionIndex(index)) {
@@ -221,9 +226,10 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                     // not at the end.
                     String index = hierarchyElement.getIndex();
                     if (!MappingUtils.isSimpleCollectionIndex(index)) {
-                        MappingUtils.throwMappingException("Destination field path should not contain filter expressions");
+                        MappingUtils
+                            .throwMappingException("Destination field path should not contain filter expressions");
                     }
-                    
+
                     int collectionIndex = MappingUtils.getCollectionIndex(index);
 
                     if (clazz.isArray()) {
@@ -232,13 +238,13 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                     }
 
                     if (Collection.class.isAssignableFrom(clazz)) {
-                        Class<?> collectionEntryType;
-                        Class<?> genericType = ReflectionUtils.determineGenericsType(pd);
-                        if (genericType != null) {
-                            collectionEntryType = genericType;
-                        } else {
-                            collectionEntryType = fieldMap.getDestDeepIndexHintContainer().getHint(i);
+                        Class<?> hintType = null;
+
+                        if (fieldMap.getDestDeepIndexHintContainer() != null) {
+                            hintType = fieldMap.getDestDeepIndexHintContainer().getHint(i);
                         }
+                        
+                        Class<?> collectionEntryType = getComponentType(clazz, pd, hintType);
 
                         o = MappingUtils.prepareIndexedCollection(clazz, null, DestBeanCreator
                             .create(collectionEntryType), collectionIndex);
@@ -271,18 +277,23 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                 if (!MappingUtils.isSimpleCollectionIndex(index)) {
                     MappingUtils.throwMappingException("Destination field path should not contain filter expressions");
                 }
-                
+
                 int collectionIndex = MappingUtils.getCollectionIndex(index);
 
                 if (currentSize < collectionIndex + 1) {
-                    
-                    Class<?> componentType = pd.getPropertyType().getComponentType();
-                    if (componentType == null) {
-                        componentType = fieldMap.getDestDeepIndexHintContainer().getHint(i); 
+                    Class<?> hintType = null;
+
+                    if (fieldMap.getDestDeepIndexHintContainer() != null) {
+                        hintType = fieldMap.getDestDeepIndexHintContainer().getHint(i);
                     }
+
+                    Class<?> componentType = getComponentType(pd.getPropertyType(), pd, hintType);
                     value = MappingUtils.prepareIndexedCollection(pd.getPropertyType(), value, DestBeanCreator
                         .create(componentType), collectionIndex);
                     ReflectionUtils.invoke(pd.getWriteMethod(), parentObj, new Object[] { value });
+                    // Re-read value object from parent object to avoid using invalid instance of property value.
+                    //
+                    value = ReflectionUtils.invoke(pd.getReadMethod(), parentObj, null);
                 }
             }
 
@@ -327,6 +338,23 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
         }
     }
 
+    private Class<?> getComponentType(Class<?> container, PropertyDescriptor pd, Class<?> hintType) {
+
+        Class<?> componentType = null;
+        if (container.isArray()) {
+            componentType = container.getComponentType();
+        } else if (Collection.class.isAssignableFrom(container)) {
+            Class<?> genericType = ReflectionUtils.determineGenericsType(pd);
+            if (genericType != null) {
+                componentType = genericType;
+            } else {
+                componentType = hintType;
+            }
+        }
+
+        return componentType;
+    }
+
     protected Object invokeReadMethod(Object target) {
         Object result = null;
         try {
@@ -358,7 +386,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
         if (!isSimpleCollectionIndex) {
             MappingUtils.throwMappingException("Destinaiton field path should not contain filter expressions");
         }
-        
+
         int collectionIndex = MappingUtils.getCollectionIndex(index);
 
         if (isSimpleCollectionIndex) {

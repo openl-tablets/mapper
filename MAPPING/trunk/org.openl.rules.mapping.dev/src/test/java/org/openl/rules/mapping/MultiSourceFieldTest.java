@@ -8,9 +8,9 @@ import java.util.List;
 
 import org.junit.Test;
 import org.openl.rules.mapping.to.A;
-import org.openl.rules.mapping.to.ArrayContainer;
 import org.openl.rules.mapping.to.B;
 import org.openl.rules.mapping.to.C;
+import org.openl.rules.mapping.to.containers.ArrayContainer;
 import org.openl.rules.mapping.to.inheritance.ChildA;
 
 public class MultiSourceFieldTest {

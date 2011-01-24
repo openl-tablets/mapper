@@ -1,4 +1,6 @@
-package org.openl.rules.mapping.to;
+package org.openl.rules.mapping.to.containers;
+
+import org.openl.rules.mapping.to.C;
 
 public class ArrayOfTypeCContainer {
 

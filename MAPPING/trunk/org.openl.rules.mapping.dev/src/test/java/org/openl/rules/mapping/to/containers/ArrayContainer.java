@@ -1,4 +1,4 @@
-package org.openl.rules.mapping.to;
+package org.openl.rules.mapping.to.containers;
 
 public class ArrayContainer {
 
