@@ -88,7 +88,7 @@ public class DozerMappingBuilder {
         FieldsMapping fieldsMapping = new FieldsMapping();
         String[] src = fieldMap.getSrc();
         
-        if (src.length > 1) {
+        if (src != null && src.length > 1) {
             FieldDefinition[] definitions = new FieldDefinition[src.length];
             for (int i = 0; i < src.length; i++) {
                 FieldDefinitionBuilder fieldDefBuilder = new FieldDefinitionBuilder(src[i]);
@@ -107,7 +107,7 @@ public class DozerMappingBuilder {
             fieldsMapping.setSrc(definitions);
         } else {
             String fieldName = StringUtils.EMPTY;
-            if (StringUtils.isNotEmpty(src[0])) {
+            if (src != null && src.length > 0 && StringUtils.isNotEmpty(src[0])) {
                 fieldName = src[0];
             }
             FieldDefinitionBuilder fieldDefBuilder = new FieldDefinitionBuilder(fieldName);
