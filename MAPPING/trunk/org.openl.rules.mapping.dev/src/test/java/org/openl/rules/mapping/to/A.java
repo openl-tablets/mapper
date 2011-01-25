@@ -4,6 +4,7 @@ public class A {
     private String aString;
     private Integer anInteger;
     private String[] aStringArray;
+    private E e;
 
     public String getAString() {
         return aString;
@@ -27,6 +28,14 @@ public class A {
 
     public void setAStringArray(String[] anStringArray) {
         this.aStringArray = anStringArray;
+    }
+
+    public E getE() {
+        return e;
+    }
+
+    public void setE(E e) {
+        this.e = e;
     }
 
 }

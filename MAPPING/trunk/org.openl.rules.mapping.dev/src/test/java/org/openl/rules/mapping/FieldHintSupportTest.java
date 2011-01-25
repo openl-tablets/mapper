@@ -7,9 +7,13 @@ import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.openl.rules.mapping.to.A;
+import org.openl.rules.mapping.to.B;
 import org.openl.rules.mapping.to.C;
+import org.openl.rules.mapping.to.D;
+import org.openl.rules.mapping.to.F;
 import org.openl.rules.mapping.to.containers.ArrayContainer;
 import org.openl.rules.mapping.to.inheritance.ChildA;
+import org.openl.rules.mapping.to.inheritance.ChildE;
 
 public class FieldHintSupportTest {
 
@@ -76,4 +80,78 @@ public class FieldHintSupportTest {
         assertEquals(A.class, ((ChildA)c1.getAList().get(1)).getAList().get(1).getClass());
         assertEquals("10", ((A)((ChildA)c1.getAList().get(1)).getAList().get(1)).getAString());
     }
+    
+    @Test
+    public void typeCastTest() {
+         
+        File source = new File("src/test/resources/org/openl/rules/mapping/hints/TypeCastTest.xlsx");
+        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        ChildA childA = new ChildA();
+        childA.setAString("child-a-string");
+
+        List childList = new ArrayList();
+
+        A innerA = new A();
+        innerA.setAString("inner-a-string");
+
+        ChildA innerChildA = new ChildA();
+        innerChildA.setAString("inner-child-a-string");
+
+        childList.add(innerA);
+        childList.add(innerChildA);
+
+        childA.setAList(childList);
+
+        F f = new F();
+        f.setA(childA);
+
+        ArrayContainer acontainer = mapper.map(f, ArrayContainer.class);
+        assertEquals(2, acontainer.getArray().length);
+        assertEquals("inner-a-string", acontainer.getArray()[0]);
+        assertEquals("inner-child-a-string", acontainer.getArray()[1]);
+
+        F f1 = mapper.map(acontainer, F.class);
+        
+        assertEquals(ChildA.class, f1.getA().getClass());
+        assertEquals(2, ((ChildA) f1.getA()).getAList().size());
+        assertEquals("inner-a-string", ((A)((ChildA) f1.getA()).getAList().get(0)).getAString());
+        assertEquals("inner-child-a-string", ((A)((ChildA) f1.getA()).getAList().get(1)).getAString());
+    }
+    
+    @Test
+    public void simplifiedHintTest() {
+         
+        File source = new File("src/test/resources/org/openl/rules/mapping/hints/SimplifiedHintsChainTest.xlsx");
+        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        ChildA childA = new ChildA();
+        childA.setAString("child-a-string");
+
+        B b = new B();
+        b.setAString("b");
+        
+        D d = new D();
+        d.setAnInt(10);
+        
+        ChildE e = new ChildE();
+        e.setB(b);
+        e.setD(d);
+
+        childA.setE(e);
+        
+        F f = new F();
+        f.setA(childA);
+
+        ArrayContainer acontainer = mapper.map(f, ArrayContainer.class);
+        assertEquals("b", acontainer.getArray()[0]);
+        assertEquals("10", acontainer.getArray()[1]);
+
+        F f1 = mapper.map(acontainer, F.class);
+        
+        assertEquals(A.class, f1.getA().getClass());
+        assertEquals("b", ((ChildE) f1.getA().getE()).getB().getAString());
+        assertEquals(10, ((ChildE) f1.getA().getE()).getD().getAnInt());
+    }
+
 }

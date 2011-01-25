@@ -245,7 +245,12 @@ public class RulesMappingsLoader {
         Class<?>[][] hint = new Class<?>[1][fieldAHint.length];
         
         for (int i = 0; i < fieldAHint.length; i++) {
-            hint[0][i] = fieldAHint[i][0];
+            if (fieldAHint[i] != null && fieldAHint[i].length > 0) {
+                hint[0][i] = fieldAHint[i][0];
+            } else {
+                hint[0][i] = null;
+            }
+            
         }
         
         return hint;

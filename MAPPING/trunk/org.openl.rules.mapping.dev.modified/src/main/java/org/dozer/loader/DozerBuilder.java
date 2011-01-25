@@ -458,7 +458,7 @@ public class DozerBuilder {
     }
 
     private static boolean isIndexed(String fieldName) {
-        return (fieldName != null) && (fieldName.matches(".+\\[.+?\\]"));
+        return (fieldName != null) && (fieldName.matches(".+\\[.+?\\]$"));
     }
 
     static String getFieldNameOfIndexedField(String fieldName) {

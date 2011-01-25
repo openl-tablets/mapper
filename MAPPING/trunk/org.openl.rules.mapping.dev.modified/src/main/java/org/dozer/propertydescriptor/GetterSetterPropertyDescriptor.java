@@ -250,6 +250,11 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                             .create(collectionEntryType), collectionIndex);
                     }
                 } else {
+                    // if user defined another type of property we should use it 
+                    if (fieldMap.getDestDeepIndexHintContainer() != null && fieldMap.getDestDeepIndexHintContainer().hasHintType(i)) {
+                        clazz = fieldMap.getDestDeepIndexHintContainer().getHint(i);
+                    }
+                    
                     try {
                         o = DestBeanCreator.create(clazz);
                     } catch (Exception e) {

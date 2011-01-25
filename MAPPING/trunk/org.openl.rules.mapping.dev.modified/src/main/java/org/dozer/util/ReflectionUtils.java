@@ -101,7 +101,7 @@ public final class ReflectionUtils {
         Class<?> latestClass = parentClass;
         DeepHierarchyElement[] hierarchy = new DeepHierarchyElement[toks.countTokens()];
         int index = 0;
-        int hintIndex = 0;
+//        int hintIndex = 0;
         while (toks.hasMoreTokens()) {
             String aFieldName = toks.nextToken();
             String theFieldName = aFieldName;
@@ -124,7 +124,19 @@ public final class ReflectionUtils {
 
             latestClass = propDescriptor.getPropertyType();
             if (toks.hasMoreTokens()) {
-                if (latestClass.isArray()) {
+                Class<?> hintType = null;
+
+                if (deepIndexHintContainer != null) {
+                    try {
+                        hintType = deepIndexHintContainer.getHint(index);
+                    } catch (Exception e) {
+                        // just ignore the exception
+                    }
+                }
+                
+                if (hintType != null) {
+                    latestClass = hintType;
+                } else if (latestClass.isArray()) {
                     latestClass = latestClass.getComponentType();
                 } else if (Collection.class.isAssignableFrom(latestClass)) {
                     Class<?> genericType = determineGenericsType(propDescriptor);
@@ -138,8 +150,7 @@ public final class ReflectionUtils {
                     if (genericType != null) {
                         latestClass = genericType;
                     } else {
-                        latestClass = deepIndexHintContainer.getHint(hintIndex);
-                        hintIndex += 1;
+                        latestClass = deepIndexHintContainer.getHint(index);
                     }
                 }
             }
