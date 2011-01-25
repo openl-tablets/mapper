@@ -59,7 +59,7 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
     }
 
     @Override
-    public Object getDestFieldDefaultValue() {
+    public String getDestFieldDefaultValue() {
         throw new UnsupportedOperationException();
     }
 

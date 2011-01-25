@@ -34,7 +34,7 @@ public class FieldDefinition {
     private String getMethod;
     private String setMethod;
     private boolean required;
-    private Object defaultValue;
+    private String defaultValue;
     
     private String hint;
     private String deepHint;
@@ -61,7 +61,7 @@ public class FieldDefinition {
         builder.deepHint(this.deepHint);
     }
 
-    public FieldDefinition defaultValue(Object value) {
+    public FieldDefinition defaultValue(String value) {
         this.defaultValue = value;
         return this;
     }

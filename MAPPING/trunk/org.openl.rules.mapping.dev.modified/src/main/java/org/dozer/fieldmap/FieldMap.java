@@ -291,7 +291,7 @@ public abstract class FieldMap implements Cloneable {
         return destField.isRequired();
     }
 
-    public Object getDestFieldDefaultValue() {
+    public String getDestFieldDefaultValue() {
         return destField.getDefaultValue();
     }
 

@@ -43,7 +43,7 @@ public class DozerField {
     private boolean indexed;
     private String index;
     private boolean required;
-    private Object defaultValue;
+    private String defaultValue;
     private HintContainer hintContainer;
     private HintContainer deepIndexHintContainer;
 
@@ -152,11 +152,11 @@ public class DozerField {
         this.required = required;
     }
 
-    public Object getDefaultValue() {
+    public String getDefaultValue() {
         return defaultValue;
     }
 
-    public void setDefaultValue(Object defaultValue) {
+    public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
 

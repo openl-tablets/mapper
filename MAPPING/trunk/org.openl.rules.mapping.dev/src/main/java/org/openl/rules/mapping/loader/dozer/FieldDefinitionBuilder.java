@@ -15,7 +15,7 @@ public class FieldDefinitionBuilder {
         return this;
     }
 
-    public FieldDefinitionBuilder defaultValue(Object value) {
+    public FieldDefinitionBuilder defaultValue(String value) {
         fieldDefinition.defaultValue(value);
         return this;
     }

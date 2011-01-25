@@ -409,7 +409,7 @@ public class DozerBuilder {
             field.setRequired(b);
         }
 
-        public void defaultValue(Object attribute) {
+        public void defaultValue(String attribute) {
             field.setDefaultValue(attribute);
         }
 
