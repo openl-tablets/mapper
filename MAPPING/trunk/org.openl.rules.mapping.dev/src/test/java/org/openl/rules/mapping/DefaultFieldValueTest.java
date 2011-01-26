@@ -1,6 +1,7 @@
 package org.openl.rules.mapping;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 
@@ -9,7 +10,6 @@ import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.B;
 import org.openl.rules.mapping.to.E;
 import org.openl.rules.mapping.to.G;
-import org.openl.rules.mapping.to.containers.IntContainer;
 
 public class DefaultFieldValueTest {
 
