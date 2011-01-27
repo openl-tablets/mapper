@@ -6,8 +6,20 @@ import org.openl.rules.runtime.ApiBasedRulesEngineFactory;
 import org.openl.syntax.exception.CompositeOpenlException;
 import org.openl.syntax.exception.SyntaxNodeException;
 
+/**
+ * The factory class which provides methods to create mapper instance.
+ */
 public class RulesBeanMapperFactory {
 
+    private RulesBeanMapperFactory() {
+    }
+
+    /**
+     * Creates mapper instance using file with mapping rule definitions.
+     * 
+     * @param source file with mapping rule definitions
+     * @return mapper instance
+     */
     public static RulesBeanMapper createMapperInstance(File source) {
         ApiBasedRulesEngineFactory factory = new ApiBasedRulesEngineFactory(source);
         Class<?> instanceClass;
@@ -16,11 +28,12 @@ public class RulesBeanMapperFactory {
         try {
             instanceClass = factory.getInterfaceClass();
             instance = factory.makeInstance();
-            
+
             if (factory.getCompiledOpenClass().hasErrors()) {
                 // TODO: remove OpenL specific exception
                 //
-                throw new CompositeOpenlException("Compilation failed", new SyntaxNodeException[0], factory.getCompiledOpenClass().getMessages());
+                throw new CompositeOpenlException("Compilation failed", new SyntaxNodeException[0], factory
+                    .getCompiledOpenClass().getMessages());
             }
 
             return new RulesBeanMapper(instanceClass, instance);

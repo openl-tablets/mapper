@@ -1,5 +1,8 @@
 package org.openl.rules.mapping;
 
+/**
+ * The class that holds information about a single converter.
+ */
 public class Converter {
 
     private Class<?> classA;
