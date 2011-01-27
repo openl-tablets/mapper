@@ -135,6 +135,9 @@ public class DozerMappingBuilder {
         }
 
         FieldMappingOptionsBuilder optionsBuilder = new FieldMappingOptionsBuilder();
+        optionsBuilder.mapNulls(fieldMap.isMapNulls());
+        optionsBuilder.mapEmptyStrings(fieldMap.isMapEmptyStrings());
+
         if (fieldMap.getConverter() != null) {
             optionsBuilder.customConverterId(fieldMap.getConverter().getConverterId());
             fieldsMapping.setConverter(fieldMap.getConverter());
@@ -144,8 +147,6 @@ public class DozerMappingBuilder {
             fieldsMapping.setCondition(fieldMap.getCondition());
         }
         
-        optionsBuilder.mapNulls(fieldMap.isMapNulls());
-        optionsBuilder.mapEmptyStrings(fieldMap.isMapEmptyStrings());
         fieldsMapping.setDest(fieldDefBuilder.build());
         fieldsMapping.setOptions(optionsBuilder.build());
         

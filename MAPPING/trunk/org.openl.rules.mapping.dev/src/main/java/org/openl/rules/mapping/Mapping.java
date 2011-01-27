@@ -14,9 +14,9 @@ public class Mapping {
     private String fieldB;
     private String convertMethodAB;
     private String convertMethodBA;
-    private boolean oneWay = false;
-    private boolean mapNulls = true;
-    private boolean mapEmptyStrings = true;
+    private boolean oneWay = MappingConstants.DEFAULT_MAP_IN_ONE_WAY_POLICY;
+    private boolean mapNulls = MappingConstants.DEFAULT_MAP_NULL_POLICY;
+    private boolean mapEmptyStrings = MappingConstants.DEFAULT_MAP_EMPTY_STRING_POLICY;
     private String classABeanFactory;
     private String classBBeanFactory;
     private String fieldACreateMethod;
@@ -27,8 +27,8 @@ public class Mapping {
     private Class<?>[] fieldBHint;
     private Class<?>[] fieldAType;
     private Class<?> fieldBType;
-    private boolean fieldARequired = false;
-    private boolean fieldBRequired = false;
+    private boolean fieldARequired = MappingConstants.DEFAULT_FIELD_REQUIRED_POLICY;
+    private boolean fieldBRequired = MappingConstants.DEFAULT_FIELD_REQUIRED_POLICY;
     private String conditionAB;
     private String conditionBA;
 

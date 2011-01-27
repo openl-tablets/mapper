@@ -23,10 +23,10 @@ public class MapEmptyStrings {
         c.setAString("c-string");
 
         mapper.map(a, b);
-        assertEquals(null, b.getAString());
+        assertEquals("b-string", b.getAString());
         
         mapper.map(a, c);
-        assertEquals(null, c.getAString());
+        assertEquals("c-string", c.getAString());
 
         
         a.setAString("");
