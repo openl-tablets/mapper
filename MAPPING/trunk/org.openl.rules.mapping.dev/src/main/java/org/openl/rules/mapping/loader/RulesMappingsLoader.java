@@ -378,6 +378,7 @@ public class RulesMappingsLoader {
         fieldMapping.setSrc(mapping.getFieldA());
         fieldMapping.setDest(mapping.getFieldB());
         fieldMapping.setMapNulls(mapping.isMapNulls());
+        fieldMapping.setMapEmptyStrings(mapping.isMapEmptyStrings());
         fieldMapping.setRequired(mapping.isFieldBRequired());
         fieldMapping.setDefaultValue(mapping.getFieldBDefaultValue());
         fieldMapping.setCreateMethod(mapping.getFieldBCreateMethod());

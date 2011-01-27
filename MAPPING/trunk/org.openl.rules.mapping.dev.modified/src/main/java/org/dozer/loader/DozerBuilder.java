@@ -242,6 +242,11 @@ public class DozerBuilder {
 
         private String mappingCondition;
         private String mappingConditionId;
+        
+        private boolean mapNull;
+        private boolean mapNullSet;
+        private boolean mapEmptyString;
+        private boolean mapEmptyStringSet;
 
         public FieldMappingBuilder(ClassMap classMap) {
             this.classMap = classMap;
@@ -322,6 +327,18 @@ public class DozerBuilder {
             return this;
         }
 
+        public FieldMappingBuilder mapNull(boolean value) {
+            this.mapNullSet = true;
+            this.mapNull = value;
+            return this;
+        }
+
+        public FieldMappingBuilder mapEmptyString(boolean value) {
+            this.mapEmptyStringSet = value;
+            this.mapEmptyString = value;
+            return this;
+        }
+
         public void build() {
             // TODO Check Map to Map mapping
             FieldMap result;
@@ -361,6 +378,14 @@ public class DozerBuilder {
             result.setCustomConverterParam(customConverterParam);
             result.setMappingCondition(mappingCondition);
             result.setMappingConditionId(mappingConditionId);
+
+            if (mapNullSet) {
+                result.setMapNull(mapNull);
+            }
+            
+            if (mapEmptyStringSet) {
+                result.setMapEmptyString(mapEmptyString);
+            }
 
             classMap.addFieldMapping(result);
         }

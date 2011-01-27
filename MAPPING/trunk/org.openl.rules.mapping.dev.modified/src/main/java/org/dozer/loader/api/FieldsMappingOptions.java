@@ -96,6 +96,22 @@ public class FieldsMappingOptions extends TypeMappingOptions {
         };
     }
 
+    public static FieldsMappingOption mapNulls(final boolean value) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.mapNull(value);
+            }
+        };
+    }
+
+    public static FieldsMappingOption mapEmptyStrings(final boolean value) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.mapEmptyString(value);
+            }
+        };
+    }
+
     public static FieldsMappingOption collectionStrategy(final boolean removeOrphans,
         final RelationshipType relationshipType) {
         return new FieldsMappingOption() {

@@ -144,6 +144,8 @@ public class DozerMappingBuilder {
             fieldsMapping.setCondition(fieldMap.getCondition());
         }
         
+        optionsBuilder.mapNulls(fieldMap.isMapNulls());
+        optionsBuilder.mapEmptyStrings(fieldMap.isMapEmptyStrings());
         fieldsMapping.setDest(fieldDefBuilder.build());
         fieldsMapping.setOptions(optionsBuilder.build());
         

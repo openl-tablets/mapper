@@ -14,8 +14,9 @@ public class Mapping {
     private String fieldB;
     private String convertMethodAB;
     private String convertMethodBA;
-    private boolean oneWay;
-    private boolean mapNulls;
+    private boolean oneWay = false;
+    private boolean mapNulls = true;
+    private boolean mapEmptyStrings = true;
     private String classABeanFactory;
     private String classBBeanFactory;
     private String fieldACreateMethod;
@@ -26,8 +27,8 @@ public class Mapping {
     private Class<?>[] fieldBHint;
     private Class<?>[] fieldAType;
     private Class<?> fieldBType;
-    private boolean fieldARequired;
-    private boolean fieldBRequired;
+    private boolean fieldARequired = false;
+    private boolean fieldBRequired = false;
     private String conditionAB;
     private String conditionBA;
 
@@ -207,17 +208,26 @@ public class Mapping {
         this.fieldBType = fieldBType;
     }
 
+    public boolean isMapEmptyStrings() {
+        return mapEmptyStrings;
+    }
+
+    public void setMapEmptyStrings(boolean mapEmptyStrings) {
+        this.mapEmptyStrings = mapEmptyStrings;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("classA", classA).append("classB",
             classB).append("fieldA", fieldA).append("fieldB", fieldB).append("convertMethodAB", convertMethodAB)
             .append("convertMethodBA", convertMethodBA).append("oneWay", oneWay).append("mapNulls", mapNulls).append(
-                "classABeanFactory", classABeanFactory).append("classBBeanFactory", classBBeanFactory).append(
-                "fieldACreateMethod", fieldACreateMethod).append("fieldBCreateMethod", fieldBCreateMethod).append(
-                "fieldADefaultValue", fieldADefaultValue).append("fieldBDefaultValue", fieldBDefaultValue).append(
-                "fieldAHint", fieldAHint).append("fieldBHint", fieldBHint).append("fieldAType", fieldAType).append(
-                "fieldBType", fieldBType).append("fieldARequired", fieldARequired).append("fieldBRequired",
-                fieldBRequired).append("conditionAB", conditionAB).append("conditionBA", conditionBA).toString();
+                "mapEmptyStrings", mapEmptyStrings).append("classABeanFactory", classABeanFactory).append(
+                "classBBeanFactory", classBBeanFactory).append("fieldACreateMethod", fieldACreateMethod).append(
+                "fieldBCreateMethod", fieldBCreateMethod).append("fieldADefaultValue", fieldADefaultValue).append(
+                "fieldBDefaultValue", fieldBDefaultValue).append("fieldAHint", fieldAHint).append("fieldBHint",
+                fieldBHint).append("fieldAType", fieldAType).append("fieldBType", fieldBType).append("fieldARequired",
+                fieldARequired).append("fieldBRequired", fieldBRequired).append("conditionAB", conditionAB).append(
+                "conditionBA", conditionBA).toString();
     }
 
 }

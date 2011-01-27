@@ -18,6 +18,16 @@ public class FieldMappingOptionsBuilder {
         return this;
     }
 
+    public FieldMappingOptionsBuilder mapNulls(boolean value) {
+        options.add(MappingOptions.mapNulls(value));
+        return this;
+    }
+
+    public FieldMappingOptionsBuilder mapEmptyStrings(boolean value) {
+        options.add(MappingOptions.mapEmptyStrings(value));
+        return this;
+    }
+
     public FieldMappingOptionsBuilder customConverterId(String converterId) {
         options.add(MappingOptions.customConverterId(converterId));
         return this;

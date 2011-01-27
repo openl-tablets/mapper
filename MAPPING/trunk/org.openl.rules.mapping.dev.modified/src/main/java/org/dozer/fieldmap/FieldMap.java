@@ -63,6 +63,8 @@ public abstract class FieldMap implements Cloneable {
     private boolean removeOrphans;
     private String mappingCondition;
     private String mappingConditionId;
+    private Boolean mapNull;
+    private Boolean mapEmptyString;
 
     // For Caching Purposes
     private final ConcurrentMap<Class<?>, DozerPropertyDescriptor> srcPropertyDescriptorMap = new ConcurrentHashMap<Class<?>, DozerPropertyDescriptor>();
@@ -113,11 +115,12 @@ public abstract class FieldMap implements Cloneable {
         }
         if (isDestFieldIndexed()) {
             HintContainer hintContainer = destField.getHintContainer();
-//            result = hintContainer != null ? hintContainer.getHint() : null;
-            
+            // result = hintContainer != null ? hintContainer.getHint() : null;
+
             if (hintContainer != null) {
                 result = hintContainer.getHint();
-            } else if (result.isArray() || (Collection.class.isAssignableFrom(result) && ReflectionUtils.determineGenericsType(result) != null)) {
+            } else if (result.isArray() || (Collection.class.isAssignableFrom(result) && ReflectionUtils
+                .determineGenericsType(result) != null)) {
                 result = result.getComponentType();
             } else {
                 result = Object.class;
@@ -453,11 +456,11 @@ public abstract class FieldMap implements Cloneable {
     }
 
     public boolean isDestMapNull() {
-        return classMap.isDestMapNull();
+        return mapNull != null ? mapNull : classMap.isDestMapNull();
     }
 
     public boolean isDestMapEmptyString() {
-        return classMap.isDestMapEmptyString();
+        return mapEmptyString != null ? mapEmptyString : classMap.isDestMapEmptyString();
     }
 
     public boolean isTrimStrings() {
@@ -472,14 +475,12 @@ public abstract class FieldMap implements Cloneable {
         return RelationshipType.NON_CUMULATIVE.equals(relationshipType);
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("source field", srcField).append(
-            "destination field", destField).append("type", type).append("customConverter", customConverter).append(
-            "relationshipType", relationshipType).append("removeOrphans", removeOrphans).append("mapId", mapId).append(
-            "copyByReference", copyByReference).append("copyByReferenceOveridden", copyByReferenceOveridden).append(
-            "srcTypeHint", getSrcHintContainer()).append("destTypeHint", getDestHintContainer()).append("mapCondition",
-            mappingCondition).append("mapConditionId", mappingConditionId).toString();
+    public void setMapNull(boolean mapNull) {
+        this.mapNull = mapNull;
+    }
+
+    public void setMapEmptyString(boolean mapEmptyString) {
+        this.mapEmptyString = mapEmptyString;
     }
 
     public String getCustomConverterParam() {
@@ -513,5 +514,16 @@ public abstract class FieldMap implements Cloneable {
     protected ConcurrentMap<Class<?>, DozerPropertyDescriptor> getDestPropertyDescriptorMap() {
         return destPropertyDescriptorMap;
     }
-    
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("source field", srcField).append(
+            "destination field", destField).append("type", type).append("customConverter", customConverter).append(
+            "relationshipType", relationshipType).append("removeOrphans", removeOrphans).append("mapId", mapId).append(
+            "copyByReference", copyByReference).append("mapNull", mapNull).append("mapEmptyString", mapEmptyString)
+            .append("copyByReferenceOveridden", copyByReferenceOveridden).append("srcTypeHint", getSrcHintContainer())
+            .append("destTypeHint", getDestHintContainer()).append("mapCondition", mappingCondition).append(
+                "mapConditionId", mappingConditionId).toString();
+    }
+
 }

@@ -78,16 +78,24 @@ public class MappingOptions {
         return FieldsMappingOptions.condition(type);
     }
 
-    public static FieldsMappingOption conditionId(final String id) {
+    public static FieldsMappingOption conditionId(String id) {
         return FieldsMappingOptions.conditionId(id);
     }
 
-    public static FieldsMappingOption useMapId(final String mapId) {
+    public static FieldsMappingOption useMapId(String mapId) {
         return FieldsMappingOptions.useMapId(mapId);
     }
 
     public static FieldsMappingOption fieldOneWay() {
         return FieldsMappingOptions.fieldOneWay();
+    }
+    
+    public static FieldsMappingOption mapNulls(boolean value) {
+        return FieldsMappingOptions.mapNulls(value);
+    }
+
+    public static FieldsMappingOption mapEmptyStrings(boolean value) {
+        return FieldsMappingOptions.mapEmptyStrings(value);
     }
 
     public static FieldsMappingOption collectionStrategy(final boolean removeOrphans,
