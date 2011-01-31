@@ -549,10 +549,6 @@ public class MappingProcessor implements Mapper {
             return mapEnum((Enum) srcFieldValue, (Class<Enum>) destFieldType);
         }
 
-        if (fieldMap.getDestDeepIndexHintContainer() != null) {
-            destFieldType = fieldMap.getDestDeepIndexHintContainer().getHint();
-        }
-
         // Default: Map from one custom data object to another custom data
         // object
         return mapCustomObject(fieldMap, destObj, destFieldType, srcFieldValue);
@@ -571,11 +567,11 @@ public class MappingProcessor implements Mapper {
         // already instantiated.
         Object result = getExistingValue(fieldMap, destObj, destFieldType);
         ClassMap classMap = null;
+
         // if the field is not null than we don't want a new instance
         if (result == null) {
             // first check to see if this plain old field map has hints to the
-            // actual
-            // type.
+            // actual type.
             if (fieldMap.getDestHintContainer() != null) {
                 Class<?> destHintType = fieldMap.getDestHintType(srcFieldValue.getClass());
                 // if the destType is null this means that there was more than
@@ -588,15 +584,14 @@ public class MappingProcessor implements Mapper {
             // Check to see if explicit map-id has been specified for the field
             // mapping
             String mapId = fieldMap.getMapId();
-
+                        
             Class<? extends Object> targetClass;
             if (fieldMap.getDestHintContainer() != null && fieldMap.getDestHintContainer().getHint() != null) {
                 targetClass = fieldMap.getDestHintContainer().getHint();
-            } else if (destFieldType.isArray()) {
-                targetClass = destFieldType.getComponentType();
             } else {
                 targetClass = destFieldType;
             }
+            
             classMap = getClassMap(srcFieldValue.getClass(), targetClass, mapId);
 
             result = DestBeanCreator.create(new BeanCreationDirective(srcFieldValue, classMap.getSrcClassToMap(),

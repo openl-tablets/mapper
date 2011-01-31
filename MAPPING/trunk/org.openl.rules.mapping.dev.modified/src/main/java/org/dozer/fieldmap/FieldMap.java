@@ -30,7 +30,6 @@ import org.dozer.propertydescriptor.GetterSetterPropertyDescriptor;
 import org.dozer.propertydescriptor.PropertyDescriptorFactory;
 import org.dozer.util.DozerConstants;
 import org.dozer.util.MappingUtils;
-import org.dozer.util.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,9 +118,10 @@ public abstract class FieldMap implements Cloneable {
 
             if (hintContainer != null) {
                 result = hintContainer.getHint();
-            } else if (result.isArray() || (Collection.class.isAssignableFrom(result) && ReflectionUtils
-                .determineGenericsType(result) != null)) {
-                result = result.getComponentType();
+            } else if ((result.isArray() || (Collection.class.isAssignableFrom(result)) && MappingUtils
+                .getSupportedCollectionEntryType(getDestPropertyDescriptor(runtimeDestClass)) != null)) {
+
+                result = MappingUtils.getSupportedCollectionEntryType(getDestPropertyDescriptor(runtimeDestClass));
             } else {
                 result = Object.class;
             }
@@ -392,7 +392,7 @@ public abstract class FieldMap implements Cloneable {
         }
     }
 
-    protected DozerPropertyDescriptor getSrcPropertyDescriptor(Class<?> runtimeSrcClass) {
+    public DozerPropertyDescriptor getSrcPropertyDescriptor(Class<?> runtimeSrcClass) {
         DozerPropertyDescriptor result = this.srcPropertyDescriptorMap.get(runtimeSrcClass);
         if (result == null) {
             String srcFieldMapGetMethod = getSrcFieldMapGetMethod();
@@ -408,7 +408,7 @@ public abstract class FieldMap implements Cloneable {
         return result;
     }
 
-    protected DozerPropertyDescriptor getDestPropertyDescriptor(Class<?> runtimeDestClass) {
+    public DozerPropertyDescriptor getDestPropertyDescriptor(Class<?> runtimeDestClass) {
         DozerPropertyDescriptor result = this.destPropertyDescriptorMap.get(runtimeDestClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeDestClass,

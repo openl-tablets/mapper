@@ -42,7 +42,7 @@ public class MultiSourceFieldMap extends FieldMap {
     }
 
     @Override
-    protected DozerPropertyDescriptor getSrcPropertyDescriptor(Class<?> runtimeSrcClass) {
+    public DozerPropertyDescriptor getSrcPropertyDescriptor(Class<?> runtimeSrcClass) {
         DozerPropertyDescriptor result = getSrcPropertyDescriptorMap().get(runtimeSrcClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeSrcClass,
@@ -54,7 +54,7 @@ public class MultiSourceFieldMap extends FieldMap {
     }
     
     @Override
-    protected DozerPropertyDescriptor getDestPropertyDescriptor(Class<?> runtimeDestClass) {
+    public DozerPropertyDescriptor getDestPropertyDescriptor(Class<?> runtimeDestClass) {
         DozerPropertyDescriptor result = getDestPropertyDescriptorMap().get(runtimeDestClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeDestClass,

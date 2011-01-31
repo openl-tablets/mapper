@@ -19,7 +19,6 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import org.apache.commons.jxpath.JXPathContext;
 import org.dozer.MappingException;
 import org.dozer.factory.BeanCreationDirective;
 import org.dozer.factory.DestBeanCreator;
@@ -98,6 +97,8 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                 // First check if value is indexed. If it's null, then the new
                 // array will be created
                 if (isIndexed) {
+                    // write value using index information
+                    //
                     writeIndexedValue(bean, value);
                 } else {
                     // Check if dest value is already set and is equal to src
@@ -226,8 +227,9 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                     // not at the end.
                     String index = hierarchyElement.getIndex();
                     if (!MappingUtils.isSimpleCollectionIndex(index)) {
-                        MappingUtils
-                            .throwMappingException("Destination field path should not contain filter expressions");
+                        MappingUtils.throwMappingException(String.format(
+                            "Destination field '%s' should be indexed or should not contain filter expressions",
+                            hierarchyElement.getPropDescriptor().getName()));
                     }
 
                     int collectionIndex = MappingUtils.getCollectionIndex(index);
@@ -383,30 +385,34 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
     }
 
     private void writeIndexedValue(Object destObj, Object destFieldValue) {
-        Object existingValue = invokeReadMethod(destObj);
-        Object indexedValue = null;
-
-        boolean isSimpleCollectionIndex = MappingUtils.isSimpleCollectionIndex(index);
-
-        if (!isSimpleCollectionIndex) {
+        if (!MappingUtils.isSimpleCollectionIndex(index)) {
             MappingUtils.throwMappingException("Destinaiton field path should not contain filter expressions");
         }
 
-        int collectionIndex = MappingUtils.getCollectionIndex(index);
+        if (MappingUtils.isSimpleCollectionIndex(index)) {
 
-        if (isSimpleCollectionIndex) {
-            indexedValue = MappingUtils.prepareIndexedCollection(getPropertyType(), existingValue, destFieldValue,
-                collectionIndex);
-        } else {
-            // use index expression as a xpath's expression to obtain value
-            indexedValue = MappingUtils.prepareIndexedCollection(getPropertyType(), existingValue, null, 0);
-            JXPathContext context = JXPathContext.newContext(indexedValue);
-            context.setValue(index, destFieldValue);
+            int collectionIndex = MappingUtils.getCollectionIndex(index);
+            Object existingValue = invokeReadMethod(destObj);
+            
+            if (collectionIndex == -1) {
+                if (existingValue != null) {
+                    collectionIndex = CollectionUtils.getLengthOfCollection(existingValue);
+                } else {
+                    collectionIndex = 0;
+                }
+            }
+
+            writeIndexedValue(destObj, collectionIndex, existingValue, destFieldValue);
         }
-
-        invokeWriteMethod(destObj, indexedValue);
     }
 
+    private void writeIndexedValue(Object destObj, int collectionIndex, Object existingValue, Object destFieldValue) {
+        Object indexedValue = MappingUtils.prepareIndexedCollection(getPropertyType(), existingValue, destFieldValue,
+            collectionIndex);
+
+        invokeWriteMethod(destObj, indexedValue);
+    } 
+    
     private Class determinePropertyType() {
         Method readMethod = getBridgedReadMethod();
         Method writeMethod = getBridgedWriteMethod();

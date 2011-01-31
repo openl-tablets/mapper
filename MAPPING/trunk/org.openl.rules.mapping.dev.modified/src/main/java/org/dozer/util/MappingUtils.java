@@ -49,6 +49,7 @@ import org.dozer.fieldmap.FieldMap;
 import org.dozer.fieldmap.FieldMapUtils;
 import org.dozer.fieldmap.MultiFieldsExcludeFieldMap;
 import org.dozer.fieldmap.MultiSourceFieldMap;
+import org.dozer.propertydescriptor.DozerPropertyDescriptor;
 
 /**
  * Internal class that provides various mapping utilities used throughout the
@@ -79,6 +80,29 @@ public final class MappingUtils {
 
     public static boolean isSupportedCollection(Class<?> aClass) {
         return CollectionUtils.isCollection(aClass) || CollectionUtils.isArray(aClass);
+    }
+    
+    private static Class<?> getSupportedCollectionEntryType(Class<?> collectionClass) {
+        Class<?> entryType = null;
+        if (collectionClass.isArray()) {
+            entryType = collectionClass.getComponentType();
+        } else if (Collection.class.isAssignableFrom(collectionClass)) {
+            Class<?> genericType = ReflectionUtils.determineGenericsType(collectionClass);
+            if (genericType != null) {
+                entryType = genericType;
+            } 
+        }
+
+        return entryType;
+    }
+    
+    public static Class<?> getSupportedCollectionEntryType(DozerPropertyDescriptor pd) {
+        Class<?> entryType = pd.genericType();
+        if (entryType == null) {
+            entryType = getSupportedCollectionEntryType(pd.getPropertyType());
+        }
+        
+        return entryType;
     }
 
     public static boolean isSupportedMap(Class<?> aClass) {
@@ -332,19 +356,40 @@ public final class MappingUtils {
         context.setLenient(true);
         return context.getValue(index);
     }
-    
+
+    /**
+     * Gets element from collection by index. If collection is <code>null</code>
+     * - <code>null</code> will be returned, if index value is <code>-1</code> -
+     * element with
+     * <code>CollectionUtils.getLengthOfCollection(collection)</code> index
+     * value will be returned.
+     * 
+     * @param collection collection object
+     * @param index index value
+     * @return collection element
+     */
     public static Object getCollectionIndexedValue(Object collection, int index) {
+        if (collection == null) {
+            return null;
+        }
+        
         Object result = null;
+        int collectionIndex = index;
+        
+        if (collectionIndex == -1) {
+            collectionIndex = CollectionUtils.getLengthOfCollection(collection);
+        }
+        
         if (collection instanceof Object[]) {
             Object[] x = (Object[]) collection;
-            if (index < x.length) {
-                return x[index];
+            if (collectionIndex < x.length) {
+                return x[collectionIndex];
             }
         } else if (collection instanceof Collection) {
             Collection<?> x = (Collection<?>) collection;
-            if (index < x.size()) {
+            if (collectionIndex < x.size()) {
                 Iterator<?> iter = x.iterator();
-                for (int i = 0; i < index; i++) {
+                for (int i = 0; i < collectionIndex; i++) {
                     iter.next();
                 }
                 result = iter.next();
@@ -364,8 +409,19 @@ public final class MappingUtils {
         return false;
     }
     
+    /**
+     * Parses index string into integer value. 
+     * @param index index string 
+     * @return integer value
+     */
     public static int getCollectionIndex(String index) {
-        return Integer.parseInt(index) - 1;
+        int intValue = Integer.parseInt(index);
+
+        if (intValue < 1) {
+            return -1;
+        }
+        
+        return intValue - 1;
     }
 
     public static Object prepareIndexedCollection(Class<?> collectionType, Object existingCollection,
