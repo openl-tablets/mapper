@@ -64,7 +64,7 @@ public class ConditionFactory {
                     Method conditionMethod = MethodUtils.getMatchingAccessibleMethod(instanceClass, condition, parameterTypes);
 
                     if (conditionMethod == null) {
-                        throw new RulesMappingException(String.format("Cannot find convert method: \"%s(%s, %s)\"",
+                        throw new RulesMappingException(String.format("Cannot find condition method: \"%s(%s, %s)\"",
                             conditionMethod, srcClass.getName(), destClass.getName()));
                     }
 
