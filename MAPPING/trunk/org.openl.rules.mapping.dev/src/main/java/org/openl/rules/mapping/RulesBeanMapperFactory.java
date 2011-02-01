@@ -22,6 +22,7 @@ public class RulesBeanMapperFactory {
      */
     public static RulesBeanMapper createMapperInstance(File source) {
         ApiBasedRulesEngineFactory factory = new ApiBasedRulesEngineFactory(source);
+        factory.setExecutionMode(true);
         Class<?> instanceClass;
         Object instance;
 
