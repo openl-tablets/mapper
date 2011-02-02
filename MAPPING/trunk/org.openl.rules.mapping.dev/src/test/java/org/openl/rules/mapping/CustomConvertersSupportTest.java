@@ -9,6 +9,8 @@ import java.util.Calendar;
 import org.junit.Test;
 import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.C;
+import org.openl.rules.mapping.to.D;
+import org.openl.rules.mapping.to.E;
 import org.openl.rules.mapping.to.xmlbeans.PurchaseOrderTO;
 import org.openuri.easypo.Customer;
 import org.openuri.easypo.LineItem;
@@ -105,6 +107,31 @@ public class CustomConvertersSupportTest {
         
         assertEquals("100", a1.getAString());
         assertEquals(Integer.valueOf(10), a1.getAnInteger());
+    }
+    
+
+    @Test
+    public void externalMapperTest() {
+
+        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/ExternalCustomConvertersTest.xlsx");
+        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        A a = new A();
+        a.setAString("a-string");
+
+        E e = new E();
+        e.setAString("e-string");
+        
+        D d = new D();
+        d.setAnInt(100);
+        
+        e.setD(d);
+        a.setE(e);
+        
+        C c = mapper.map(a, C.class);
+        assertEquals("a-string", c.getAString());
+        assertEquals("e-string", c.getB().getAString());
+        assertEquals(Integer.valueOf(100), c.getB().getAnInteger());
     }
 
 }
