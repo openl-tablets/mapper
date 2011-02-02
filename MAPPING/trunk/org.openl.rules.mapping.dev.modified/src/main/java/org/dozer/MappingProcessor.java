@@ -240,8 +240,9 @@ public class MappingProcessor implements Mapper {
 
             superMappings.addAll(superClasses);
             // superMappings.addAll(interfaceMappings);
+            List<String> overridedFieldMappings = getFieldMapKeys(destObj, classMap.getFieldMaps()); 
             if (!superMappings.isEmpty()) {
-                mappedParentFields = processSuperTypeMapping(superMappings, srcObj, destObj, mapId);
+                mappedParentFields = processSuperTypeMapping(superMappings, srcObj, destObj, mapId, overridedFieldMappings);
             }
         }
 
@@ -256,6 +257,19 @@ public class MappingProcessor implements Mapper {
             }
             mapField(fieldMapping, srcObj, destObj);
         }
+    }
+
+    private List<String> getFieldMapKeys(Object destObj, List<FieldMap> fieldMaps) {
+        List<String> keys = new ArrayList<String>();
+        
+        for (FieldMap fieldMap : fieldMaps) {
+            String key = MappingUtils.getMappedParentFieldKey(destObj, fieldMap);
+            if (!keys.contains(key)) {
+                keys.add(key);
+            }
+        }
+        
+        return keys;
     }
 
     private void mapField(FieldMap fieldMapping, Object srcObj, Object destObj) {
@@ -1157,17 +1171,55 @@ public class MappingProcessor implements Mapper {
         }
     }
 
+    /**
+     * Maps classes using mappings of super classes.
+     * 
+     * @param superClasses mappings of super classes
+     * @param srcObj source
+     * @param destObj destination
+     * @param mapId map id
+     * @param overriddenFieldMappings overridden field mappings
+     * @return list of mapped field keys
+     */
     private List<String> processSuperTypeMapping(Collection<ClassMap> superClasses, Object srcObj, Object destObj,
-        String mapId) {
+        String mapId, List<String> overriddenFieldMappings) {
         List<String> mappedFields = new ArrayList<String>();
+
         for (ClassMap map : superClasses) {
-            map(map, srcObj, destObj, true, mapId);
-            for (FieldMap fieldMapping : map.getFieldMaps()) {
+            // create copy of super class map which will be modified farther
+            ClassMap copy = map.copyOf();
+            // remove from field mappings list entries that overridden by child class
+            removeOverriddenFieldMappings(copy, overriddenFieldMappings, destObj);
+            // map classes using field mappings for super classes
+            map(copy, srcObj, destObj, true, mapId);
+            for (FieldMap fieldMapping : copy.getFieldMaps()) {
+                // remember mapped fields
                 String key = MappingUtils.getMappedParentFieldKey(destObj, fieldMapping);
                 mappedFields.add(key);
             }
         }
+        
         return mappedFields;
+    }
+
+    /**
+     * Removes field maps from class map what are overridden.
+     * 
+     * @param copy copy of class map
+     * @param overriddenFieldMappings keys of overridden field mappings
+     * @param destObj destination object
+     */
+    private void removeOverriddenFieldMappings(ClassMap copy, List<String> overriddenFieldMappings, Object destObj) {
+        List<FieldMap> result = new ArrayList<FieldMap>();
+        
+        for(FieldMap fieldMap : copy.getFieldMaps()) {
+            String key = MappingUtils.getMappedParentFieldKey(destObj, fieldMap);
+            if (!overriddenFieldMappings.contains(key)) {
+                result.add(fieldMap);
+            }
+        }
+        
+        copy.setFieldMaps(result);
     }
 
     private static Object getExistingValue(FieldMap fieldMap, Object destObj, Class<?> destFieldType) {

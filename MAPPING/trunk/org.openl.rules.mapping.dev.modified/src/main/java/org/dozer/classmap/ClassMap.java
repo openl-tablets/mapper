@@ -341,4 +341,25 @@ public class ClassMap {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("source class", getSrcClassName())
             .append("destination class", getDestClassName()).append("map-id", mapId).toString();
     }
+    
+    public ClassMap copyOf() {
+        ClassMap copy = new ClassMap(this.globalConfiguration);
+        copy.setSrcClass(srcClass);
+        copy.setDestClass(destClass);
+        copy.setFieldMaps(new ArrayList<FieldMap>(fieldMaps));
+        copy.setAllowedExceptions(new ArrayList<Class<RuntimeException>>(allowedExceptions));
+        copy.setType(type);
+        copy.setDateFormat(dateFormat);
+        copy.setBeanFactory(beanFactory);
+        copy.setMapNull(mapNull);
+        copy.setMapEmptyString(mapEmptyString);
+        copy.setWildcard(wildcard);
+        copy.setStopOnErrors(stopOnErrors);
+        copy.setTrimStrings(trimStrings);
+        copy.setCustomConverters(customConverters);
+        copy.setMapId(mapId);
+        copy.setRelationshipType(relationshipType);
+
+        return copy;
+    }
 }

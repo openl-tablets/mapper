@@ -1,6 +1,7 @@
 package org.openl.rules.mapping.to;
 
 public class E {
+    private String aString;
     private D d;
 
     public D getD() {
@@ -9,6 +10,14 @@ public class E {
 
     public void setD(D d) {
         this.d = d;
+    }
+
+    public String getAString() {
+        return aString;
+    }
+
+    public void setAString(String string) {
+        aString = string;
     }
 
 }
