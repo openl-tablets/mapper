@@ -1,6 +1,6 @@
 package org.openl.rules.mapping;
 
-public class MappingConstants {
+public final class MappingConstants {
 
     private MappingConstants() {
     }

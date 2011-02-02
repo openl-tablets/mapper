@@ -108,13 +108,10 @@ public abstract class FieldMap implements Cloneable {
     }
 
     public Class<?> getDestFieldType(Class<?> runtimeDestClass) {
-        Class<?> result = null;
-        if (result == null) {
-            result = getDestPropertyDescriptor(runtimeDestClass).getPropertyType();
-        }
+        Class<?> result = getDestPropertyDescriptor(runtimeDestClass).getPropertyType();
+
         if (isDestFieldIndexed()) {
             HintContainer hintContainer = destField.getHintContainer();
-            // result = hintContainer != null ? hintContainer.getHint() : null;
 
             if (hintContainer != null) {
                 result = hintContainer.getHint();
@@ -126,6 +123,7 @@ public abstract class FieldMap implements Cloneable {
                 result = Object.class;
             }
         }
+
         return result;
     }
 

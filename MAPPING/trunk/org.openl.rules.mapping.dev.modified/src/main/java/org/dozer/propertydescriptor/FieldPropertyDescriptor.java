@@ -34,7 +34,7 @@ import java.lang.reflect.Type;
  * @author tierney.matt
  * @author dmitry.buzdin
  */
-public class FieldPropertyDescriptor extends AbstractPropertyDescriptor implements DozerPropertyDescriptor {
+public class FieldPropertyDescriptor extends AbstractPropertyDescriptor {
 
     private final DozerPropertyDescriptor[] descriptorChain;
 

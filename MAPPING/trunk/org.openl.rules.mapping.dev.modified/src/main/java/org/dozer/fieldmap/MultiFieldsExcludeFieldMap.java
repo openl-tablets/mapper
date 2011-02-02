@@ -202,12 +202,6 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
     }
 
     @Override
-    public String getSrcFieldName() {
-        // TODO Auto-generated method stub
-        return super.getSrcFieldName();
-    }
-
-    @Override
     public String getSrcFieldTheGetMethod() {
         throw new UnsupportedOperationException();
     }

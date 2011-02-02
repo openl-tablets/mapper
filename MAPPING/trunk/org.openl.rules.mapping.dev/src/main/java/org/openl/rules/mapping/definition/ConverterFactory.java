@@ -9,7 +9,10 @@ import org.apache.commons.lang.reflect.MethodUtils;
 import org.dozer.CustomConverter;
 import org.openl.rules.mapping.RulesMappingException;
 
-public class ConverterFactory {
+public final class ConverterFactory {
+
+    private ConverterFactory() {
+    }
 
     /**
      * Creates custom converter object using conversion method name and object
@@ -47,37 +50,54 @@ public class ConverterFactory {
             Class<?>[] interfaces = new Class[] { CustomConverter.class };
             ClassLoader classLoader = ConverterFactory.class.getClassLoader();
 
-            return (CustomConverter) Proxy.newProxyInstance(classLoader, interfaces, new InvocationHandler() {
-
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
-                    // Parameters list of CustomConverter.convert method :
-                    // 1) Object existingDestinationFieldValue,
-                    // 2) Object sourceFieldValue,
-                    // 3) Class<?> destinationClass,
-                    // 4) Class<?> sourceClass);
-                    //
-                    Class<?> destClass = (Class<?>) args[2];
-                    Class<?> srcClass = (Class<?>) args[3];
-                    Class<?>[] parameterTypes = new Class<?>[] { srcClass, destClass };
-
-                    Method convertMethod = MethodUtils.getMatchingAccessibleMethod(instanceClass, convertMethodName,
-                        parameterTypes);
-                    
-                    if (convertMethod == null) {
-                        throw new RulesMappingException(String.format("Cannot find convert method: \"%s(%s, %s)\"",
-                            convertMethodName, srcClass.getName(), destClass.getName()));
-                    }
-
-                    Object destValue = args[0];
-                    Object srcValue = args[1];
-                    Object[] parameterValues = new Object[] { srcValue, destValue };
-
-                    return convertMethod.invoke(instance, parameterValues);
-                }
-            });
+            return (CustomConverter) Proxy.newProxyInstance(classLoader, interfaces,
+                new CustomConverterInvocationHandler(convertMethodName, instanceClass, instance));
         }
 
         return null;
     }
+
+    /**
+     * Intended to internal use only. The invocation handler implementation
+     * which used to create proxy object for appropriate convert method.
+     */
+    private static class CustomConverterInvocationHandler implements InvocationHandler {
+        private final Class<?> instanceClass;
+        private final Object instance;
+        private final String convertMethodName;
+
+        private CustomConverterInvocationHandler(String convertMethodName, Class<?> instanceClass, Object instance) {
+            this.instanceClass = instanceClass;
+            this.instance = instance;
+            this.convertMethodName = convertMethodName;
+        }
+
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+            // Parameters list of CustomConverter.convert method :
+            // 1) Object existingDestinationFieldValue,
+            // 2) Object sourceFieldValue,
+            // 3) Class<?> destinationClass,
+            // 4) Class<?> sourceClass);
+            //
+            Class<?> destClass = (Class<?>) args[2];
+            Class<?> srcClass = (Class<?>) args[3];
+            Class<?>[] parameterTypes = new Class<?>[] { srcClass, destClass };
+
+            Method convertMethod = MethodUtils.getMatchingAccessibleMethod(instanceClass, convertMethodName,
+                parameterTypes);
+
+            if (convertMethod == null) {
+                throw new RulesMappingException(String.format("Cannot find convert method: \"%s(%s, %s)\"",
+                    convertMethodName, srcClass.getName(), destClass.getName()));
+            }
+
+            Object destValue = args[0];
+            Object srcValue = args[1];
+            Object[] parameterValues = new Object[] { srcValue, destValue };
+
+            return convertMethod.invoke(instance, parameterValues);
+        }
+    }
+
 }

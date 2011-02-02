@@ -29,7 +29,7 @@ import org.dozer.util.MappingUtils;
  * 
  * @author garsombke.franz
  */
-public class PropertyDescriptorFactory {
+public final class PropertyDescriptorFactory {
 
     private PropertyDescriptorFactory() {
     }

@@ -208,9 +208,10 @@ public class RulesMappingsLoader {
 
         if (existedHint.length != size) {
             Class<?>[][] newHint = new Class<?>[size][];
-            for (int i = 0; i < existedHint.length; i++) {
-                newHint[i] = existedHint[i];
-            }
+            System.arraycopy(existedHint, 0, newHint, 0, existedHint.length);
+//            for (int i = 0; i < existedHint.length; i++) {
+//                newHint[i] = existedHint[i];
+//            }
 
             return newHint;
         }

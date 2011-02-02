@@ -232,18 +232,7 @@ public class MappingProcessor implements Mapper {
         // first.
         List<String> mappedParentFields = null;
         if (!bypassSuperMappings) {
-            Collection<ClassMap> superMappings = new ArrayList<ClassMap>();
-
-            Collection<ClassMap> superClasses = checkForSuperTypeMapping(srcClass, destClass);
-            // List<ClassMap> interfaceMappings =
-            // classMappings.findInterfaceMappings(srcClass, destClass);
-
-            superMappings.addAll(superClasses);
-            // superMappings.addAll(interfaceMappings);
-            List<String> overridedFieldMappings = getFieldMapKeys(destObj, classMap.getFieldMaps()); 
-            if (!superMappings.isEmpty()) {
-                mappedParentFields = processSuperTypeMapping(superMappings, srcObj, destObj, mapId, overridedFieldMappings);
-            }
+            mappedParentFields = mapParentFields(classMap, srcObj, destObj, mapId);
         }
 
         // Perform mappings for each field. Iterate through Fields Maps for this
@@ -257,6 +246,21 @@ public class MappingProcessor implements Mapper {
             }
             mapField(fieldMapping, srcObj, destObj);
         }
+    }
+
+    private List<String> mapParentFields(ClassMap classMap, Object srcObj, Object destObj, String mapId) {
+        Collection<ClassMap> superMappings = new ArrayList<ClassMap>();
+        List<String> mappedParentFields = new ArrayList<String>();
+        Collection<ClassMap> superClasses = checkForSuperTypeMapping(srcObj.getClass(), destObj.getClass());
+        superMappings.addAll(superClasses);
+
+        List<String> overridedFieldMappings = getFieldMapKeys(destObj, classMap.getFieldMaps()); 
+        
+        if (!superMappings.isEmpty()) {
+            mappedParentFields = processSuperTypeMapping(superMappings, srcObj, destObj, mapId, overridedFieldMappings);
+        }
+        
+        return mappedParentFields;
     }
 
     private List<String> getFieldMapKeys(Object destObj, List<FieldMap> fieldMaps) {
@@ -1183,7 +1187,7 @@ public class MappingProcessor implements Mapper {
      */
     private List<String> processSuperTypeMapping(Collection<ClassMap> superClasses, Object srcObj, Object destObj,
         String mapId, List<String> overriddenFieldMappings) {
-        List<String> mappedFields = new ArrayList<String>();
+        List<String> mappedFieldKeys = new ArrayList<String>();
 
         for (ClassMap map : superClasses) {
             // create copy of super class map which will be modified farther
@@ -1195,11 +1199,11 @@ public class MappingProcessor implements Mapper {
             for (FieldMap fieldMapping : copy.getFieldMaps()) {
                 // remember mapped fields
                 String key = MappingUtils.getMappedParentFieldKey(destObj, fieldMapping);
-                mappedFields.add(key);
+                mappedFieldKeys.add(key);
             }
         }
         
-        return mappedFields;
+        return mappedFieldKeys;
     }
 
     /**

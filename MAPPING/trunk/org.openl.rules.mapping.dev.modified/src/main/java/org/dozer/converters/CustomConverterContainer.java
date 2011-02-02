@@ -39,7 +39,7 @@ public class CustomConverterContainer {
 
     public void setConverters(List<CustomConverterDescription> converters) {
         if (converters == null) {
-            throw new NullPointerException("Converters can not be null!");
+            throw new IllegalArgumentException("Converters can not be null!");
         }
         this.converters = converters;
     }
@@ -57,8 +57,7 @@ public class CustomConverterContainer {
         final Class<?> src = ClassUtils.primitiveToWrapper(srcClass);
         final Class<?> dest = ClassUtils.primitiveToWrapper(destClass);
 
-        CustomConverterDescription appropriateConverter = findConverter(src, dest);
-        return appropriateConverter;
+        return findConverter(src, dest);
     }
 
     private CustomConverterDescription findConverter(Class<?> src, Class<?> dest) {

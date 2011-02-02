@@ -9,7 +9,7 @@ import org.openl.syntax.exception.SyntaxNodeException;
 /**
  * The factory class which provides methods to create mapper instance.
  */
-public class RulesBeanMapperFactory {
+public final class RulesBeanMapperFactory {
 
     private RulesBeanMapperFactory() {
     }

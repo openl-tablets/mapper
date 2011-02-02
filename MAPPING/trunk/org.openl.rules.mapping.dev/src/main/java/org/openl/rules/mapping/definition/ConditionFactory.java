@@ -10,7 +10,10 @@ import org.dozer.CustomConverter;
 import org.dozer.fieldmap.FieldMappingCondition;
 import org.openl.rules.mapping.RulesMappingException;
 
-public class ConditionFactory {
+public final class ConditionFactory {
+
+    private ConditionFactory() {
+    }
 
     /**
      * Creates condition object using condition name and object info where it is
@@ -48,35 +51,54 @@ public class ConditionFactory {
             Class<?>[] interfaces = new Class[] { FieldMappingCondition.class };
             ClassLoader classLoader = ConditionFactory.class.getClassLoader();
 
-            return (FieldMappingCondition) Proxy.newProxyInstance(classLoader, interfaces, new InvocationHandler() {
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-
-                    // Parameters list of FieldMappingCondition.mapField method :
-                    // 1) Object sourceFieldValue,
-                    // 2) Object destFieldValue,
-                    // 3) Class<?> sourceType,
-                    // 4) Class<?> destType)
-                    //
-                    Class<?> srcClass = (Class<?>) args[2];
-                    Class<?> destClass = (Class<?>) args[3];
-                    Class<?>[] parameterTypes = new Class<?>[] { srcClass, destClass };
-
-                    Method conditionMethod = MethodUtils.getMatchingAccessibleMethod(instanceClass, condition, parameterTypes);
-
-                    if (conditionMethod == null) {
-                        throw new RulesMappingException(String.format("Cannot find condition method: \"%s(%s, %s)\"",
-                            conditionMethod, srcClass.getName(), destClass.getName()));
-                    }
-
-                    Object srcValue = args[0];
-                    Object destValue = args[1];
-                    Object[] parameterValues = new Object[] { srcValue, destValue };
-
-                    return conditionMethod.invoke(instance, parameterValues);
-                }
-            });
+            return (FieldMappingCondition) Proxy.newProxyInstance(classLoader, interfaces,
+                new ConditionInvocationHander(condition, instanceClass, instance));
         }
 
         return null;
     }
+    
+    /**
+     * Intended to internal use only. The invocation handler implementation
+     * which used to create proxy object for appropriate condition method.
+     */
+    private static class ConditionInvocationHander implements InvocationHandler {
+        
+        private String condition;
+        private Class<?> instanceClass;
+        private Object instance;
+        
+        public ConditionInvocationHander(String condition, Class<?> instanceClass, Object instance) {
+            this.condition = condition;
+            this.instanceClass = instanceClass;
+            this.instance = instance;
+        }
+
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+            // Parameters list of FieldMappingCondition.mapField method :
+            // 1) Object sourceFieldValue,
+            // 2) Object destFieldValue,
+            // 3) Class<?> sourceType,
+            // 4) Class<?> destType)
+            //
+            Class<?> srcClass = (Class<?>) args[2];
+            Class<?> destClass = (Class<?>) args[3];
+            Class<?>[] parameterTypes = new Class<?>[] { srcClass, destClass };
+
+            Method conditionMethod = MethodUtils.getMatchingAccessibleMethod(instanceClass, condition, parameterTypes);
+
+            if (conditionMethod == null) {
+                throw new RulesMappingException(String.format("Cannot find condition method: \"%s(%s, %s)\"",
+                    condition, srcClass.getName(), destClass.getName()));
+            }
+
+            Object srcValue = args[0];
+            Object destValue = args[1];
+            Object[] parameterValues = new Object[] { srcValue, destValue };
+
+            return conditionMethod.invoke(instance, parameterValues);
+        }
+    }
+    
 }

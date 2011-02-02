@@ -4,7 +4,7 @@ import org.dozer.CustomConverter;
 import org.dozer.classmap.RelationshipType;
 
 public class MappingOptions {
-
+    
     public static ConfigurationMappingOption defaultStopOnErrors(final Boolean value) {
         return ConfigurationMappingOptions.stopOnErrors(value);
     }

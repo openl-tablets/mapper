@@ -491,11 +491,11 @@ public class DozerBuilder {
             return null;
         }
 
-        return fieldName.substring(0, fieldName.lastIndexOf("["));
+        return fieldName.substring(0, fieldName.lastIndexOf('['));
     }
 
     private static String getIndexOfIndexedField(String fieldName) {
-        return fieldName.substring(fieldName.lastIndexOf("[") + 1, fieldName.lastIndexOf("]"));
+        return fieldName.substring(fieldName.lastIndexOf('[') + 1, fieldName.lastIndexOf(']'));
 //        return fieldName.replaceAll(".*\\[", "").replaceAll("\\]", "");
     }
 

@@ -101,15 +101,15 @@ public final class ReflectionUtils {
         Class<?> latestClass = parentClass;
         DeepHierarchyElement[] hierarchy = new DeepHierarchyElement[toks.countTokens()];
         int index = 0;
-//        int hintIndex = 0;
+
         while (toks.hasMoreTokens()) {
             String aFieldName = toks.nextToken();
             String theFieldName = aFieldName;
             String indexExpression = null;
 
             if (aFieldName.contains("[")) {
-                theFieldName = aFieldName.substring(0, aFieldName.indexOf("["));
-                indexExpression = aFieldName.substring(aFieldName.indexOf("[") + 1, aFieldName.indexOf("]"));
+                theFieldName = aFieldName.substring(0, aFieldName.indexOf('['));
+                indexExpression = aFieldName.substring(aFieldName.indexOf('[') + 1, aFieldName.indexOf(']'));
             }
 
             PropertyDescriptor propDescriptor = findPropertyDescriptor(latestClass, theFieldName, deepIndexHintContainer);

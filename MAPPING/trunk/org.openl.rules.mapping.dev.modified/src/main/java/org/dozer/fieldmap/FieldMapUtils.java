@@ -8,7 +8,7 @@ import org.dozer.classmap.ClassMap;
 import org.dozer.util.MappingUtils;
 import org.dozer.util.ReflectionUtils;
 
-public class FieldMapUtils {
+public final class FieldMapUtils {
 
     private FieldMapUtils() {
     }

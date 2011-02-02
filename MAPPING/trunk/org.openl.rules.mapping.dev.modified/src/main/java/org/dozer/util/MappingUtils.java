@@ -244,6 +244,8 @@ public final class MappingUtils {
             return null;
         }
 
+        Class<?> destType = destClass;
+        
         // This method is messy. Just trying to isolate the junk into this one
         // method instead of spread across the mapping
         // processor until a better solution can be put into place
@@ -251,16 +253,16 @@ public final class MappingUtils {
         // determine the custom converter.
         if (fieldMap != null && fieldMap.isDestFieldIndexed()) {
             if (destClass.isArray()) {
-                destClass = destClass.getComponentType();
+                destType = destClass.getComponentType();
             } else if (destClass.isAssignableFrom(Collection.class) && fieldMap.getDestHintContainer() != null && !fieldMap
                 .getDestHintContainer().hasMoreThanOneHint()) {
                 // use hint when trying to find a custom converter
-                destClass = fieldMap.getDestHintContainer().getHint();
+                destType = fieldMap.getDestHintContainer().getHint();
             }
         }
 
         return findCustomConverter(converterByDestTypeCache, customConverterObjects, customConverterContainer,
-            srcClass, destClass);
+            srcClass, destType);
     }
 
     public static void reverseFields(FieldMap source, FieldMap reversed) {

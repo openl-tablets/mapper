@@ -80,8 +80,8 @@ public class HintContainer {
 
     // TODO: Refactor/Relocate. This method doesn't seem to belong in this class
     public Class<?> getHint(Class<?> clazz, List<Class<?>> clazzHints) {
-        List<Class<?>> hints = getHints();
-        int hintsSize = hints.size();
+        List<Class<?>> hintTypes = getHints();
+        int hintsSize = hintTypes.size();
         if (hintsSize == 1) {
             return getHint();
         }
@@ -96,7 +96,7 @@ public class HintContainer {
         for (int i = 0; i < size; i++) {
             Class<?> element = clazzHints.get(i);
             if (element.getName().equals(myClazName)) {
-                return hints.get(count);
+                return hintTypes.get(count);
             }
             count++;
         }

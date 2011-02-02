@@ -51,18 +51,16 @@ public class DozerMappingBuilder {
         // Register all mapping conditions and custom converters 
         //
         for (FieldsMapping fieldsMapping : fieldsMappings) {
-            if (fieldsMapping.getCondition() != null) {
-                if (!mappingsContainer.getConditions().containsKey(fieldsMapping.getCondition().getConditionId())) {
-                    mappingsContainer.getConditions().put(fieldsMapping.getCondition().getConditionId(),
-                        fieldsMapping.getCondition().getFieldMappingCondition());
-                }
+            if (fieldsMapping.getCondition() != null && !mappingsContainer.getConditions().containsKey(
+                fieldsMapping.getCondition().getConditionId())) {
+                mappingsContainer.getConditions().put(fieldsMapping.getCondition().getConditionId(),
+                    fieldsMapping.getCondition().getFieldMappingCondition());
             }
             
-            if (fieldsMapping.getConverter() != null) {
-                if (!mappingsContainer.getConverters().containsKey(fieldsMapping.getConverter().getConverterId())) {
-                    mappingsContainer.getConverters().put(fieldsMapping.getConverter().getConverterId(),
-                        fieldsMapping.getConverter().getInstance());
-                }
+            if (fieldsMapping.getConverter() != null && !mappingsContainer.getConverters().containsKey(
+                fieldsMapping.getConverter().getConverterId())) {
+                mappingsContainer.getConverters().put(fieldsMapping.getConverter().getConverterId(),
+                    fieldsMapping.getConverter().getInstance());
             }
         }
 
@@ -170,7 +168,7 @@ public class DozerMappingBuilder {
      * Intended for internal usage. Holds information about a single field map
      * and used as an intermediate container during mapping models conversion.
      */
-    private class FieldsMapping {
+    private static class FieldsMapping {
 
         private FieldDefinition[] src;
         private FieldDefinition dest;

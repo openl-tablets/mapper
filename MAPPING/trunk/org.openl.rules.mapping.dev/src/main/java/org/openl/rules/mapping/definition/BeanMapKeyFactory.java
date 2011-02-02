@@ -1,6 +1,9 @@
 package org.openl.rules.mapping.definition;
 
-public class BeanMapKeyFactory {
+public final class BeanMapKeyFactory {
+
+    private BeanMapKeyFactory() {
+    }
 
     /**
      * Creates string key using classes information.

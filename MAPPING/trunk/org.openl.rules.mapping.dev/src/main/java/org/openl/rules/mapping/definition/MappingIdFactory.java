@@ -3,7 +3,10 @@ package org.openl.rules.mapping.definition;
 import org.apache.commons.lang.StringUtils;
 import org.openl.rules.mapping.Mapping;
 
-public class MappingIdFactory {
+public final class MappingIdFactory {
+
+    private MappingIdFactory() {
+    }
 
     /**
      * Creates string key using mapping object info.

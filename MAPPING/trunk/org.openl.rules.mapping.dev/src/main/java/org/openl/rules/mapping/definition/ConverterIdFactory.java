@@ -2,7 +2,10 @@ package org.openl.rules.mapping.definition;
 
 import org.openl.rules.mapping.Converter;
 
-public class ConverterIdFactory {
+public final class ConverterIdFactory {
+
+    private ConverterIdFactory() {
+    }
 
     public static String createConverterId(Converter converter) {
         StringBuilder result = new StringBuilder();
