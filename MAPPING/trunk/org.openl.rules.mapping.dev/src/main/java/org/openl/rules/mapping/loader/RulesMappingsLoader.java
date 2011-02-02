@@ -31,6 +31,9 @@ public class RulesMappingsLoader {
     private Class<?> instanceClass;
     private Object instance;
 
+    /**
+     * Internal cache of default converters.
+     */
     private Map<String, ConverterDescriptor> customConvertersMap = new HashMap<String, ConverterDescriptor>();
 
     public RulesMappingsLoader(Class<?> instanceClass, Object instance) {
@@ -390,6 +393,7 @@ public class RulesMappingsLoader {
         fieldMapping.setDestType(mapping.getFieldBType());
 
         if (!StringUtils.isBlank(mapping.getConvertMethodAB())) {
+            // create converter descriptor for current field mapping.
             String converterId = MappingIdFactory.createMappingId(mapping);
             ConverterDescriptor converterDescriptor = createConverterDescriptor(converterId, mapping
                 .getConvertMethodAB(), mapping.getClassA(), mapping.getClassB());
@@ -407,17 +411,17 @@ public class RulesMappingsLoader {
 
     private ConverterDescriptor createConverterDescriptor(String converterId, String convertMethod, Class<?> srcType,
         Class<?> destType) {
-// TODO: add custom converters cache to decrease proxy objects usage
-//        
-//        if (customConvertersMap.containsKey(converterId)) {
-//            return customConvertersMap.get(converterId);
-//        }
-
+        // At this moment we don't know real types of fields and cannot cache
+        // converter instances. To reduce count of converters we are using
+        // proxies objects which invokes appropriate convert method at runtime
         CustomConverter converter = ConverterFactory.createConverter(convertMethod, instanceClass, instance);
         return new ConverterDescriptor(converterId, converter, srcType, destType);
     }
 
     private ConditionDescriptor createConditionDescriptor(String conditionId, String conditionMethod) {
+        // At this moment we don't know real types of fields and cannot cache
+        // condition instances. To reduce count of condition methods we are using
+        // proxies objects which invokes appropriate condition method at runtime
         FieldMappingCondition condition = ConditionFactory.createCondition(conditionMethod, instanceClass, instance);
         return new ConditionDescriptor(conditionId, condition);
     }
