@@ -15,7 +15,7 @@ public class ThreadSafetyTest {
     @Test
     public void threadSafetyTest() {
 
-        int threadsCount = 100;
+        int threadsCount = 5;
         final ExecutionStatus status = new ExecutionStatus();
 
         File source = new File("src/test/resources/org/openl/rules/mapping/thread/ThreadSafetyTest.xlsx");
