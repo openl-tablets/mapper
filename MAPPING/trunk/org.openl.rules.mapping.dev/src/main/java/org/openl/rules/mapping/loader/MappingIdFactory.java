@@ -1,4 +1,4 @@
-package org.openl.rules.mapping.definition;
+package org.openl.rules.mapping.loader;
 
 import org.apache.commons.lang.StringUtils;
 import org.openl.rules.mapping.Mapping;

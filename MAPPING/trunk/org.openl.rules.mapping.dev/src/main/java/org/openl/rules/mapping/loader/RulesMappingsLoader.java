@@ -15,38 +15,50 @@ import org.dozer.CustomConverter;
 import org.dozer.fieldmap.FieldMappingCondition;
 import org.openl.rules.mapping.Converter;
 import org.openl.rules.mapping.Mapping;
-import org.openl.rules.mapping.RulesMappingException;
+import org.openl.rules.mapping.TypeResolver;
 import org.openl.rules.mapping.definition.BeanMap;
-import org.openl.rules.mapping.definition.BeanMapKeyFactory;
 import org.openl.rules.mapping.definition.ConditionDescriptor;
-import org.openl.rules.mapping.definition.ConditionFactory;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
-import org.openl.rules.mapping.definition.ConverterFactory;
-import org.openl.rules.mapping.definition.ConverterIdFactory;
 import org.openl.rules.mapping.definition.FieldMap;
-import org.openl.rules.mapping.definition.MappingIdFactory;
+import org.openl.rules.mapping.exception.RulesMappingException;
 
+/**
+ * Intended for internal use only.
+ * 
+ * Loads mapping declarations and converts them into internal model which used
+ * by mapper.
+ */
 public class RulesMappingsLoader {
 
     private Class<?> instanceClass;
     private Object instance;
+    private TypeResolver typeResolver;
 
     /**
      * Internal cache of default converters.
      */
     private Map<String, ConverterDescriptor> customConvertersMap = new HashMap<String, ConverterDescriptor>();
 
-    public RulesMappingsLoader(Class<?> instanceClass, Object instance) {
+    public RulesMappingsLoader(Class<?> instanceClass, Object instance, TypeResolver typeResolver) {
         this.instanceClass = instanceClass;
         this.instance = instance;
+        this.typeResolver = typeResolver;
     }
 
+    /**
+     * Loads mappings from source.
+     * @return collection of loaded {@link BeanMap} objects
+     */
     public Collection<BeanMap> loadMappings() {
         List<Mapping> mappings = findDeclarations(instanceClass, instance, Mapping.class);
 
         return processMappings(mappings);
     }
 
+    /**
+     * Loads defined default converters from source.
+     * @return collection of loaded {@link ConverterDescriptor} objects
+     */
     public Collection<ConverterDescriptor> loadDefaultConverters() {
         List<Converter> defaultConverters = findDeclarations(instanceClass, instance, Converter.class);
 
@@ -212,9 +224,6 @@ public class RulesMappingsLoader {
         if (existedHint.length != size) {
             Class<?>[][] newHint = new Class<?>[size][];
             System.arraycopy(existedHint, 0, newHint, 0, existedHint.length);
-//            for (int i = 0; i < existedHint.length; i++) {
-//                newHint[i] = existedHint[i];
-//            }
 
             return newHint;
         }
@@ -414,16 +423,58 @@ public class RulesMappingsLoader {
         // At this moment we don't know real types of fields and cannot cache
         // converter instances. To reduce count of converters we are using
         // proxies objects which invokes appropriate convert method at runtime
-        CustomConverter converter = ConverterFactory.createConverter(convertMethod, instanceClass, instance);
+        CustomConverter converter;
+        String typeName = getTypeName(convertMethod);
+        
+        if (typeName != null) {
+            Class<?> convertClass = typeResolver.findClass(typeName);
+            if (convertClass == null) {
+                throw new RulesMappingException(String.format("Type '%s' not found",typeName));
+            }
+            
+            converter = ConverterFactory.createConverter(getMethodName(convertMethod), convertClass, null);
+        } else {
+            converter = ConverterFactory.createConverter(convertMethod, instanceClass, instance);
+        }
+
         return new ConverterDescriptor(converterId, converter, srcType, destType);
     }
 
     private ConditionDescriptor createConditionDescriptor(String conditionId, String conditionMethod) {
         // At this moment we don't know real types of fields and cannot cache
-        // condition instances. To reduce count of condition methods we are using
-        // proxies objects which invokes appropriate condition method at runtime
-        FieldMappingCondition condition = ConditionFactory.createCondition(conditionMethod, instanceClass, instance);
+        // condition instances. To reduce count of condition methods we are
+        // using proxies objects which invokes appropriate condition method at runtime
+        FieldMappingCondition condition;
+        String typeName = getTypeName(conditionMethod);
+        
+        if (typeName != null) {
+            Class<?> conditionClass = typeResolver.findClass(typeName);
+            if (conditionClass == null) {
+                throw new RulesMappingException(String.format("Type '%s' not found", typeName));
+            }
+            
+            condition = ConditionFactory.createCondition(getMethodName(conditionMethod), conditionClass, instance);
+        } else {
+            condition = ConditionFactory.createCondition(conditionMethod, instanceClass, instance);
+        }
+        
         return new ConditionDescriptor(conditionId, condition);
+    }
+
+    private String getMethodName(String methodName) {
+        if (!methodName.contains(".")) {
+            return methodName;
+        }
+
+        return methodName.substring(methodName.lastIndexOf('.') + 1);
+    }
+
+    private String getTypeName(String methodName) {
+        if (!methodName.contains(".")) {
+            return null;
+        }
+
+        return methodName.substring(0, methodName.lastIndexOf('.'));
     }
 
 }

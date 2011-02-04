@@ -1,14 +1,17 @@
-package org.openl.rules.mapping.definition;
+package org.openl.rules.mapping.loader;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.dozer.CustomConverter;
-import org.openl.rules.mapping.RulesMappingException;
+import org.dozer.util.ReflectionUtils;
+import org.openl.rules.mapping.exception.RulesMappingException;
 
+/**
+ * Provides method to create custom converter object.
+ */
 public final class ConverterFactory {
 
     private ConverterFactory() {
@@ -20,7 +23,7 @@ public final class ConverterFactory {
      * 
      * @param convertMethod conversion method name
      * @param instanceClass class object which defines available methods
-     * @param object instance of class which is defined by
+     * @param instance instance of class which is defined by
      *            <code>instanceClass</code> parameter
      * @return {@CustomConverter} instance
      */
@@ -39,7 +42,7 @@ public final class ConverterFactory {
      * 
      * @param convertMethodName convert method name
      * @param instanceClass class object which defines available methods
-     * @param object instance of class which is defined by
+     * @param instance instance of class which is defined by
      *            <code>instanceClass</code> parameter
      * @return {@link CustomConverter} instance
      */
@@ -48,7 +51,7 @@ public final class ConverterFactory {
 
         if (StringUtils.isNotEmpty(convertMethodName)) {
             Class<?>[] interfaces = new Class[] { CustomConverter.class };
-            ClassLoader classLoader = ConverterFactory.class.getClassLoader();
+            ClassLoader classLoader = instanceClass.getClassLoader();
 
             return (CustomConverter) Proxy.newProxyInstance(classLoader, interfaces,
                 new CustomConverterInvocationHandler(convertMethodName, instanceClass, instance));
@@ -61,7 +64,7 @@ public final class ConverterFactory {
      * Intended to internal use only. The invocation handler implementation
      * which used to create proxy object for appropriate convert method.
      */
-    private static class CustomConverterInvocationHandler implements InvocationHandler {
+    private static final class CustomConverterInvocationHandler implements InvocationHandler {
         private final Class<?> instanceClass;
         private final Object instance;
         private final String convertMethodName;
@@ -84,7 +87,10 @@ public final class ConverterFactory {
             Class<?> srcClass = (Class<?>) args[3];
             Class<?>[] parameterTypes = new Class<?>[] { srcClass, destClass };
 
-            Method convertMethod = MethodUtils.getMatchingAccessibleMethod(instanceClass, convertMethodName,
+            // Try to find appropriate method among methods what are provided by
+            // instanceClass.
+            //
+            Method convertMethod = ReflectionUtils.findMatchingAccessibleMethod(instanceClass, convertMethodName,
                 parameterTypes);
 
             if (convertMethod == null) {
@@ -96,7 +102,7 @@ public final class ConverterFactory {
             Object srcValue = args[1];
             Object[] parameterValues = new Object[] { srcValue, destValue };
 
-            return convertMethod.invoke(instance, parameterValues);
+            return ReflectionUtils.invoke(convertMethod, instance, parameterValues);
         }
     }
 

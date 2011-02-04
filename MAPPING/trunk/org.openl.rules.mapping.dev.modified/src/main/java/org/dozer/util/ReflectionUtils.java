@@ -15,9 +15,12 @@
  */
 package org.dozer.util;
 
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dozer.MappingException;
+import org.dozer.config.BeanContainer;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.propertydescriptor.DeepHierarchyElement;
 
@@ -393,6 +396,13 @@ public final class ReflectionUtils {
         return result;
     }
 
+    /**
+     * Checks that given object is not null and is array.
+     * 
+     * @param obj object to check
+     * @return <code>true</code> if given is not null and is array;
+     *         <code>false</code> - otherwise
+     */
     public static boolean isArray(Object obj) {
         return obj != null && obj.getClass().isArray();
     }
@@ -406,4 +416,29 @@ public final class ReflectionUtils {
         return StringUtils.join(typeNames, ",");
     }
 
+    /**
+     * Find an accessible method that matches the given name and has compatible
+     * parameters. Compatible parameters mean that every method parameter is
+     * assignable from the given parameters. In other words, it finds a method
+     * with the given name that will take the parameters given.
+     * 
+     * @param clazz find method in this class
+     * @param methodName find method with this name
+     * @param paramTypes find method with most compatible parameters
+     * @return {@link Method} object if matching method is found;
+     *         <code>null</code> - otherwise
+     */
+    public static Method findMatchingAccessibleMethod(Class<?> clazz, String methodName, Class<?>[] paramTypes) {
+        return MethodUtils.getMatchingAccessibleMethod(clazz, methodName, paramTypes);
+    }
+    
+    public static Class<?> loadClass(ClassLoader classLoader, String className) {
+        try {
+            return ClassUtils.getClass(classLoader, className);
+        } catch (ClassNotFoundException e) {
+            MappingUtils.throwMappingException(e);
+        }
+
+        return null;
+    }
 }

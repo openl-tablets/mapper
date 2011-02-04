@@ -150,7 +150,8 @@ public final class MappingUtils {
     }
 
     public static String getMappedParentFieldKey(Object destObj, FieldMap destFieldMap) {
-        StringBuilder buf = new StringBuilder(100); // TODO Use IdentityHashMap
+        StringBuilder buf = new StringBuilder(100); 
+        // TODO Use IdentityHashMap
         // instead of String
         // concatenation
         buf.append(System.identityHashCode(destObj));
@@ -352,7 +353,14 @@ public final class MappingUtils {
         return className.contains(DozerConstants.CGLIB_ID) || className.startsWith(DozerConstants.JAVASSIST_PACKAGE) || className
             .contains(DozerConstants.JAVASSIST_NAME);
     }
-    
+
+    /**
+     * Gets value of object using xpath expression.
+     * 
+     * @param object source object
+     * @param index xpath expression
+     * @return obtained value
+     */
     public static Object getXPathIndexedValue(Object object, String index) {
         JXPathContext context = JXPathContext.newContext(object);
         context.setLenient(true);
@@ -400,6 +408,13 @@ public final class MappingUtils {
         return result;
     }
 
+    /**
+     * Checks that input string is integer value.
+     * 
+     * @param index string value
+     * @return <code>true</code> if input string is integer value;
+     *         <code>false</code> - otherwise
+     */
     public static boolean isSimpleCollectionIndex(String index) {
         try {
             Integer.parseInt(index);
@@ -591,5 +606,5 @@ public final class MappingUtils {
     private static boolean isBaseClass(Class<?> clazz) {
         return clazz == null || BASE_CLASS.equals(clazz.getName());
     }
-
+    
 }

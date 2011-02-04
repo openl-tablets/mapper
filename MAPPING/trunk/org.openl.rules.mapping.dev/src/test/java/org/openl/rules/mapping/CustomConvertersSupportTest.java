@@ -134,4 +134,39 @@ public class CustomConvertersSupportTest {
         assertEquals(Integer.valueOf(100), c.getB().getAnInteger());
     }
 
+    @Test
+    public void externalCustomConverterTest() {
+        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/ExternalStaticMethodCustomConverterTest.xlsx");
+        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
+        
+        Calendar currentDate = Calendar.getInstance();
+        purchaseOrder.setDate(currentDate);
+        
+        Customer customer = purchaseOrder.addNewCustomer();
+        customer.setName("customer name");
+        customer.setAddress("customer address");
+        customer.setAge(21);
+        
+        LineItem item1 = purchaseOrder.addNewLineItem();
+        item1.setDescription("line1");
+        item1.setPrice(BigDecimal.valueOf(10.5));
+
+        LineItem item2 = purchaseOrder.addNewLineItem();
+        item2.setDescription("single");
+        item2.setPrice(BigDecimal.valueOf(5.1));
+
+        purchaseOrder.setLineItemArray(new LineItem[]{item1, item2});
+        
+        PurchaseOrderTO result = mapper.map(purchaseOrder, PurchaseOrderTO.class);
+        
+        assertEquals(true, result.isHasSingleLineItem());
+        
+        item2.setDescription("item2");
+        result = mapper.map(purchaseOrder, PurchaseOrderTO.class);
+        
+        assertEquals(false, result.isHasSingleLineItem());
+    }
+
 }

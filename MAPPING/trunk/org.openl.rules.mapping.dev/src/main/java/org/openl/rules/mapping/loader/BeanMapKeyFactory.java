@@ -1,4 +1,4 @@
-package org.openl.rules.mapping.definition;
+package org.openl.rules.mapping.loader;
 
 public final class BeanMapKeyFactory {
 

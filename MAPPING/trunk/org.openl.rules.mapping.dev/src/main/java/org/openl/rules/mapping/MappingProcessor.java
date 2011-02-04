@@ -6,6 +6,7 @@ import org.dozer.DozerBeanMapper;
 import org.dozer.MappingException;
 import org.openl.rules.mapping.definition.BeanMap;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
+import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.loader.RulesMappingsLoader;
 import org.openl.rules.mapping.loader.dozer.DozerBuilder;
 
@@ -28,8 +29,8 @@ class MappingProcessor {
      * @param instanceClass class definition
      * @param instance instance object
      */
-    public MappingProcessor(Class<?> instanceClass, Object instance) {
-        this.mappingsLoader = new RulesMappingsLoader(instanceClass, instance);
+    public MappingProcessor(Class<?> instanceClass, Object instance, TypeResolver typeResolver) {
+        this.mappingsLoader = new RulesMappingsLoader(instanceClass, instance, typeResolver);
 
         init();
     }

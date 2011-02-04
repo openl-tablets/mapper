@@ -9,7 +9,7 @@ import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.B;
 import org.openl.rules.mapping.to.C;
 
-public class MapEmptyStrings {
+public class MapEmptyStringsTest {
     @Test
     public void mapEmptyStringValueTest() {
 

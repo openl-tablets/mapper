@@ -1,15 +1,18 @@
-package org.openl.rules.mapping.definition;
+package org.openl.rules.mapping.loader;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.dozer.CustomConverter;
 import org.dozer.fieldmap.FieldMappingCondition;
-import org.openl.rules.mapping.RulesMappingException;
+import org.dozer.util.ReflectionUtils;
+import org.openl.rules.mapping.exception.RulesMappingException;
 
+/**
+ * Provides method to create field mapping condition object.
+ */
 public final class ConditionFactory {
 
     private ConditionFactory() {
@@ -21,14 +24,14 @@ public final class ConditionFactory {
      * 
      * @param condition condition name
      * @param instanceClass class object which defines available methods
-     * @param object instance of class which is defined by
+     * @param instance instance of class which is defined by
      *            <code>instanceClass</code> parameter
      * @return {@link FieldMappingCondition} instance
      */
     public static FieldMappingCondition createCondition(String condition, Class<?> instanceClass, Object instance) {
         return createConditionProxy(condition, instanceClass, instance);
     }
-    
+
     /**
      * Creates proxy object for converter instance. The following steps are used
      * to obtain converter instance:
@@ -40,7 +43,7 @@ public final class ConditionFactory {
      * 
      * @param convertMethodName convert method name
      * @param instanceClass class object which defines available methods
-     * @param object instance of class which is defined by
+     * @param instance instance of class which is defined by
      *            <code>instanceClass</code> parameter
      * @return {@link CustomConverter} instance
      */
@@ -49,7 +52,7 @@ public final class ConditionFactory {
 
         if (StringUtils.isNotEmpty(condition)) {
             Class<?>[] interfaces = new Class[] { FieldMappingCondition.class };
-            ClassLoader classLoader = ConditionFactory.class.getClassLoader();
+            ClassLoader classLoader = instanceClass.getClassLoader();
 
             return (FieldMappingCondition) Proxy.newProxyInstance(classLoader, interfaces,
                 new ConditionInvocationHander(condition, instanceClass, instance));
@@ -57,17 +60,17 @@ public final class ConditionFactory {
 
         return null;
     }
-    
+
     /**
      * Intended to internal use only. The invocation handler implementation
      * which used to create proxy object for appropriate condition method.
      */
-    private static class ConditionInvocationHander implements InvocationHandler {
-        
+    private static final class ConditionInvocationHander implements InvocationHandler {
+
         private String condition;
         private Class<?> instanceClass;
         private Object instance;
-        
+
         public ConditionInvocationHander(String condition, Class<?> instanceClass, Object instance) {
             this.condition = condition;
             this.instanceClass = instanceClass;
@@ -86,7 +89,11 @@ public final class ConditionFactory {
             Class<?> destClass = (Class<?>) args[3];
             Class<?>[] parameterTypes = new Class<?>[] { srcClass, destClass };
 
-            Method conditionMethod = MethodUtils.getMatchingAccessibleMethod(instanceClass, condition, parameterTypes);
+            // Try to find appropriate method among methods what are provided by
+            // instanceClass.
+            //
+            Method conditionMethod = ReflectionUtils.findMatchingAccessibleMethod(instanceClass, condition,
+                parameterTypes);
 
             if (conditionMethod == null) {
                 throw new RulesMappingException(String.format("Cannot find condition method: \"%s(%s, %s)\"",
@@ -97,8 +104,8 @@ public final class ConditionFactory {
             Object destValue = args[1];
             Object[] parameterValues = new Object[] { srcValue, destValue };
 
-            return conditionMethod.invoke(instance, parameterValues);
+            return ReflectionUtils.invoke(conditionMethod, instance, parameterValues);
         }
     }
-    
+
 }

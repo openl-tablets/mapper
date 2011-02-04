@@ -1,4 +1,4 @@
-package org.openl.rules.mapping;
+package org.openl.rules.mapping.exception;
 
 /**
  * Class defines base runtime exception which is used by rules mapper.

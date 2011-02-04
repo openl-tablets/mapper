@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 
 import org.junit.Test;
+import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.B;
 
