@@ -38,8 +38,10 @@ public class DozerMappingBuilder {
         // Default implementation uses one way mapping.
         //
         final TypeMappingOptionsBuilder typeOptionsBuilder = new TypeMappingOptionsBuilder();
+        // The bean map level options.
         typeOptionsBuilder.oneWay();
-        typeOptionsBuilder.wildcard(false);
+        typeOptionsBuilder.wildcard(beanMapping.getConfiguration().isWildcard());
+        typeOptionsBuilder.trimStrings(beanMapping.getConfiguration().isTrimStrings());
 
         // Convert field mappings to Dozer's model. 
         //
@@ -124,6 +126,7 @@ public class DozerMappingBuilder {
         fieldDefBuilder.required(fieldMap.isRequired());
         fieldDefBuilder.defaultValue(fieldMap.getDefaultValue());
         fieldDefBuilder.createMethod(fieldMap.getCreateMethod());
+        fieldDefBuilder.dateFormat(fieldMap.getDateFormat());
 
         if (fieldMap.getDestHint() != null) {
             fieldDefBuilder.deepHint(getHint(fieldMap.getDestHint()));

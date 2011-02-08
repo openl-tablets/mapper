@@ -9,19 +9,30 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class FieldMap {
 
+    private BeanMap beanMap;
     private String[] src;
     private String dest;
     private String createMethod;
     private String defaultValue;
-    private boolean mapNulls;
-    private boolean mapEmptyStrings;
-    private boolean required;
+    private String dateFormat;
+    private Boolean mapNulls;
+    private Boolean mapEmptyStrings;
+    // private Boolean trimStrings;
+    private Boolean required;
     private Class<?>[][] srcHint;
     private Class<?>[] destHint;
     private Class<?>[] srcType;
     private Class<?> destType;
     private ConverterDescriptor converter;
     private ConditionDescriptor condition;
+
+    public BeanMap getBeanMap() {
+        return beanMap;
+    }
+
+    public void setBeanMap(BeanMap beanMap) {
+        this.beanMap = beanMap;
+    }
 
     public String[] getSrc() {
         return src;
@@ -47,6 +58,14 @@ public class FieldMap {
         this.createMethod = createMethod;
     }
 
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
+
     public String getDefaultValue() {
         return defaultValue;
     }
@@ -56,26 +75,51 @@ public class FieldMap {
     }
 
     public boolean isMapNulls() {
-        return mapNulls;
+        if (mapNulls != null) {
+            return mapNulls;
+        }
+
+        return beanMap.getConfiguration().isMapNulls();
     }
 
-    public void setMapNulls(boolean mapNulls) {
+    public void setMapNulls(Boolean mapNulls) {
         this.mapNulls = mapNulls;
     }
 
     public boolean isMapEmptyStrings() {
-        return mapEmptyStrings;
+        if (mapEmptyStrings != null) {
+            return mapEmptyStrings;
+        }
+
+        return beanMap.getConfiguration().isMapEmptyStrings();
+
     }
 
-    public void setMapEmptyStrings(boolean mapEmptyStrings) {
+    public void setMapEmptyStrings(Boolean mapEmptyStrings) {
         this.mapEmptyStrings = mapEmptyStrings;
     }
 
+    // public Boolean isTrimStrings() {
+    // if (trimStrings != null) {
+    // return trimStrings;
+    // }
+    //
+    // return beanMap.getConfiguration().isTrimStrings();
+    // }
+    //
+    // public void setTrimStrings(Boolean trimStrings) {
+    // this.trimStrings = trimStrings;
+    // }
+
     public boolean isRequired() {
-        return required;
+        if (required != null) {
+            return required;
+        }
+
+        return beanMap.getConfiguration().isRequiredFields();
     }
 
-    public void setRequired(boolean required) {
+    public void setRequired(Boolean required) {
         this.required = required;
     }
 
@@ -126,15 +170,14 @@ public class FieldMap {
     public void setDestType(Class<?> destType) {
         this.destType = destType;
     }
-    
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("src", src).append(
-            "dest", dest).append("createMethod", createMethod).append("defaultValue", defaultValue).append(
-            "mapNulls", mapNulls).append("mapEmptyStrings", mapEmptyStrings).append("required", required).append(
-            "srcHint", srcHint).append("destHint", destHint).append(
-            "srcType", srcType).append("destType", destType).append("mapCondition",
-            condition).append("customConverter", converter).toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("src", src).append("dest", dest)
+            .append("createMethod", createMethod).append("defaultValue", defaultValue).append("dateFormat", dateFormat)
+            .append("mapNulls", mapNulls).append("mapEmptyStrings", mapEmptyStrings).append("required", required)
+            .append("srcHint", srcHint).append("destHint", destHint).append("srcType", srcType).append("destType",
+                destType).append("mapCondition", condition).append("customConverter", converter).toString();
     }
-   
+
 }

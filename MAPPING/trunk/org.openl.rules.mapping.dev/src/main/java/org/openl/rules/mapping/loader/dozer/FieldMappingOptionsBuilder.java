@@ -27,7 +27,7 @@ public class FieldMappingOptionsBuilder {
         options.add(MappingOptions.mapEmptyStrings(value));
         return this;
     }
-
+    
     public FieldMappingOptionsBuilder customConverterId(String converterId) {
         options.add(MappingOptions.customConverterId(converterId));
         return this;

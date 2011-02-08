@@ -3,6 +3,7 @@ package org.openl.rules.mapping.loader.dozer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dozer.loader.DozerBuilder;
 import org.dozer.loader.api.MappingOptions;
 import org.dozer.loader.api.TypeMappingOption;
 
@@ -19,6 +20,17 @@ public class TypeMappingOptionsBuilder {
         options.add(MappingOptions.wildcard(value));
         return this;
     }
+
+    public TypeMappingOptionsBuilder trimStrings(boolean value) {
+        options.add(MappingOptions.trimStrings(value));
+        return this;
+    }
+
+    public TypeMappingOptionsBuilder dateFormat(String value) {
+        options.add(MappingOptions.dateFormat(value));
+        return this;
+    }
+
     
     public TypeMappingOption[] build() {
         return options.toArray(new TypeMappingOption[options.size()]);

@@ -9,11 +9,12 @@ import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.B;
 import org.openl.rules.mapping.to.C;
 
-public class MapEmptyStringsTest {
+public class ClassMappingConfigurationTest {
+
     @Test
     public void mapEmptyStringValueTest() {
 
-        File source = new File("src/test/resources/org/openl/rules/mapping/mapemptystrings/MapEmptyStringlValueTest.xlsx");
+        File source = new File("src/test/resources/org/openl/rules/mapping/config/ClassMappingConfigurationTest.xlsx");
         RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
@@ -23,10 +24,10 @@ public class MapEmptyStringsTest {
         c.setAString("c-string");
 
         mapper.map(a, b);
-        assertEquals(null, b.getAString());
+        assertEquals("b-string", b.getAString());
         
         mapper.map(a, c);
-        assertEquals(null, c.getAString());
+        assertEquals("c-string", c.getAString());
 
         
         a.setAString("");
@@ -34,7 +35,7 @@ public class MapEmptyStringsTest {
         c.setAString("c-string");
         
         mapper.map(a, b);
-        assertEquals("", b.getAString());
+        assertEquals("b-string", b.getAString());
         
         mapper.map(a, c);
         assertEquals("c-string", c.getAString());

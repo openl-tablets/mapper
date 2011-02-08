@@ -5,6 +5,9 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * The class that holds all information about a single field mapping definition.
+ * 
+ * TODO: replace current bean class with bean fields of which are groped by
+ * other beans.
  */
 public class Mapping {
 
@@ -14,21 +17,23 @@ public class Mapping {
     private String fieldB;
     private String convertMethodAB;
     private String convertMethodBA;
-    private boolean oneWay = MappingConstants.DEFAULT_MAP_IN_ONE_WAY_POLICY;
-    private boolean mapNulls = MappingConstants.DEFAULT_MAP_NULL_POLICY;
-    private boolean mapEmptyStrings = MappingConstants.DEFAULT_MAP_EMPTY_STRING_POLICY;
+    private Boolean oneWay;
+    private Boolean mapNulls;
+    private Boolean mapEmptyStrings;
     private String classABeanFactory;
     private String classBBeanFactory;
     private String fieldACreateMethod;
     private String fieldBCreateMethod;
     private String fieldADefaultValue;
     private String fieldBDefaultValue;
+//    private String fieldADateFormat;
+//    private String fieldBDateFormat;
     private Class<?>[][] fieldAHint;
     private Class<?>[] fieldBHint;
     private Class<?>[] fieldAType;
     private Class<?> fieldBType;
-    private boolean fieldARequired = MappingConstants.DEFAULT_FIELD_REQUIRED_POLICY;
-    private boolean fieldBRequired = MappingConstants.DEFAULT_FIELD_REQUIRED_POLICY;
+    private Boolean fieldARequired;
+    private Boolean fieldBRequired;
     private String conditionAB;
     private String conditionBA;
 
@@ -80,22 +85,6 @@ public class Mapping {
         this.convertMethodBA = convertMethodBA;
     }
 
-    public boolean isOneWay() {
-        return oneWay;
-    }
-
-    public void setOneWay(boolean oneWay) {
-        this.oneWay = oneWay;
-    }
-
-    public boolean isMapNulls() {
-        return mapNulls;
-    }
-
-    public void setMapNulls(boolean mapNulls) {
-        this.mapNulls = mapNulls;
-    }
-
     public String getClassABeanFactory() {
         return classABeanFactory;
     }
@@ -142,22 +131,6 @@ public class Mapping {
 
     public void setFieldBDefaultValue(String fieldBDefaultValue) {
         this.fieldBDefaultValue = fieldBDefaultValue;
-    }
-
-    public boolean isFieldARequired() {
-        return fieldARequired;
-    }
-
-    public void setFieldARequired(boolean fieldARequired) {
-        this.fieldARequired = fieldARequired;
-    }
-
-    public boolean isFieldBRequired() {
-        return fieldBRequired;
-    }
-
-    public void setFieldBRequired(boolean fieldBRequired) {
-        this.fieldBRequired = fieldBRequired;
     }
 
     public String getConditionAB() {
@@ -208,13 +181,61 @@ public class Mapping {
         this.fieldBType = fieldBType;
     }
 
-    public boolean isMapEmptyStrings() {
+    public Boolean getOneWay() {
+        return oneWay;
+    }
+
+    public void setOneWay(Boolean oneWay) {
+        this.oneWay = oneWay;
+    }
+
+    public Boolean getMapNulls() {
+        return mapNulls;
+    }
+
+    public void setMapNulls(Boolean mapNulls) {
+        this.mapNulls = mapNulls;
+    }
+
+    public Boolean getMapEmptyStrings() {
         return mapEmptyStrings;
     }
 
-    public void setMapEmptyStrings(boolean mapEmptyStrings) {
+    public void setMapEmptyStrings(Boolean mapEmptyStrings) {
         this.mapEmptyStrings = mapEmptyStrings;
     }
+
+    public Boolean getFieldARequired() {
+        return fieldARequired;
+    }
+
+    public void setFieldARequired(Boolean fieldARequired) {
+        this.fieldARequired = fieldARequired;
+    }
+
+    public Boolean getFieldBRequired() {
+        return fieldBRequired;
+    }
+
+    public void setFieldBRequired(Boolean fieldBRequired) {
+        this.fieldBRequired = fieldBRequired;
+    }
+
+//    public String getFieldADateFormat() {
+//        return fieldADateFormat;
+//    }
+//
+//    public void setFieldADateFormat(String fieldADateFormat) {
+//        this.fieldADateFormat = fieldADateFormat;
+//    }
+//
+//    public String getFieldBDateFormat() {
+//        return fieldBDateFormat;
+//    }
+//
+//    public void setFieldBDateFormat(String fieldBDateFormat) {
+//        this.fieldBDateFormat = fieldBDateFormat;
+//    }
 
     @Override
     public String toString() {
@@ -224,7 +245,8 @@ public class Mapping {
                 "mapEmptyStrings", mapEmptyStrings).append("classABeanFactory", classABeanFactory).append(
                 "classBBeanFactory", classBBeanFactory).append("fieldACreateMethod", fieldACreateMethod).append(
                 "fieldBCreateMethod", fieldBCreateMethod).append("fieldADefaultValue", fieldADefaultValue).append(
-                "fieldBDefaultValue", fieldBDefaultValue).append("fieldAHint", fieldAHint).append("fieldBHint",
+                "fieldBDefaultValue", fieldBDefaultValue)/*.append("fieldADateFormat", fieldADateFormat).append(
+                "fieldBDateFormat", fieldBDateFormat)*/.append("fieldAHint", fieldAHint).append("fieldBHint",
                 fieldBHint).append("fieldAType", fieldAType).append("fieldBType", fieldBType).append("fieldARequired",
                 fieldARequired).append("fieldBRequired", fieldBRequired).append("conditionAB", conditionAB).append(
                 "conditionBA", conditionBA).toString();

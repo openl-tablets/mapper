@@ -34,6 +34,11 @@ public class FieldDefinitionBuilder {
         fieldDefinition.deepHint(hint);
         return this;
     }
+    
+    public FieldDefinitionBuilder dateFormat(String dateFormat) {
+        fieldDefinition.dateFormat(dateFormat);
+        return this;
+    }
 
     public FieldDefinition build() {
         return fieldDefinition;

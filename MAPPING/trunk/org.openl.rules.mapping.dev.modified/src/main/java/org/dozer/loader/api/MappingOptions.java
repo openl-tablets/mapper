@@ -97,7 +97,7 @@ public class MappingOptions {
     public static FieldsMappingOption mapEmptyStrings(boolean value) {
         return FieldsMappingOptions.mapEmptyStrings(value);
     }
-
+    
     public static FieldsMappingOption collectionStrategy(final boolean removeOrphans,
         final RelationshipType relationshipType) {
         return FieldsMappingOptions.collectionStrategy(removeOrphans, relationshipType);

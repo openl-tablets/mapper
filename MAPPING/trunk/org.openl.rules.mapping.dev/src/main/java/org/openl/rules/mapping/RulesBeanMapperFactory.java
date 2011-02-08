@@ -15,7 +15,7 @@ import org.openl.syntax.exception.SyntaxNodeException;
  */
 public final class RulesBeanMapperFactory {
 
-    private final static String DEFAULT_OPENL_CONFIGURATION_PREFIX = "org.openl.rules.java::";
+    private static final String DEFAULT_OPENL_CONFIGURATION_PREFIX = "org.openl.rules.java::";
 
     private RulesBeanMapperFactory() {
     }

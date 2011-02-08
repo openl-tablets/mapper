@@ -10,7 +10,7 @@ import org.openl.types.IOpenClass;
  */
 final class RulesTypeResolver implements TypeResolver {
 
-    private final static String DEFAULT_OPENL_NAMESPACE = "org.openl.this";
+    private static final String DEFAULT_OPENL_NAMESPACE = "org.openl.this";
     
     private IOpenLConfiguration openLConfiguration;
 

@@ -35,6 +35,7 @@ public class FieldDefinition {
     private String setMethod;
     private boolean required;
     private String defaultValue;
+    private String dateFormat;
     
     private String hint;
     private String deepHint;
@@ -59,6 +60,12 @@ public class FieldDefinition {
 
         builder.hint(this.hint);
         builder.deepHint(this.deepHint);
+        builder.dateFormat(this.dateFormat);
+    }
+
+    public FieldDefinition dateFormat(String value) {
+        this.dateFormat = value;
+        return this;
     }
 
     public FieldDefinition defaultValue(String value) {

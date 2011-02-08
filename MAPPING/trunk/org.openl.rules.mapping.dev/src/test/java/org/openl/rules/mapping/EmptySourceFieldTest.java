@@ -22,7 +22,7 @@ public class EmptySourceFieldTest {
 
         mapper.map(a, b);
         
-        assertEquals("b", b.getAString());
+        assertEquals(null, b.getAString());
     }
     
 }
