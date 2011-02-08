@@ -50,7 +50,7 @@ public class BeanMapConfiguration {
         return globalConfiguration.isMapNulls();
     }
 
-    public void setMapNulls(boolean mapNulls) {
+    public void setMapNulls(Boolean mapNulls) {
         this.mapNulls = mapNulls;
     }
 
