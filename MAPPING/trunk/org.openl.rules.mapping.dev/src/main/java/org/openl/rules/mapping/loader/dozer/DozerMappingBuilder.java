@@ -31,8 +31,12 @@ public class DozerMappingBuilder {
         final TypeDefinitionBuilder srcTypeBuilder = new TypeDefinitionBuilder(beanMapping.getSrcClass());
         final TypeDefinitionBuilder destTypeBuilder = new TypeDefinitionBuilder(beanMapping.getDestClass());
 
-        if (StringUtils.isNotEmpty(beanMapping.getDestBeanFactory())) {
-            destTypeBuilder.beanFactory(beanMapping.getDestBeanFactory());
+        if (beanMapping.getConfiguration().getClassBBeanFactory() != null) {
+            // Use factory class name instead of Class object because Dozer has
+            // pre-processing stuff. See ConstructionStrategies.ByFactory class
+            // for more details.
+            //
+            destTypeBuilder.beanFactory(beanMapping.getConfiguration().getClassBBeanFactory().getName());
         }
 
         // Default implementation uses one way mapping.

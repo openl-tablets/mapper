@@ -11,6 +11,8 @@ public class BeanMapConfiguration {
     private Configuration globalConfiguration;
     private Class<?> classA;
     private Class<?> classB;
+    private Class<?> classABeanFactory;
+    private Class<?> classBBeanFactory;
     private Boolean mapNulls;
     private Boolean mapEmptyStrings;
     private Boolean trimStrings;
@@ -40,6 +42,22 @@ public class BeanMapConfiguration {
 
     public void setClassB(Class<?> classB) {
         this.classB = classB;
+    }
+
+    public Class<?> getClassABeanFactory() {
+        return classABeanFactory;
+    }
+
+    public void setClassABeanFactory(Class<?> classABeanFactory) {
+        this.classABeanFactory = classABeanFactory;
+    }
+
+    public Class<?> getClassBBeanFactory() {
+        return classBBeanFactory;
+    }
+
+    public void setClassBBeanFactory(Class<?> classBBeanFactory) {
+        this.classBBeanFactory = classBBeanFactory;
     }
 
     public boolean isMapNulls() {
@@ -113,9 +131,10 @@ public class BeanMapConfiguration {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("classA", classA).append("classB",
-            classB).append("mapNulls", mapNulls).append("mapEmptyStrings", mapEmptyStrings).append("trimStrings",
-            trimStrings).append("requiredFields", requiredFields).append("wildcard", wildcard).append("dateFormat",
-            dateFormat).append("globalConfiguration", globalConfiguration).toString();
+            classB).append("classABeanFactory", classABeanFactory).append("classABeanFactory", classABeanFactory)
+            .append("mapNulls", mapNulls).append("mapEmptyStrings", mapEmptyStrings).append("trimStrings", trimStrings)
+            .append("requiredFields", requiredFields).append("wildcard", wildcard).append("dateFormat", dateFormat)
+            .append("globalConfiguration", globalConfiguration).toString();
     }
 
 }

@@ -14,7 +14,6 @@ public class BeanMap {
 
     private Class<?> srcClass;
     private Class<?> destClass;
-    private String destBeanFactory;
     private List<FieldMap> fieldMappings = new ArrayList<FieldMap>();
     private BeanMapConfiguration configuration;
 
@@ -32,14 +31,6 @@ public class BeanMap {
 
     public void setDestClass(Class<?> destClass) {
         this.destClass = destClass;
-    }
-
-    public String getDestBeanFactory() {
-        return destBeanFactory;
-    }
-
-    public void setDestBeanFactory(String destBeanFactory) {
-        this.destBeanFactory = destBeanFactory;
     }
 
     public List<FieldMap> getFieldMappings() {
@@ -61,7 +52,7 @@ public class BeanMap {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("srcClass", srcClass).append(
-            "destClass", destClass).append("destBeanFactory", destBeanFactory).append("configuration", configuration)
+            "destClass", destClass).append("configuration", configuration)
             .toString();
     }
 }

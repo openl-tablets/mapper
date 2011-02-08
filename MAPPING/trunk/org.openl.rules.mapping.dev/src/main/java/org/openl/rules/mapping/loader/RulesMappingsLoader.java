@@ -99,6 +99,8 @@ public class RulesMappingsLoader {
             beanMapConfiguration.setRequiredFields(classConfiguration.getRequiredFields());
             beanMapConfiguration.setTrimStrings(classConfiguration.getTrimStrings());
             beanMapConfiguration.setWildcard(classConfiguration.getWildcard());
+            beanMapConfiguration.setClassABeanFactory(classConfiguration.getClassABeanFactory());
+            beanMapConfiguration.setClassBBeanFactory(classConfiguration.getClassBBeanFactory());
 
             // If user defined class mapping configuration earlier we override
             // that configuration with new one.
@@ -446,8 +448,6 @@ public class RulesMappingsLoader {
         reverseMapping.setClassB(mapping.getClassA());
         reverseMapping.setFieldA(new String[] { mapping.getFieldB() });
         reverseMapping.setFieldB(fieldA[0]);
-        reverseMapping.setClassABeanFactory(mapping.getClassBBeanFactory());
-        reverseMapping.setClassBBeanFactory(mapping.getClassABeanFactory());
         reverseMapping.setFieldACreateMethod(mapping.getFieldBCreateMethod());
         reverseMapping.setFieldBCreateMethod(mapping.getFieldACreateMethod());
         reverseMapping.setFieldADefaultValue(mapping.getFieldBDefaultValue());

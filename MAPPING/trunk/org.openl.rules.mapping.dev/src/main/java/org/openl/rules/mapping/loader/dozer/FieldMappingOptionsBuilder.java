@@ -13,11 +13,6 @@ public class FieldMappingOptionsBuilder {
     public FieldMappingOptionsBuilder() {
     }
 
-    public FieldMappingOptionsBuilder oneWay() {
-        options.add(MappingOptions.fieldOneWay());
-        return this;
-    }
-
     public FieldMappingOptionsBuilder mapNulls(boolean value) {
         options.add(MappingOptions.mapNulls(value));
         return this;

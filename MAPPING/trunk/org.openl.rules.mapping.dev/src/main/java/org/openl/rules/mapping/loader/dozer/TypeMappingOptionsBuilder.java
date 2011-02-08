@@ -3,7 +3,6 @@ package org.openl.rules.mapping.loader.dozer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dozer.loader.DozerBuilder;
 import org.dozer.loader.api.MappingOptions;
 import org.dozer.loader.api.TypeMappingOption;
 

@@ -20,8 +20,6 @@ public class Mapping {
     private Boolean oneWay;
     private Boolean mapNulls;
     private Boolean mapEmptyStrings;
-    private String classABeanFactory;
-    private String classBBeanFactory;
     private String fieldACreateMethod;
     private String fieldBCreateMethod;
     private String fieldADefaultValue;
@@ -83,22 +81,6 @@ public class Mapping {
 
     public void setConvertMethodBA(String convertMethodBA) {
         this.convertMethodBA = convertMethodBA;
-    }
-
-    public String getClassABeanFactory() {
-        return classABeanFactory;
-    }
-
-    public void setClassABeanFactory(String classABeanFactory) {
-        this.classABeanFactory = classABeanFactory;
-    }
-
-    public String getClassBBeanFactory() {
-        return classBBeanFactory;
-    }
-
-    public void setClassBBeanFactory(String classBBeanFactory) {
-        this.classBBeanFactory = classBBeanFactory;
     }
 
     public String getFieldACreateMethod() {
@@ -242,8 +224,7 @@ public class Mapping {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("classA", classA).append("classB",
             classB).append("fieldA", fieldA).append("fieldB", fieldB).append("convertMethodAB", convertMethodAB)
             .append("convertMethodBA", convertMethodBA).append("oneWay", oneWay).append("mapNulls", mapNulls).append(
-                "mapEmptyStrings", mapEmptyStrings).append("classABeanFactory", classABeanFactory).append(
-                "classBBeanFactory", classBBeanFactory).append("fieldACreateMethod", fieldACreateMethod).append(
+                "mapEmptyStrings", mapEmptyStrings).append("fieldACreateMethod", fieldACreateMethod).append(
                 "fieldBCreateMethod", fieldBCreateMethod).append("fieldADefaultValue", fieldADefaultValue).append(
                 "fieldBDefaultValue", fieldBDefaultValue)/*.append("fieldADateFormat", fieldADateFormat).append(
                 "fieldBDateFormat", fieldBDateFormat)*/.append("fieldAHint", fieldAHint).append("fieldBHint",

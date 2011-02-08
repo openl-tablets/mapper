@@ -7,6 +7,8 @@ public class ClassMappingConfiguration {
 
     private Class<?> classA;
     private Class<?> classB;
+    private Class<?> classABeanFactory;
+    private Class<?> classBBeanFactory;
     private Boolean mapNulls;
     private Boolean mapEmptyStrings;
     private Boolean trimStrings;
@@ -76,6 +78,22 @@ public class ClassMappingConfiguration {
 
     public void setDateFormat(String dateFormat) {
         this.dateFormat = dateFormat;
+    }
+
+    public Class<?> getClassABeanFactory() {
+        return classABeanFactory;
+    }
+
+    public void setClassABeanFactory(Class<?> classABeanFactory) {
+        this.classABeanFactory = classABeanFactory;
+    }
+
+    public Class<?> getClassBBeanFactory() {
+        return classBBeanFactory;
+    }
+
+    public void setClassBBeanFactory(Class<?> classBBeanFactory) {
+        this.classBBeanFactory = classBBeanFactory;
     }
 
 }
