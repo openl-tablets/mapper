@@ -54,9 +54,7 @@ public class RulesMappingsLoader {
      * 
      * @return collection of loaded {@link BeanMap} objects
      */
-    public Collection<BeanMap> loadMappings() {
-        Configuration globalConfiguration = loadConfiguration();
-        Map<String, BeanMapConfiguration> mappingConfigurations = loadBeanMapConfiguraitons(globalConfiguration);
+    public Collection<BeanMap> loadMappings(Map<String, BeanMapConfiguration> mappingConfigurations, Configuration globalConfiguration) {
         List<Mapping> mappings = findDeclarations(instanceClass, instance, Mapping.class);
 
         return processMappings(mappings, mappingConfigurations, globalConfiguration);
@@ -67,14 +65,14 @@ public class RulesMappingsLoader {
      * 
      * @return global configuration
      */
-    private Configuration loadConfiguration() {
+    public Configuration loadConfiguration() {
         List<GlobalConfiguration> globalConfigurations = findDeclarations(instanceClass, instance,
             GlobalConfiguration.class);
 
         return processConfiguration(globalConfigurations);
     }
 
-    private Map<String, BeanMapConfiguration> loadBeanMapConfiguraitons(Configuration globalConfiguration) {
+    public Map<String, BeanMapConfiguration> loadBeanMapConfiguraitons(Configuration globalConfiguration) {
         List<ClassMappingConfiguration> configs = findDeclarations(instanceClass, instance,
             ClassMappingConfiguration.class);
 
@@ -118,7 +116,7 @@ public class RulesMappingsLoader {
         beanMapConfiguration.setGlobalConfiguration(globalConfiguration);
         beanMapConfiguration.setClassA(srcClass);
         beanMapConfiguration.setClassB(destClass);
-        
+
         return beanMapConfiguration;
     }
 
@@ -207,7 +205,7 @@ public class RulesMappingsLoader {
     private Collection<BeanMap> processMappings(Collection<Mapping> mappings,
         Map<String, BeanMapConfiguration> mappingConfigurations, Configuration globalConfiguration) {
 
-        Map<String, BeanMap> beanMappings = new HashMap<String, BeanMap>();
+        Map<String, BeanMap> beanMappings = getPreDefinedBeanMappingsByConfiguration(mappingConfigurations);
 
         for (Mapping mapping : mappings) {
             normalizeMapping(mapping);
@@ -222,20 +220,18 @@ public class RulesMappingsLoader {
             //
             if (beanMapping == null) {
                 beanMapping = createBeanMap(classA, classB);
-                BeanMapConfiguration beanMappingConfiguration = mappingConfigurations.get(key);
-                // If user didn't define bean map configuration create new one with
-                // reference to global configuration.
+                // If user didn't define bean map configuration create new one
+                // with reference to a global configuration.
                 // 
-                if (beanMappingConfiguration == null) {
-                    beanMappingConfiguration = createBeanMapConfiguration(classA, classB, globalConfiguration);
-                }
+                BeanMapConfiguration beanMappingConfiguration = createBeanMapConfiguration(classA, classB,
+                    globalConfiguration);
 
                 beanMapping.setConfiguration(beanMappingConfiguration);
                 beanMappings.put(key, beanMapping);
             }
 
             beanMapping.getFieldMappings().add(createFieldMap(mapping, beanMapping));
-            
+
             if (!(mapping.getOneWay() != null && mapping.getOneWay())) {
                 // If field mapping is bi-directional find reverse bean map
                 //
@@ -245,11 +241,7 @@ public class RulesMappingsLoader {
                 //
                 if (reverseBeanMapping == null) {
                     reverseBeanMapping = createBeanMap(classB, classA);
-                    if (mappingConfigurations.containsKey(reverseMappingKey)) {
-                        reverseBeanMapping.setConfiguration(mappingConfigurations.get(reverseMappingKey));
-                    } else {
-                        reverseBeanMapping.setConfiguration(beanMapping.getConfiguration());
-                    }
+                    reverseBeanMapping.setConfiguration(beanMapping.getConfiguration());
 
                     beanMappings.put(reverseMappingKey, reverseBeanMapping);
                 }
@@ -264,6 +256,21 @@ public class RulesMappingsLoader {
         return beanMappings.values();
     }
 
+    private Map<String, BeanMap> getPreDefinedBeanMappingsByConfiguration(Map<String, BeanMapConfiguration> mappingConfigurations) {
+        Map<String, BeanMap> beanMappings = new HashMap<String, BeanMap>();
+        
+        for(Map.Entry<String,BeanMapConfiguration> entry : mappingConfigurations.entrySet()) {
+            String key = entry.getKey();
+            BeanMapConfiguration configuration = entry.getValue();
+            BeanMap beanMap = createBeanMap(configuration.getClassA(), configuration.getClassB());
+            beanMap.setConfiguration(configuration);
+            
+            beanMappings.put(key, beanMap);
+        }
+        
+        return beanMappings;
+    }
+    
     /**
      * Loads global configuration
      * 
@@ -492,12 +499,25 @@ public class RulesMappingsLoader {
         fieldMapping.setMapEmptyStrings(mapping.getMapEmptyStrings());
         fieldMapping.setRequired(mapping.getFieldBRequired());
         fieldMapping.setDefaultValue(mapping.getFieldBDefaultValue());
-        fieldMapping.setCreateMethod(mapping.getFieldBCreateMethod());
-
         fieldMapping.setSrcHint(mapping.getFieldAHint());
         fieldMapping.setDestHint(mapping.getFieldBHint());
         fieldMapping.setSrcType(mapping.getFieldAType());
         fieldMapping.setDestType(mapping.getFieldBType());
+
+        // Update type name because if user defined create method with class
+        // name without package prefix we should use type resolver to load
+        // appropriate class.
+        if (StringUtils.isNotEmpty(mapping.getFieldBCreateMethod()) && getTypeName(mapping.getFieldBCreateMethod()) != null) {
+            String typeName = getTypeName(mapping.getFieldBCreateMethod());
+            Class<?> clazz = typeResolver.findClass(typeName);
+            if (clazz == null) {
+                throw new RulesMappingException(String.format("Type '%s' not found", typeName));
+            }
+
+            fieldMapping.setCreateMethod(clazz.getName() + "." + getMethodName(mapping.getFieldBCreateMethod()));
+        } else {
+            fieldMapping.setCreateMethod(mapping.getFieldBCreateMethod());
+        }
 
         if (!StringUtils.isBlank(mapping.getConvertMethodAB())) {
             // create converter descriptor for current field mapping.

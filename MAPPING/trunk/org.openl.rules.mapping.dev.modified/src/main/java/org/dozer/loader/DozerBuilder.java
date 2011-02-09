@@ -126,6 +126,11 @@ public class DozerBuilder {
             classMap.setTrimStrings(value);
             return this;
         }
+        
+        public MappingBuilder requiredFields(Boolean value) {
+            classMap.setRequiredFields(value);
+            return this;
+        }
 
         public MappingBuilder stopOnErrors(Boolean value) {
             classMap.setStopOnErrors(value);
@@ -247,6 +252,8 @@ public class DozerBuilder {
         private boolean mapNullSet;
         private boolean mapEmptyString;
         private boolean mapEmptyStringSet;
+        private boolean trimString;
+        private boolean trimStringSet;
 
         public FieldMappingBuilder(ClassMap classMap) {
             this.classMap = classMap;
@@ -334,8 +341,14 @@ public class DozerBuilder {
         }
 
         public FieldMappingBuilder mapEmptyString(boolean value) {
-            this.mapEmptyStringSet = value;
+            this.mapEmptyStringSet = true;
             this.mapEmptyString = value;
+            return this;
+        }
+        
+        public FieldMappingBuilder trimString(boolean value) {
+            this.trimStringSet = true;
+            this.trimString = value;
             return this;
         }
 
@@ -385,6 +398,10 @@ public class DozerBuilder {
             
             if (mapEmptyStringSet) {
                 result.setMapEmptyString(mapEmptyString);
+            }
+            
+            if (trimStringSet) {
+                result.setTrimString(trimString);
             }
 
             classMap.addFieldMapping(result);
@@ -571,6 +588,21 @@ public class DozerBuilder {
 
         public ConfigurationBuilder trimStrings(Boolean value) {
             configuration.setTrimStrings(value);
+            return this;
+        }
+
+        public ConfigurationBuilder mapNulls(Boolean value) {
+            configuration.setMapNulls(value);
+            return this;
+        }
+
+        public ConfigurationBuilder mapEmptyStrings(Boolean value) {
+            configuration.setMapEmptyStrings(value);
+            return this;
+        }
+
+        public ConfigurationBuilder requiredFields(Boolean value) {
+            configuration.setRequiredFields(value);
             return this;
         }
 

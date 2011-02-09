@@ -15,16 +15,15 @@
  */
 package org.dozer.classmap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.dozer.converters.CustomConverterContainer;
 import org.dozer.fieldmap.FieldMap;
-import org.dozer.util.DozerConstants;
 import org.dozer.util.MappingUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Internal class that represents a class mapping definition. Holds all of the
@@ -45,8 +44,9 @@ public class ClassMap {
     private MappingDirection type;
     private String dateFormat;
     private String beanFactory;
-    private boolean mapNull = DozerConstants.DEFAULT_MAP_NULL_POLICY;
-    private boolean mapEmptyString = DozerConstants.DEFAULT_MAP_EMPTY_STRING_POLICY;
+    private Boolean mapNull;
+    private Boolean mapEmptyString;
+    private Boolean requiredFields;
     private Boolean wildcard;
     private Boolean stopOnErrors;
     private Boolean trimStrings;
@@ -77,6 +77,30 @@ public class ClassMap {
 
     public void setTrimStrings(Boolean trimStrings) {
         this.trimStrings = trimStrings;
+    }
+    
+    public Boolean isMapNull() {
+        return mapNull != null ? mapNull.booleanValue() : globalConfiguration.getMapNulls().booleanValue();
+    }
+
+    public void setMapNull(Boolean mapNull) {
+        this.mapNull = mapNull;
+    }
+
+    public Boolean isMapEmptyString() {
+        return mapEmptyString != null ? mapEmptyString.booleanValue() : globalConfiguration.getMapEmptyStrings().booleanValue();
+    }
+
+    public void setMapEmptyString(Boolean mapEmptyString) {
+        this.mapEmptyString = mapEmptyString;
+    }
+
+    public Boolean isRequiredFields() {
+        return requiredFields != null ? requiredFields.booleanValue() : globalConfiguration.getRequiredFields().booleanValue();
+    }
+
+    public void setRequiredFields(Boolean requiredFields) {
+        this.requiredFields = requiredFields;
     }
 
     public List<Class<RuntimeException>> getAllowedExceptions() {
@@ -209,19 +233,19 @@ public class ClassMap {
     }
 
     public boolean isDestMapNull() {
-        return destClass.getMapNull() != null ? destClass.getMapNull().booleanValue() : mapNull;
+        return destClass.getMapNull() != null ? destClass.getMapNull().booleanValue() : isMapNull();
     }
 
     public boolean isSrcMapNull() {
-        return srcClass.getMapNull() != null ? srcClass.getMapNull().booleanValue() : mapNull;
+        return srcClass.getMapNull() != null ? srcClass.getMapNull().booleanValue() : isMapNull();
     }
 
     public boolean isDestMapEmptyString() {
-        return destClass.getMapEmptyString() != null ? destClass.getMapEmptyString().booleanValue() : mapEmptyString;
+        return destClass.getMapEmptyString() != null ? destClass.getMapEmptyString().booleanValue() : isMapEmptyString();
     }
 
     public boolean isSrcMapEmptyString() {
-        return srcClass.getMapEmptyString() != null ? srcClass.getMapEmptyString().booleanValue() : mapEmptyString;
+        return srcClass.getMapEmptyString() != null ? srcClass.getMapEmptyString().booleanValue() : isMapEmptyString();
     }
 
     public String getDestClassBeanFactory() {

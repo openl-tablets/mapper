@@ -30,6 +30,36 @@ public class DozerConfigBuilder {
         return this;
     }
     
+    public DozerConfigBuilder dateFormat(String format) {
+        configOptionBuilder.dateFormat(format);
+        return this;
+    }
+    
+    public DozerConfigBuilder wildcard(boolean value) {
+        configOptionBuilder.wildcard(value);
+        return this;
+    }
+
+    public DozerConfigBuilder trimStrings(boolean value) {
+        configOptionBuilder.trimStrings(value);
+        return this;
+    }
+    
+    public DozerConfigBuilder mapNulls(boolean value) {
+        configOptionBuilder.mapNulls(value);
+        return this;
+    }
+
+    public DozerConfigBuilder mapEmptyStrings(boolean value) {
+        configOptionBuilder.mapEmptyStrings(value);
+        return this;
+    }
+
+    public DozerConfigBuilder requiredFields(boolean value) {
+        configOptionBuilder.requiredFields(value);
+        return this;
+    }
+    
     private void addDefaultConverter(ConverterDescriptor defaultConverter) {
         configOptionBuilder.defaultConverter(defaultConverter.getInstance(), defaultConverter.getSrcType(),
             defaultConverter.getDestType());

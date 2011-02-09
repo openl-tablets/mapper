@@ -25,12 +25,26 @@ public class TypeMappingOptionsBuilder {
         return this;
     }
 
+    public TypeMappingOptionsBuilder mapNulls(boolean value) {
+        options.add(MappingOptions.mapNull(value));
+        return this;
+    }
+
+    public TypeMappingOptionsBuilder mapEmptyStrings(boolean value) {
+        options.add(MappingOptions.mapEmptyString(value));
+        return this;
+    }
+
     public TypeMappingOptionsBuilder dateFormat(String value) {
         options.add(MappingOptions.dateFormat(value));
         return this;
     }
-
     
+    public TypeMappingOptionsBuilder requiredFields(boolean value) {
+        options.add(MappingOptions.requiredFields(value));
+        return this;
+    }
+
     public TypeMappingOption[] build() {
         return options.toArray(new TypeMappingOption[options.size()]);
     }

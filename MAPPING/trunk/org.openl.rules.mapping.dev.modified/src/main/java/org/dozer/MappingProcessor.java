@@ -1269,5 +1269,5 @@ public class MappingProcessor implements Mapper {
 
         return mapping;
     }
-
+    
 }

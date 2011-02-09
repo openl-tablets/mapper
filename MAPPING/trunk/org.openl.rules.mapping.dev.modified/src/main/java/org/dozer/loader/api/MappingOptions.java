@@ -5,6 +5,8 @@ import org.dozer.classmap.RelationshipType;
 
 public class MappingOptions {
     
+    // Configuration level options
+    //
     public static ConfigurationMappingOption defaultStopOnErrors(final Boolean value) {
         return ConfigurationMappingOptions.stopOnErrors(value);
     }
@@ -49,6 +51,20 @@ public class MappingOptions {
         return ConfigurationMappingOptions.allowedException(type);
     }
 
+    public static ConfigurationMappingOption defaultMapNulls(boolean value) {
+        return ConfigurationMappingOptions.mapNulls(value);
+    }
+
+    public static ConfigurationMappingOption defaultMapEmptyStrings(boolean value) {
+        return ConfigurationMappingOptions.mapEmptyStrings(value);
+    }
+
+    public static ConfigurationMappingOption defaultRequiredFields(boolean value) {
+        return ConfigurationMappingOptions.requiredFields(value);
+    }
+
+    // Field mapping level options
+    //
     public static FieldsMappingOption copyByReference() {
         return FieldsMappingOptions.copyByReference();
     }
@@ -90,12 +106,16 @@ public class MappingOptions {
         return FieldsMappingOptions.fieldOneWay();
     }
     
-    public static FieldsMappingOption mapNulls(boolean value) {
-        return FieldsMappingOptions.mapNulls(value);
+    public static FieldsMappingOption fieldMapNull(boolean value) {
+        return FieldsMappingOptions.mapNull(value);
     }
 
-    public static FieldsMappingOption mapEmptyStrings(boolean value) {
-        return FieldsMappingOptions.mapEmptyStrings(value);
+    public static FieldsMappingOption fieldTrimStrings(boolean value) {
+        return FieldsMappingOptions.trimString(value);
+    }
+
+    public static FieldsMappingOption fieldMapEmptyString(boolean value) {
+        return FieldsMappingOptions.mapEmptyString(value);
     }
     
     public static FieldsMappingOption collectionStrategy(final boolean removeOrphans,
@@ -103,6 +123,9 @@ public class MappingOptions {
         return FieldsMappingOptions.collectionStrategy(removeOrphans, relationshipType);
     }
 
+    
+    // Type map level options.
+    //
     public static TypeMappingOption mapId(final String mapId) {
         return TypeMappingOptions.mapId(mapId);
     }
@@ -114,13 +137,17 @@ public class MappingOptions {
     public static TypeMappingOption dateFormat(final String value) {
         return TypeMappingOptions.dateFormat(value);
     }
+    
+    public static TypeMappingOption requiredFields(boolean value) {
+        return TypeMappingOptions.requiredFields(value);
+    }
 
     public static TypeMappingOption mapEmptyString(final boolean value) {
-        return TypeMappingOptions.mapEmptyString(value);
+        return TypeMappingOptions.mapEmptyStrings(value);
     }
 
     public static TypeMappingOption mapNull(final boolean value) {
-        return TypeMappingOptions.mapNull(value);
+        return TypeMappingOptions.mapNulls(value);
     }
 
     public static TypeMappingOption relationshipType(final RelationshipType value) {
@@ -142,5 +169,6 @@ public class MappingOptions {
     public static TypeMappingOption wildcard(final boolean value) {
         return TypeMappingOptions.wildcard(value);
     }
+
 
 }

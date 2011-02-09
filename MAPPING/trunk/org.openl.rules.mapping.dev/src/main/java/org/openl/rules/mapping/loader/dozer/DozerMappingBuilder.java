@@ -46,7 +46,11 @@ public class DozerMappingBuilder {
         typeOptionsBuilder.oneWay();
         typeOptionsBuilder.wildcard(beanMapping.getConfiguration().isWildcard());
         typeOptionsBuilder.trimStrings(beanMapping.getConfiguration().isTrimStrings());
-
+        typeOptionsBuilder.mapEmptyStrings(beanMapping.getConfiguration().isMapEmptyStrings());
+        typeOptionsBuilder.mapNulls(beanMapping.getConfiguration().isMapNulls());
+        typeOptionsBuilder.dateFormat(beanMapping.getConfiguration().getDateFormat());
+        typeOptionsBuilder.requiredFields(beanMapping.getConfiguration().isRequiredFields());
+        
         // Convert field mappings to Dozer's model. 
         //
         final List<FieldsMapping> fieldsMappings = new ArrayList<FieldsMapping>(beanMapping.getFieldMappings().size());
@@ -142,6 +146,7 @@ public class DozerMappingBuilder {
         FieldMappingOptionsBuilder optionsBuilder = new FieldMappingOptionsBuilder();
         optionsBuilder.mapNulls(fieldMap.isMapNulls());
         optionsBuilder.mapEmptyStrings(fieldMap.isMapEmptyStrings());
+        optionsBuilder.trimStrings(fieldMap.isTrimStrings());
 
         if (fieldMap.getConverter() != null) {
             optionsBuilder.customConverterId(fieldMap.getConverter().getConverterId());

@@ -38,6 +38,31 @@ public class ConfigurationMappingOptions {
             }
         };
     }
+    
+    public static ConfigurationMappingOption mapNulls(final Boolean value) {
+        return new ConfigurationMappingOption() {
+            public void apply(ConfigurationBuilder configBuilder) {
+                configBuilder.mapNulls(value);
+            }
+        };
+    }
+
+    public static ConfigurationMappingOption mapEmptyStrings(final Boolean value) {
+        return new ConfigurationMappingOption() {
+            public void apply(ConfigurationBuilder configBuilder) {
+                configBuilder.mapEmptyStrings(value);
+            }
+        };
+    }
+
+    public static ConfigurationMappingOption requiredFields(final Boolean value) {
+        return new ConfigurationMappingOption() {
+            public void apply(ConfigurationBuilder configBuilder) {
+                configBuilder.requiredFields(value);
+            }
+        };
+    }
+
 
     public static ConfigurationMappingOption relationshipType(final RelationshipType value) {
         return new ConfigurationMappingOption() {

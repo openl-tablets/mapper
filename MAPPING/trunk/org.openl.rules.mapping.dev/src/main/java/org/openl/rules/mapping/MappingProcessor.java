@@ -1,10 +1,13 @@
 package org.openl.rules.mapping;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.dozer.DozerBeanMapper;
 import org.dozer.MappingException;
 import org.openl.rules.mapping.definition.BeanMap;
+import org.openl.rules.mapping.definition.BeanMapConfiguration;
+import org.openl.rules.mapping.definition.Configuration;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
 import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.loader.RulesMappingsLoader;
@@ -36,14 +39,26 @@ class MappingProcessor {
     }
 
     private void init() {
-        
+
         Collection<ConverterDescriptor> defaultConverters = mappingsLoader.loadDefaultConverters();
-        
+
         for (ConverterDescriptor converter : defaultConverters) {
             dozerBuilder.configBuilder().defaultConverter(converter);
         }
+
+        Configuration globalConfiguration = mappingsLoader.loadConfiguration();
         
-        Collection<BeanMap> mappings = mappingsLoader.loadMappings();
+        dozerBuilder.configBuilder().dateFormat(globalConfiguration.getDateFormat());
+        dozerBuilder.configBuilder().wildcard(globalConfiguration.isWildcard());
+        dozerBuilder.configBuilder().trimStrings(globalConfiguration.isTrimStrings());
+        dozerBuilder.configBuilder().mapNulls(globalConfiguration.isMapNulls());
+        dozerBuilder.configBuilder().mapEmptyStrings(globalConfiguration.isMapEmptyStrings());
+        dozerBuilder.configBuilder().requiredFields(globalConfiguration.isRequiredFields());
+        
+        Map<String, BeanMapConfiguration> mappingConfigurations = mappingsLoader
+            .loadBeanMapConfiguraitons(globalConfiguration);
+
+        Collection<BeanMap> mappings = mappingsLoader.loadMappings(mappingConfigurations, globalConfiguration);
 
         for (BeanMap mapping : mappings) {
             dozerBuilder.mappingBuilder().mapping(mapping);

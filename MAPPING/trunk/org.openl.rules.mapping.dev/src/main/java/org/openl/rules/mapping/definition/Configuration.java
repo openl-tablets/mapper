@@ -9,50 +9,65 @@ import org.openl.rules.mapping.MappingConstants;
  */
 public class Configuration {
 
-    private boolean mapNulls = MappingConstants.DEFAULT_MAP_NULL_POLICY;
-    private boolean mapEmptyStrings = MappingConstants.DEFAULT_MAP_EMPTY_STRING_POLICY;
-    private boolean trimStrings = MappingConstants.DEFAULT_TRIM_STRINGS_POLICY;
-    private boolean requiredFields = MappingConstants.DEFAULT_FIELD_REQUIRED_POLICY;
-    private boolean wildcard = MappingConstants.DEFAULT_WILDCARD_POLICY;
+    private Boolean mapNulls = MappingConstants.DEFAULT_MAP_NULL_POLICY;
+    private Boolean mapEmptyStrings = MappingConstants.DEFAULT_MAP_EMPTY_STRING_POLICY;
+    private Boolean trimStrings = MappingConstants.DEFAULT_TRIM_STRINGS_POLICY;
+    private Boolean requiredFields = MappingConstants.DEFAULT_FIELD_REQUIRED_POLICY;
+    private Boolean wildcard = MappingConstants.DEFAULT_WILDCARD_POLICY;
     private String dateFormat;
 
     public boolean isMapNulls() {
-        return mapNulls;
+        if (mapNulls != null) {
+            return mapNulls;
+        }
+        return MappingConstants.DEFAULT_MAP_NULL_POLICY;
     }
 
-    public void setMapNulls(boolean mapNulls) {
+    public void setMapNulls(Boolean mapNulls) {
         this.mapNulls = mapNulls;
     }
 
     public boolean isMapEmptyStrings() {
-        return mapEmptyStrings;
+        if (mapEmptyStrings != null) {
+            return mapEmptyStrings;
+        }
+        return MappingConstants.DEFAULT_MAP_EMPTY_STRING_POLICY;
     }
 
-    public void setMapEmptyStrings(boolean mapEmptyStrings) {
+    public void setMapEmptyStrings(Boolean mapEmptyStrings) {
         this.mapEmptyStrings = mapEmptyStrings;
     }
 
     public boolean isTrimStrings() {
-        return trimStrings;
+        if (trimStrings != null) {
+            return trimStrings;
+        }
+        return MappingConstants.DEFAULT_TRIM_STRINGS_POLICY;
     }
 
-    public void setTrimStrings(boolean trimStrings) {
+    public void setTrimStrings(Boolean trimStrings) {
         this.trimStrings = trimStrings;
     }
 
     public boolean isRequiredFields() {
-        return requiredFields;
+        if (requiredFields != null) {
+            return requiredFields;
+        }
+        return MappingConstants.DEFAULT_FIELD_REQUIRED_POLICY;
     }
 
-    public void setRequiredFields(boolean requiredFields) {
+    public void setRequiredFields(Boolean requiredFields) {
         this.requiredFields = requiredFields;
     }
 
     public boolean isWildcard() {
-        return wildcard;
+        if (wildcard != null) {
+            return wildcard;
+        }
+        return MappingConstants.DEFAULT_WILDCARD_POLICY;
     }
 
-    public void setWildcard(boolean wildcard) {
+    public void setWildcard(Boolean wildcard) {
         this.wildcard = wildcard;
     }
 

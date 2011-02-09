@@ -64,6 +64,7 @@ public abstract class FieldMap implements Cloneable {
     private String mappingConditionId;
     private Boolean mapNull;
     private Boolean mapEmptyString;
+    private Boolean trimString;
 
     // For Caching Purposes
     private final ConcurrentMap<Class<?>, DozerPropertyDescriptor> srcPropertyDescriptorMap = new ConcurrentHashMap<Class<?>, DozerPropertyDescriptor>();
@@ -462,7 +463,7 @@ public abstract class FieldMap implements Cloneable {
     }
 
     public boolean isTrimStrings() {
-        return classMap.isTrimStrings();
+        return trimString != null ? trimString : classMap.isTrimStrings();
     }
 
     public boolean isStopOnErrors() {
@@ -479,6 +480,10 @@ public abstract class FieldMap implements Cloneable {
 
     public void setMapEmptyString(boolean mapEmptyString) {
         this.mapEmptyString = mapEmptyString;
+    }
+
+    public void setTrimString(boolean trimString) {
+        this.trimString = trimString;
     }
 
     public String getCustomConverterParam() {
@@ -519,9 +524,9 @@ public abstract class FieldMap implements Cloneable {
             "destination field", destField).append("type", type).append("customConverter", customConverter).append(
             "relationshipType", relationshipType).append("removeOrphans", removeOrphans).append("mapId", mapId).append(
             "copyByReference", copyByReference).append("mapNull", mapNull).append("mapEmptyString", mapEmptyString)
-            .append("copyByReferenceOveridden", copyByReferenceOveridden).append("srcTypeHint", getSrcHintContainer())
-            .append("destTypeHint", getDestHintContainer()).append("mapCondition", mappingCondition).append(
-                "mapConditionId", mappingConditionId).toString();
+            .append("trimString", trimString).append("copyByReferenceOveridden", copyByReferenceOveridden).append(
+                "srcTypeHint", getSrcHintContainer()).append("destTypeHint", getDestHintContainer()).append(
+                "mapCondition", mappingCondition).append("mapConditionId", mappingConditionId).toString();
     }
 
 }

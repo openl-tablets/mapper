@@ -17,7 +17,7 @@ public class FieldMap {
     private String dateFormat;
     private Boolean mapNulls;
     private Boolean mapEmptyStrings;
-    // private Boolean trimStrings;
+    private Boolean trimStrings;
     private Boolean required;
     private Class<?>[][] srcHint;
     private Class<?>[] destHint;
@@ -99,17 +99,17 @@ public class FieldMap {
         this.mapEmptyStrings = mapEmptyStrings;
     }
 
-    // public Boolean isTrimStrings() {
-    // if (trimStrings != null) {
-    // return trimStrings;
-    // }
-    //
-    // return beanMap.getConfiguration().isTrimStrings();
-    // }
-    //
-    // public void setTrimStrings(Boolean trimStrings) {
-    // this.trimStrings = trimStrings;
-    // }
+     public Boolean isTrimStrings() {
+        if (trimStrings != null) {
+            return trimStrings;
+        }
+
+        return beanMap.getConfiguration().isTrimStrings();
+    }
+
+    public void setTrimStrings(Boolean trimStrings) {
+        this.trimStrings = trimStrings;
+    }
 
     public boolean isRequired() {
         if (required != null) {

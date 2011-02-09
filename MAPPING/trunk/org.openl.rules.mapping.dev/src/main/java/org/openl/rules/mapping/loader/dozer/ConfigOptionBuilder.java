@@ -16,6 +16,36 @@ public class ConfigOptionBuilder {
         return this;
     }
     
+    public ConfigOptionBuilder dateFormat(String format) {
+        options.add(MappingOptions.defaultDateFormat(format));
+        return this;
+    }
+    
+    public ConfigOptionBuilder wildcard(boolean value) {
+        options.add(MappingOptions.defaultWildcard(value));
+        return this;
+    }
+
+    public ConfigOptionBuilder trimStrings(boolean value) {
+        options.add(MappingOptions.defaultTrimStrings(value));
+        return this;
+    }
+    
+    public ConfigOptionBuilder mapNulls(boolean value) {
+        options.add(MappingOptions.defaultMapNulls(value));
+        return this;
+    }
+
+    public ConfigOptionBuilder mapEmptyStrings(boolean value) {
+        options.add(MappingOptions.defaultMapEmptyStrings(value));
+        return this;
+    }
+
+    public ConfigOptionBuilder requiredFields(boolean value) {
+        options.add(MappingOptions.defaultRequiredFields(value));
+        return this;
+    }
+    
     public ConfigurationMappingOption[] build() {
         return options.toArray(new ConfigurationMappingOption[options.size()]);
     }

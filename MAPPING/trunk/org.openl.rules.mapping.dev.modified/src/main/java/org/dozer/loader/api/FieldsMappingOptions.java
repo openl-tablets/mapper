@@ -96,7 +96,7 @@ public class FieldsMappingOptions extends TypeMappingOptions {
         };
     }
 
-    public static FieldsMappingOption mapNulls(final boolean value) {
+    public static FieldsMappingOption mapNull(final boolean value) {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
                 fieldMappingBuilder.mapNull(value);
@@ -104,10 +104,18 @@ public class FieldsMappingOptions extends TypeMappingOptions {
         };
     }
 
-    public static FieldsMappingOption mapEmptyStrings(final boolean value) {
+    public static FieldsMappingOption mapEmptyString(final boolean value) {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
                 fieldMappingBuilder.mapEmptyString(value);
+            }
+        };
+    }
+    
+    public static FieldsMappingOption trimString(final boolean value) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.trimString(value);
             }
         };
     }

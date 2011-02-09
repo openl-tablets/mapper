@@ -14,12 +14,17 @@ public class FieldMappingOptionsBuilder {
     }
 
     public FieldMappingOptionsBuilder mapNulls(boolean value) {
-        options.add(MappingOptions.mapNulls(value));
+        options.add(MappingOptions.fieldMapNull(value));
         return this;
     }
 
     public FieldMappingOptionsBuilder mapEmptyStrings(boolean value) {
-        options.add(MappingOptions.mapEmptyStrings(value));
+        options.add(MappingOptions.fieldMapEmptyString(value));
+        return this;
+    }
+    
+    public FieldMappingOptionsBuilder trimStrings(boolean value) {
+        options.add(MappingOptions.fieldTrimStrings(value));
         return this;
     }
     
