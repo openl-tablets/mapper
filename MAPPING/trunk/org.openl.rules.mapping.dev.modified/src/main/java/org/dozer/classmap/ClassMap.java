@@ -151,7 +151,14 @@ public class ClassMap {
             // happen, but check just in case since the use case
             // doesnt actually error out. It just double maps which is a problem
             // when the data type is a Collections.
-            if (fieldName.equals(destFieldName) || alternateFieldName.equals(destFieldName)) {
+            
+            // Added new one check for destFieldName value. In case of
+            // destFieldName is started with upper-case letter and fieldName
+            // value is started with lower-case letter we get double mapping for
+            // the same field.
+            //
+            if (fieldName.equals(destFieldName) || alternateFieldName.equals(destFieldName) || alternateFieldName
+                .equals(provideAlternateName(destFieldName))) {
                 result = fieldMap;
                 break;
             }

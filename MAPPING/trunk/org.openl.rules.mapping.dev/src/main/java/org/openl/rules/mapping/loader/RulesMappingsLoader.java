@@ -503,6 +503,7 @@ public class RulesMappingsLoader {
         fieldMapping.setDestHint(mapping.getFieldBHint());
         fieldMapping.setSrcType(mapping.getFieldAType());
         fieldMapping.setDestType(mapping.getFieldBType());
+        fieldMapping.setTrimStrings(mapping.getTrimStrings());
 
         // Update type name because if user defined create method with class
         // name without package prefix we should use type resolver to load

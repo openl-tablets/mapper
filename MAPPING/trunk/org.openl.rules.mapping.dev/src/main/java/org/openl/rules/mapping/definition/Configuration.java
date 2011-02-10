@@ -9,11 +9,11 @@ import org.openl.rules.mapping.MappingConstants;
  */
 public class Configuration {
 
-    private Boolean mapNulls = MappingConstants.DEFAULT_MAP_NULL_POLICY;
-    private Boolean mapEmptyStrings = MappingConstants.DEFAULT_MAP_EMPTY_STRING_POLICY;
-    private Boolean trimStrings = MappingConstants.DEFAULT_TRIM_STRINGS_POLICY;
-    private Boolean requiredFields = MappingConstants.DEFAULT_FIELD_REQUIRED_POLICY;
-    private Boolean wildcard = MappingConstants.DEFAULT_WILDCARD_POLICY;
+    private Boolean mapNulls;
+    private Boolean mapEmptyStrings;
+    private Boolean trimStrings;
+    private Boolean requiredFields;
+    private Boolean wildcard;
     private String dateFormat;
 
     public boolean isMapNulls() {
