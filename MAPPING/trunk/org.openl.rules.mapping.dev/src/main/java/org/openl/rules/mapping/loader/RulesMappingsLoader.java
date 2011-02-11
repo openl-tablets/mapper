@@ -480,6 +480,12 @@ public class RulesMappingsLoader {
         if (mapping.getFieldAHint() != null && mapping.getFieldAHint()[0] != null) {
             reverseMapping.setFieldBHint(mapping.getFieldAHint()[0]);
         }
+        if (mapping.getFieldADateFormat() != null && mapping.getFieldADateFormat()[0] != null) {
+            reverseMapping.setFieldBDateFormat(mapping.getFieldADateFormat()[0]);
+        }
+        if (mapping.getFieldBDateFormat() != null) {
+            reverseMapping.setFieldADateFormat(new String[] {mapping.getFieldBDateFormat()});
+        }
 
         return reverseMapping;
     }
@@ -504,6 +510,8 @@ public class RulesMappingsLoader {
         fieldMapping.setSrcType(mapping.getFieldAType());
         fieldMapping.setDestType(mapping.getFieldBType());
         fieldMapping.setTrimStrings(mapping.getTrimStrings());
+        fieldMapping.setSrcDateFormat(mapping.getFieldADateFormat());
+        fieldMapping.setDestDateFormat(mapping.getFieldBDateFormat());
 
         // Update type name because if user defined create method with class
         // name without package prefix we should use type resolver to load

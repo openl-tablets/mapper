@@ -14,11 +14,12 @@ public class FieldMap {
     private String dest;
     private String createMethod;
     private String defaultValue;
-    private String dateFormat;
     private Boolean mapNulls;
     private Boolean mapEmptyStrings;
     private Boolean trimStrings;
     private Boolean required;
+    private String[] srcDateFormat;
+    private String destDateFormat;
     private Class<?>[][] srcHint;
     private Class<?>[] destHint;
     private Class<?>[] srcType;
@@ -58,14 +59,6 @@ public class FieldMap {
         this.createMethod = createMethod;
     }
 
-    public String getDateFormat() {
-        return dateFormat;
-    }
-
-    public void setDateFormat(String dateFormat) {
-        this.dateFormat = dateFormat;
-    }
-
     public String getDefaultValue() {
         return defaultValue;
     }
@@ -99,7 +92,7 @@ public class FieldMap {
         this.mapEmptyStrings = mapEmptyStrings;
     }
 
-     public Boolean isTrimStrings() {
+    public Boolean isTrimStrings() {
         if (trimStrings != null) {
             return trimStrings;
         }
@@ -171,13 +164,30 @@ public class FieldMap {
         this.destType = destType;
     }
 
+    public String[] getSrcDateFormat() {
+        return srcDateFormat;
+    }
+
+    public void setSrcDateFormat(String[] srcDateFormat) {
+        this.srcDateFormat = srcDateFormat;
+    }
+
+    public String getDestDateFormat() {
+        return destDateFormat;
+    }
+
+    public void setDestDateFormat(String destDateFormat) {
+        this.destDateFormat = destDateFormat;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("src", src).append("dest", dest)
-            .append("createMethod", createMethod).append("defaultValue", defaultValue).append("dateFormat", dateFormat)
-            .append("mapNulls", mapNulls).append("mapEmptyStrings", mapEmptyStrings).append("required", required)
-            .append("srcHint", srcHint).append("destHint", destHint).append("srcType", srcType).append("destType",
-                destType).append("mapCondition", condition).append("customConverter", converter).toString();
+            .append("createMethod", createMethod).append("defaultValue", defaultValue).append("mapNulls", mapNulls)
+            .append("mapEmptyStrings", mapEmptyStrings).append("required", required).append("srcHint", srcHint).append(
+                "destHint", destHint).append("srcType", srcType).append("destType", destType).append("mapCondition",
+                condition).append("customConverter", converter).append("srcDateFormat", srcDateFormat).append(
+                "destDateFormat", destDateFormat).toString();
     }
 
 }

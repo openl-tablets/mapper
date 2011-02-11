@@ -25,8 +25,8 @@ public class Mapping {
     private String fieldBCreateMethod;
     private String fieldADefaultValue;
     private String fieldBDefaultValue;
-    // private String fieldADateFormat;
-    // private String fieldBDateFormat;
+    private String[] fieldADateFormat;
+    private String fieldBDateFormat;
     private Class<?>[][] fieldAHint;
     private Class<?>[] fieldBHint;
     private Class<?>[] fieldAType;
@@ -204,21 +204,21 @@ public class Mapping {
         this.fieldBRequired = fieldBRequired;
     }
 
-    // public String getFieldADateFormat() {
-    // return fieldADateFormat;
-    // }
-    //
-    // public void setFieldADateFormat(String fieldADateFormat) {
-    // this.fieldADateFormat = fieldADateFormat;
-    // }
-    //
-    // public String getFieldBDateFormat() {
-    // return fieldBDateFormat;
-    // }
-    //
-    // public void setFieldBDateFormat(String fieldBDateFormat) {
-    // this.fieldBDateFormat = fieldBDateFormat;
-    // }
+    public String[] getFieldADateFormat() {
+        return fieldADateFormat;
+    }
+
+    public void setFieldADateFormat(String[] fieldADateFormat) {
+        this.fieldADateFormat = fieldADateFormat;
+    }
+
+    public String getFieldBDateFormat() {
+        return fieldBDateFormat;
+    }
+
+    public void setFieldBDateFormat(String fieldBDateFormat) {
+        this.fieldBDateFormat = fieldBDateFormat;
+    }
 
     public Boolean getTrimStrings() {
         return trimStrings;
@@ -235,13 +235,11 @@ public class Mapping {
             .append("convertMethodBA", convertMethodBA).append("oneWay", oneWay).append("mapNulls", mapNulls).append(
                 "mapEmptyStrings", mapEmptyStrings).append("trimStrings", trimStrings).append("fieldACreateMethod",
                 fieldACreateMethod).append("fieldBCreateMethod", fieldBCreateMethod).append("fieldADefaultValue",
-                fieldADefaultValue).append("fieldBDefaultValue", fieldBDefaultValue)
-            /*
-             * .append("fieldADateFormat", fieldADateFormat).append(
-             * "fieldBDateFormat", fieldBDateFormat)
-             */.append("fieldAHint", fieldAHint).append("fieldBHint", fieldBHint).append("fieldAType", fieldAType)
-            .append("fieldBType", fieldBType).append("fieldARequired", fieldARequired).append("fieldBRequired",
-                fieldBRequired).append("conditionAB", conditionAB).append("conditionBA", conditionBA).toString();
+                fieldADefaultValue).append("fieldBDefaultValue", fieldBDefaultValue).append("fieldADateFormat",
+                fieldADateFormat).append("fieldBDateFormat", fieldBDateFormat).append("fieldAHint", fieldAHint).append(
+                "fieldBHint", fieldBHint).append("fieldAType", fieldAType).append("fieldBType", fieldBType).append(
+                "fieldARequired", fieldARequired).append("fieldBRequired", fieldBRequired).append("conditionAB",
+                conditionAB).append("conditionBA", conditionBA).toString();
     }
 
 }

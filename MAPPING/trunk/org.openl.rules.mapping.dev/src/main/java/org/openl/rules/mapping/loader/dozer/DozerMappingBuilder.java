@@ -110,6 +110,11 @@ public class DozerMappingBuilder {
                     fieldDefBuilder.hint(getHint(fieldMap.getSrcType()));
                 }
                 
+                if(fieldMap.getSrcDateFormat() != null && fieldMap.getSrcDateFormat().length != 0 && fieldMap.getSrcDateFormat()[i] != null) {
+                    fieldDefBuilder.dateFormat(fieldMap.getSrcDateFormat()[i]);
+                }
+
+                
                 definitions[i] = fieldDefBuilder.build();
             }
             fieldsMapping.setSrc(definitions);
@@ -126,7 +131,11 @@ public class DozerMappingBuilder {
             if (fieldMap.getSrcType() != null && fieldMap.getSrcType()[0] != null) {
                 fieldDefBuilder.hint(getHint(fieldMap.getSrcType()[0]));
             }
-            
+
+            if (fieldMap.getSrcDateFormat() != null && fieldMap.getSrcDateFormat()[0] != null) {
+                fieldDefBuilder.dateFormat(fieldMap.getSrcDateFormat()[0]);
+            }
+
             fieldsMapping.setSrc(new FieldDefinition[] { fieldDefBuilder.build() });
         }
 
@@ -134,8 +143,10 @@ public class DozerMappingBuilder {
         fieldDefBuilder.required(fieldMap.isRequired());
         fieldDefBuilder.defaultValue(fieldMap.getDefaultValue());
         fieldDefBuilder.createMethod(fieldMap.getCreateMethod());
-        fieldDefBuilder.dateFormat(fieldMap.getDateFormat());
-
+        
+        if (fieldMap.getDestDateFormat() != null) {
+            fieldDefBuilder.dateFormat(fieldMap.getDestDateFormat());
+        }
         if (fieldMap.getDestHint() != null) {
             fieldDefBuilder.deepHint(getHint(fieldMap.getDestHint()));
         }
