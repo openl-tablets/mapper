@@ -5,3 +5,4 @@ Bundle-SymbolicName: org.openl.rules.mapping.dev
 Bundle-Version: 5.7.4
 Require-Bundle: org.openl.rules.mapping.dev.modified;visibility:=reexport,
  org.openl.rules;visibility:=reexport
+Export-Package: org.openl.rules.mapping

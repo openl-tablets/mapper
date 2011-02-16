@@ -21,6 +21,7 @@
         <module>../org.openl.rules.mapping.dev.modified</module>
         <module>../org.openl.rules.mapping.dev.modified.test</module>
         <module>../org.openl.rules.mapping.dev</module>
+        <module>../org.openl.rules.mapping.dev.test</module>
     </modules>
 
     <scm>
@@ -105,6 +106,12 @@
 
             <dependency>
                 <groupId>org.openl.rules</groupId>
+                <artifactId>org.openl.rules.mapping.dev</artifactId>
+                <version>${version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openl.rules</groupId>
                 <artifactId>org.openl.rules</artifactId>
                 <version>${version}</version>
             </dependency>
@@ -125,6 +132,12 @@
                 <groupId>commons-collections</groupId>
                 <artifactId>commons-collections</artifactId>
                 <version>3.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.thoughtworks.xstream</groupId>
+                <artifactId>xstream</artifactId>
+                <version>1.3.1</version>
             </dependency>
 
         </dependencies>
