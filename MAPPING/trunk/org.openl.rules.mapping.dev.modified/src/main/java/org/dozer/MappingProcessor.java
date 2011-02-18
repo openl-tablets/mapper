@@ -635,15 +635,8 @@ public class MappingProcessor implements Mapper {
                 HintContainer destHintContainer = new HintContainer();
                 destHintContainer.setHintName(genericType.getName());
                 FieldMap cloneFieldMap = (FieldMap) fieldMap.clone();
-                cloneFieldMap.setDestHintContainer(destHintContainer); // should
-                // affect
-                // only
-                // this
-                // time
-                // as
-                // fieldMap
-                // is
-                // cloned
+                cloneFieldMap.setDestHintContainer(destHintContainer); 
+                // should affect only this time as fieldMap is cloned
                 fieldMap = cloneFieldMap;
             }
         }
@@ -660,9 +653,10 @@ public class MappingProcessor implements Mapper {
         // if they use a standard Collection we have to assume it is a
         // List...better
         // way to handle this?
-        if (destCollectionType.getName().equals(Collection.class.getName())) {
+        if (Collection.class.getName().equals(destCollectionType.getName())) {
             destCollectionType = List.class;
         }
+        
         // Array to Array
         if (CollectionUtils.isArray(srcFieldType) && (CollectionUtils.isArray(destCollectionType))) {
             result = mapArrayToArray(srcObj, srcCollectionValue, fieldMap, destObj);
@@ -740,7 +734,7 @@ public class MappingProcessor implements Mapper {
         } else {
             List<?> list = Arrays.asList((Object[]) srcCollectionValue);
             List<?> returnList;
-            if (!destEntryType.getName().equals(BASE_CLASS)) {
+            if (!BASE_CLASS.equals(destEntryType.getName())) {
                 returnList = addOrUpdateToList(srcObj, fieldMap, list, destObj, destEntryType);
             } else {
                 returnList = addOrUpdateToList(srcObj, fieldMap, list, destObj, null);

@@ -232,6 +232,8 @@ public class RulesMappingsLoader {
 
             beanMapping.getFieldMappings().add(createFieldMap(mapping, beanMapping));
 
+            // TODO: review existing code. Can we use Dozer's mapping processor instead of using this code?  
+            //
             if (!(mapping.getOneWay() != null && mapping.getOneWay())) {
                 // If field mapping is bi-directional find reverse bean map
                 //

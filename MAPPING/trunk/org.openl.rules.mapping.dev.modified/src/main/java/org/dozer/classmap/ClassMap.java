@@ -167,7 +167,7 @@ public class ClassMap {
         return result;
     }
 
-    String provideAlternateName(String fieldName) {
+    private String provideAlternateName(String fieldName) {
         return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
     }
 
@@ -177,8 +177,14 @@ public class ClassMap {
         if (fieldMaps != null) {
             for (FieldMap fieldMap : fieldMaps) {
                 String fieldName = fieldMap.getSrcFieldName();
+                String alternateFieldName = StringUtils.EMPTY;
+                
+                if (!MappingUtils.isBlankOrNull(fieldName)) {
+                    alternateFieldName = provideAlternateName(fieldName);
+                }
 
-                if ((fieldName != null) && fieldName.equals(srcFieldName)) {
+                if (fieldName != null && (fieldName.equals(srcFieldName) || alternateFieldName.equals(srcFieldName) 
+                        || alternateFieldName.equals(provideAlternateName(srcFieldName)))) {
                     result = fieldMap;
                     break;
                 }
