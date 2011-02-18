@@ -6,8 +6,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /**
  * The class that holds all information about a single field mapping definition.
  * 
- * TODO: replace current bean class with bean fields of which are groped by
- * other beans.
+ * TODO: replace current bean with bean that holds information about mapping
+ * attributes by groups (each group is separated bean).
  */
 public class Mapping {
 
@@ -17,6 +17,8 @@ public class Mapping {
     private String fieldB;
     private String convertMethodAB;
     private String convertMethodBA;
+    private String convertMethodABId;
+    private String convertMethodBAId;
     private Boolean oneWay;
     private Boolean mapNulls;
     private Boolean mapEmptyStrings;
@@ -228,11 +230,28 @@ public class Mapping {
         this.trimStrings = trimStrings;
     }
 
+    public String getConvertMethodABId() {
+        return convertMethodABId;
+    }
+
+    public void setConvertMethodABId(String convertMethodABId) {
+        this.convertMethodABId = convertMethodABId;
+    }
+
+    public String getConvertMethodBAId() {
+        return convertMethodBAId;
+    }
+
+    public void setConvertMethodBAId(String convertMethodBAId) {
+        this.convertMethodBAId = convertMethodBAId;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("classA", classA).append("classB",
             classB).append("fieldA", fieldA).append("fieldB", fieldB).append("convertMethodAB", convertMethodAB)
-            .append("convertMethodBA", convertMethodBA).append("oneWay", oneWay).append("mapNulls", mapNulls).append(
+            .append("convertMethodBA", convertMethodBA).append("convertMethodABId", convertMethodABId).append(
+                "convertMethodBAId", convertMethodBAId).append("oneWay", oneWay).append("mapNulls", mapNulls).append(
                 "mapEmptyStrings", mapEmptyStrings).append("trimStrings", trimStrings).append("fieldACreateMethod",
                 fieldACreateMethod).append("fieldBCreateMethod", fieldBCreateMethod).append("fieldADefaultValue",
                 fieldADefaultValue).append("fieldBDefaultValue", fieldBDefaultValue).append("fieldADateFormat",

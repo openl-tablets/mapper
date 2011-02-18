@@ -389,11 +389,12 @@ public class MappingProcessor implements Mapper {
 
         if (!MappingUtils.isBlankOrNull(fieldMapping.getCustomConverterId())) {
             if (customConverterObjectsWithId != null && customConverterObjectsWithId.containsKey(fieldMapping
-                .getCustomConverterId())) {
+                .getCustomConverterId()) && customConverterObjectsWithId.get(fieldMapping.getCustomConverterId()) != null) {
                 Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping
                     .getSrcFieldType(srcObj.getClass());
-                destFieldValue = mapUsingCustomConverterInstance(customConverterObjectsWithId.get(fieldMapping
-                    .getCustomConverterId()), srcFieldClass, srcFieldValue, destFieldType, destObj, fieldMapping, false);
+                CustomConverter converterInstance = customConverterObjectsWithId.get(fieldMapping.getCustomConverterId());
+                destFieldValue = mapUsingCustomConverterInstance(converterInstance, srcFieldClass, srcFieldValue,
+                    destFieldType, destObj, fieldMapping, false);
             } else {
                 throw new MappingException("CustomConverter instance not found with id:" + fieldMapping
                     .getCustomConverterId());

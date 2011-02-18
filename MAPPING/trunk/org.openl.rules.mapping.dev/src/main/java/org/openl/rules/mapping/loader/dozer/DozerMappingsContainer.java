@@ -9,6 +9,10 @@ import org.dozer.CustomConverter;
 import org.dozer.fieldmap.FieldMappingCondition;
 import org.dozer.loader.api.BeanMappingBuilder;
 
+/**
+ * Container that holds processed information about mappings. Intended for
+ * internal use only.
+ */
 public class DozerMappingsContainer {
 
     private final List<BeanMappingBuilder> mappingBuilders = new ArrayList<BeanMappingBuilder>();

@@ -15,7 +15,7 @@ public class CreateMethodTest {
     public void createMethodTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/createMethod/CreateMethodTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         C c = new C();
         c.setAString("c-string");

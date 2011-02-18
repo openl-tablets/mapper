@@ -17,7 +17,7 @@ public class DefaultFieldValueTest {
     public void defaultStringValueTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/defaultValue/DefaultFieldValueTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         B b = new B();
@@ -32,7 +32,7 @@ public class DefaultFieldValueTest {
     public void defaultFieldInitializationTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/defaultValue/DefaultFieldValueTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
 
@@ -45,7 +45,7 @@ public class DefaultFieldValueTest {
     public void defaultFieldInitializationThruConstructorTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/defaultValue/DefaultFieldValueTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
 

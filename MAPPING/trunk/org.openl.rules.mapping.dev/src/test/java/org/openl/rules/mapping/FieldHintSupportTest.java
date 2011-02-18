@@ -21,7 +21,7 @@ public class FieldHintSupportTest {
     public void indexedListsWithoutGenericTypeTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/hints/FieldHintsSupportTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         C c = new C();
         c.setAString("root");
@@ -85,7 +85,7 @@ public class FieldHintSupportTest {
     public void typeCastTest() {
          
         File source = new File("src/test/resources/org/openl/rules/mapping/hints/TypeCastTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         ChildA childA = new ChildA();
         childA.setAString("child-a-string");
@@ -123,7 +123,7 @@ public class FieldHintSupportTest {
     public void simplifiedHintTest() {
          
         File source = new File("src/test/resources/org/openl/rules/mapping/hints/SimplifiedHintsChainTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         ChildA childA = new ChildA();
         childA.setAString("child-a-string");

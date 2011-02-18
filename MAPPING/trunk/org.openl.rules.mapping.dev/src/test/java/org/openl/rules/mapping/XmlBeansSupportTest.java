@@ -17,7 +17,7 @@ public class XmlBeansSupportTest {
     @Test
     public void testBeanFactory() {
         File source = new File("src/test/resources/org/openl/rules/mapping/xmlbeans/XmlBeansSupportTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         

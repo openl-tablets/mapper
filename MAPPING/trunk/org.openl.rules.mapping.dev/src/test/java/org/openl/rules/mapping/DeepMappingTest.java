@@ -20,7 +20,7 @@ public class DeepMappingTest {
     public void mappingWithArrayTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/DeepMappingWithArrayTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         C c1 = new C();
         c1.setAString("c1");
@@ -68,7 +68,7 @@ public class DeepMappingTest {
     public void usingIndexedArrayInCustomConvertersTest() {
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/index/UsingIndexedArrayInCustomConvertersTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         C c1 = new C();
         c1.setAString("c1");
@@ -110,7 +110,7 @@ public class DeepMappingTest {
     public void mappingWithTypedListTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/DeepMappingWithTypedListTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         C c1 = new C();
         c1.setAString("c1");

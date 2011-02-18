@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileReader;
 
 import org.junit.Test;
-import org.openl.rules.mapping.RulesBeanMapper;
-import org.openl.rules.mapping.RulesBeanMapperFactory;
 import org.openl.rules.mapping.to.model1.PolicyEntity;
 import org.openl.rules.mapping.to.model2.Policy;
 
@@ -25,7 +23,7 @@ public class MappingPerformanceBenchmarkTest {
         File source = new File("src/test/resources/org/openl/rules/mapping/mapping.xlsx");
         
         long time1 = System.currentTimeMillis();
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
         long time2 = System.currentTimeMillis();
 
         mapper.map(policyEntity, Policy.class);

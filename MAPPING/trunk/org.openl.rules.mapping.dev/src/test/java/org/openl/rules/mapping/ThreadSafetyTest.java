@@ -19,7 +19,7 @@ public class ThreadSafetyTest {
         final ExecutionStatus status = new ExecutionStatus();
 
         File source = new File("src/test/resources/org/openl/rules/mapping/thread/ThreadSafetyTest.xlsx");
-        final RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        final Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         for (int i = 0; i < threadsCount; i++) {
 

@@ -3,6 +3,7 @@ package org.openl.rules.mapping;
 import java.util.Collection;
 import java.util.Map;
 
+import org.dozer.CustomConverter;
 import org.dozer.DozerBeanMapper;
 import org.dozer.MappingException;
 import org.openl.rules.mapping.definition.BeanMap;
@@ -25,21 +26,28 @@ class MappingProcessor {
     private DozerBeanMapper beanMapper;
     private DozerBuilder dozerBuilder = new DozerBuilder();
 
+    private Map<String, CustomConverter> customConvertersWithId;
+    
     /**
      * Creates new instance of mappings processor using OpenL Rules project
      * instance information.
      * 
      * @param instanceClass class definition
      * @param instance instance object
+     * @param typeResolver type resolver
+     * @param customConvertersWithId user custom converters
      */
-    public MappingProcessor(Class<?> instanceClass, Object instance, TypeResolver typeResolver) {
+    public MappingProcessor(Class<?> instanceClass, Object instance, TypeResolver typeResolver, Map<String, CustomConverter> customConvertersWithId) {
         this.mappingsLoader = new RulesMappingsLoader(instanceClass, instance, typeResolver);
+        this.customConvertersWithId = customConvertersWithId;
 
         init();
     }
 
     private void init() {
 
+        dozerBuilder.mappingBuilder().customConvertersWithId(customConvertersWithId);
+        
         Collection<ConverterDescriptor> defaultConverters = mappingsLoader.loadDefaultConverters();
 
         for (ConverterDescriptor converter : defaultConverters) {

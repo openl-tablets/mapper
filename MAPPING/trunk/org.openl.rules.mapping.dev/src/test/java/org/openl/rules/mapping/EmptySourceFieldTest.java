@@ -14,7 +14,7 @@ public class EmptySourceFieldTest {
     public void emptySourceTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/emptySource/EmptySourceTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         B b = new B();

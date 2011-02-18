@@ -14,7 +14,7 @@ public class MapEmptyStringsTest {
     public void mapEmptyStringValueTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/mapemptystrings/MapEmptyStringlValueTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         B b = new B();

@@ -15,7 +15,7 @@ public class ClassMappingConfigurationTest {
     public void mapEmptyStringValueTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/config/ClassMappingConfigurationTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         B b = new B();

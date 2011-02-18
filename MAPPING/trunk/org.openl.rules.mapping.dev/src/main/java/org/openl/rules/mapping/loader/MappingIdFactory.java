@@ -3,6 +3,10 @@ package org.openl.rules.mapping.loader;
 import org.apache.commons.lang.StringUtils;
 import org.openl.rules.mapping.Mapping;
 
+/**
+ * Factory that creates unique ID of mapping definition using mapping data.
+ * Intended for internal use only.
+ */
 public final class MappingIdFactory {
 
     private MappingIdFactory() {
@@ -18,7 +22,7 @@ public final class MappingIdFactory {
         StringBuilder result = new StringBuilder();
         result.append(mapping.getClassA().getName());
         result.append(".");
-        
+
         String[] fieldA = mapping.getFieldA();
         if (fieldA == null || fieldA.length == 0) {
             result.append("<noname>");
@@ -28,11 +32,11 @@ public final class MappingIdFactory {
             String fieldName = StringUtils.join(fieldA, ",");
             result.append("[" + fieldName + "]");
         }
-        
+
         result.append("->");
         result.append(mapping.getClassB().getName());
         result.append(".");
-        
+
         if (StringUtils.isEmpty(mapping.getFieldB())) {
             result.append("<noname>");
         } else {

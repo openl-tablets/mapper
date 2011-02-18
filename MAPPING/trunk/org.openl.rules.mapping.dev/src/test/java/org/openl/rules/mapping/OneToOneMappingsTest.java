@@ -17,7 +17,7 @@ public class OneToOneMappingsTest {
     public void fieldToFieldTest1() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/OneToOneMappingsTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("string");

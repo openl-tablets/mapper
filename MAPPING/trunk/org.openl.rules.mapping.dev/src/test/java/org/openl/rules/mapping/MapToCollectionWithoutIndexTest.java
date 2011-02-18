@@ -20,7 +20,7 @@ public class MapToCollectionWithoutIndexTest {
     public void mappingWithArrayTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToArrayWithoutIndexTest1.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         B b1 = new B();
         b1.setAString("b1");
@@ -42,7 +42,7 @@ public class MapToCollectionWithoutIndexTest {
     public void mappingWithTypedListTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToTypedListWithoutIndexTest1.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         B b1 = new B();
         b1.setAString("b1");
@@ -64,7 +64,7 @@ public class MapToCollectionWithoutIndexTest {
     public void mappingWithUntypedListTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToUntypedListWithoutIndexTest1.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         B b1 = new B();
         b1.setAString("b1");
@@ -87,7 +87,7 @@ public class MapToCollectionWithoutIndexTest {
     public void mappingWithArrayAndLastElementIndexValueTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToArrayWithoutIndexTest2.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
         C c1 = new C();
         c1.setAString("c1");
 
@@ -122,7 +122,7 @@ public class MapToCollectionWithoutIndexTest {
     public void mappingWithTypedListAndLastElementIndexTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToTypedListWithoutIndexTest2.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         C c1 = new C();
         c1.setAString("c1");
@@ -159,7 +159,7 @@ public class MapToCollectionWithoutIndexTest {
     public void mappingWithUntypedListAndLastElementIndexTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToUntypedListWithoutIndexTest2.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         B b1 = new B();
         b1.setAString("b1");

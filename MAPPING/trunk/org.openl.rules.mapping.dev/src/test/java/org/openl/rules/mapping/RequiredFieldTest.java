@@ -15,7 +15,7 @@ public class RequiredFieldTest {
     public void requiredClauseIsPassedTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/required/RequiredFieldTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("a-string");
@@ -29,7 +29,7 @@ public class RequiredFieldTest {
     public void requiredClauseIsNotPassedTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/required/RequiredFieldTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         mapper.map(a, B.class);

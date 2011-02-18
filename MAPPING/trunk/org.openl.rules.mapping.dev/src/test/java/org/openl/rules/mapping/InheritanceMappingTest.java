@@ -17,7 +17,7 @@ public class InheritanceMappingTest {
     public void superClassMappingTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/inheritance/SuperClassMappingTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAnInteger(100);
@@ -37,7 +37,7 @@ public class InheritanceMappingTest {
     public void superMappingsOrderTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/inheritance/SuperMappingsOrderTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         ChildE childE = new ChildE();
         // ChildE's specific field
@@ -60,7 +60,7 @@ public class InheritanceMappingTest {
     public void superMappingOverrideTest1() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/inheritance/SuperClassMappingOverrideTest1.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("a");
@@ -75,7 +75,7 @@ public class InheritanceMappingTest {
     public void superMappingOverrideTest2() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/inheritance/SuperClassMappingOverrideTest2.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("a");

@@ -15,7 +15,7 @@ public class WildcardMappingTest {
     public void wildcardSupportTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/wildcard/WildcardMappingTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         C c = new C();
         c.setAString("c-string");

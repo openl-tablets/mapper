@@ -54,7 +54,8 @@ public class RulesMappingsLoader {
      * 
      * @return collection of loaded {@link BeanMap} objects
      */
-    public Collection<BeanMap> loadMappings(Map<String, BeanMapConfiguration> mappingConfigurations, Configuration globalConfiguration) {
+    public Collection<BeanMap> loadMappings(Map<String, BeanMapConfiguration> mappingConfigurations,
+        Configuration globalConfiguration) {
         List<Mapping> mappings = findDeclarations(instanceClass, instance, Mapping.class);
 
         return processMappings(mappings, mappingConfigurations, globalConfiguration);
@@ -232,7 +233,8 @@ public class RulesMappingsLoader {
 
             beanMapping.getFieldMappings().add(createFieldMap(mapping, beanMapping));
 
-            // TODO: review existing code. Can we use Dozer's mapping processor instead of using this code?  
+            // TODO: review existing code. Can we use Dozer's mapping processor
+            // instead of using this code?
             //
             if (!(mapping.getOneWay() != null && mapping.getOneWay())) {
                 // If field mapping is bi-directional find reverse bean map
@@ -258,21 +260,22 @@ public class RulesMappingsLoader {
         return beanMappings.values();
     }
 
-    private Map<String, BeanMap> getPreDefinedBeanMappingsByConfiguration(Map<String, BeanMapConfiguration> mappingConfigurations) {
+    private Map<String, BeanMap> getPreDefinedBeanMappingsByConfiguration(
+        Map<String, BeanMapConfiguration> mappingConfigurations) {
         Map<String, BeanMap> beanMappings = new HashMap<String, BeanMap>();
-        
-        for(Map.Entry<String,BeanMapConfiguration> entry : mappingConfigurations.entrySet()) {
+
+        for (Map.Entry<String, BeanMapConfiguration> entry : mappingConfigurations.entrySet()) {
             String key = entry.getKey();
             BeanMapConfiguration configuration = entry.getValue();
             BeanMap beanMap = createBeanMap(configuration.getClassA(), configuration.getClassB());
             beanMap.setConfiguration(configuration);
-            
+
             beanMappings.put(key, beanMap);
         }
-        
+
         return beanMappings;
     }
-    
+
     /**
      * Loads global configuration
      * 
@@ -486,7 +489,7 @@ public class RulesMappingsLoader {
             reverseMapping.setFieldBDateFormat(mapping.getFieldADateFormat()[0]);
         }
         if (mapping.getFieldBDateFormat() != null) {
-            reverseMapping.setFieldADateFormat(new String[] {mapping.getFieldBDateFormat()});
+            reverseMapping.setFieldADateFormat(new String[] { mapping.getFieldBDateFormat() });
         }
 
         return reverseMapping;
@@ -530,7 +533,12 @@ public class RulesMappingsLoader {
             fieldMapping.setCreateMethod(mapping.getFieldBCreateMethod());
         }
 
-        if (!StringUtils.isBlank(mapping.getConvertMethodAB())) {
+        if (!StringUtils.isBlank(mapping.getConvertMethodABId())) {
+            // create converter descriptor for current field mapping.
+            ConverterDescriptor converterDescriptor = createConverterDescriptor(mapping.getConvertMethodABId(), null,
+                null, null);
+            fieldMapping.setConverter(converterDescriptor);
+        } else if (!StringUtils.isBlank(mapping.getConvertMethodAB())) {
             // create converter descriptor for current field mapping.
             String converterId = MappingIdFactory.createMappingId(mapping);
             ConverterDescriptor converterDescriptor = createConverterDescriptor(converterId, mapping
@@ -551,19 +559,26 @@ public class RulesMappingsLoader {
         Class<?> destType) {
         // At this moment we don't know real types of fields and cannot cache
         // converter instances. To reduce count of converters we are using
-        // proxies objects which invokes appropriate convert method at runtime
-        CustomConverter converter;
-        String typeName = getTypeName(convertMethod);
+        // proxy objects which invokes appropriate convert method at runtime
+        CustomConverter converter = null;
 
-        if (typeName != null) {
-            Class<?> convertClass = typeResolver.findClass(typeName);
-            if (convertClass == null) {
-                throw new RulesMappingException(String.format("Type '%s' not found", typeName));
+        // Check that user defined convert method using method name. 
+        // If convert method is not defined we are does't try to resolve convert
+        // method and using only method ID value to create descriptor.
+        //
+        if (StringUtils.isNotEmpty(convertMethod)) {
+            String typeName = getTypeName(convertMethod);
+
+            if (typeName != null) {
+                Class<?> convertClass = typeResolver.findClass(typeName);
+                if (convertClass == null) {
+                    throw new RulesMappingException(String.format("Type '%s' not found", typeName));
+                }
+
+                converter = ConverterFactory.createConverter(getMethodName(convertMethod), convertClass, null);
+            } else {
+                converter = ConverterFactory.createConverter(convertMethod, instanceClass, instance);
             }
-
-            converter = ConverterFactory.createConverter(getMethodName(convertMethod), convertClass, null);
-        } else {
-            converter = ConverterFactory.createConverter(convertMethod, instanceClass, instance);
         }
 
         return new ConverterDescriptor(converterId, converter, srcType, destType);

@@ -18,7 +18,7 @@ public class MapSupportTest {
     public void mapSupportTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/map/MapSupportTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("a-string");
@@ -74,7 +74,7 @@ public class MapSupportTest {
     public void mapTypeFieldSupportTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/map/MapTypeFieldSupportTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("a-string");

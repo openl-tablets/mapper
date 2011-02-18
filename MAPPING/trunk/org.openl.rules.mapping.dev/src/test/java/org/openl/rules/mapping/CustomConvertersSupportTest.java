@@ -5,7 +5,10 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.dozer.CustomConverter;
 import org.junit.Test;
 import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.C;
@@ -21,7 +24,7 @@ public class CustomConvertersSupportTest {
     @Test
     public void defaultConverterTest1() {
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/DefaultCustomConvertersTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         
@@ -56,7 +59,7 @@ public class CustomConvertersSupportTest {
     @Test
     public void customConverterTest1() {
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConvertersTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         
@@ -93,7 +96,7 @@ public class CustomConvertersSupportTest {
     public void converterReusageTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConverterReuseTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("100");
@@ -113,8 +116,8 @@ public class CustomConvertersSupportTest {
     @Test
     public void externalMapperTest() {
 
-        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/ExternalCustomConvertersTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/ExternalMapperTest.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("a-string");
@@ -137,7 +140,97 @@ public class CustomConvertersSupportTest {
     @Test
     public void externalCustomConverterTest() {
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/ExternalStaticMethodCustomConverterTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
+        
+        Calendar currentDate = Calendar.getInstance();
+        purchaseOrder.setDate(currentDate);
+        
+        Customer customer = purchaseOrder.addNewCustomer();
+        customer.setName("customer name");
+        customer.setAddress("customer address");
+        customer.setAge(21);
+        
+        LineItem item1 = purchaseOrder.addNewLineItem();
+        item1.setDescription("line1");
+        item1.setPrice(BigDecimal.valueOf(10.5));
+
+        LineItem item2 = purchaseOrder.addNewLineItem();
+        item2.setDescription("single");
+        item2.setPrice(BigDecimal.valueOf(5.1));
+
+        purchaseOrder.setLineItemArray(new LineItem[]{item1, item2});
+        
+        PurchaseOrderTO result = mapper.map(purchaseOrder, PurchaseOrderTO.class);
+        
+        assertEquals(true, result.isHasSingleLineItem());
+        
+        item2.setDescription("item2");
+        result = mapper.map(purchaseOrder, PurchaseOrderTO.class);
+        
+        assertEquals(false, result.isHasSingleLineItem());
+    }
+
+    @Test
+    public void customConverterWithIdTest1() {
+        
+        Map<String, CustomConverter> converters = new HashMap<String, CustomConverter>();
+        converters.put("isExists", new CustomConverter(){
+            public Object convert(Object existingDestinationFieldValue, Object sourceFieldValue,
+                Class<?> destinationClass, Class<?> sourceClass) {
+                return sourceFieldValue != null;
+            }
+            
+        });
+
+        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConvertersWithIdTest.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, converters);
+
+        PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
+        
+        Calendar currentDate = Calendar.getInstance();
+        purchaseOrder.setDate(currentDate);
+        
+        Customer customer = purchaseOrder.addNewCustomer();
+        customer.setName("customer name");
+        customer.setAddress("customer address");
+        customer.setAge(21);
+        
+        LineItem item1 = purchaseOrder.addNewLineItem();
+        item1.setDescription("line1");
+        item1.setPrice(BigDecimal.valueOf(10.5));
+
+        LineItem item2 = purchaseOrder.addNewLineItem();
+        item2.setDescription("single");
+        item2.setPrice(BigDecimal.valueOf(5.1));
+
+        purchaseOrder.setLineItemArray(new LineItem[]{item1, item2});
+        
+        PurchaseOrderTO result = mapper.map(purchaseOrder, PurchaseOrderTO.class);
+        
+        assertEquals(true, result.isHasSingleLineItem());
+        
+        item2.setDescription("item2");
+        result = mapper.map(purchaseOrder, PurchaseOrderTO.class);
+        
+        assertEquals(false, result.isHasSingleLineItem());
+    }
+
+    @Test
+    public void customConverterWithIdTest2() {
+        
+        Map<String, CustomConverter> converters = new HashMap<String, CustomConverter>();
+        converters.put("isExists", new CustomConverter(){
+            public Object convert(Object existingDestinationFieldValue, Object sourceFieldValue,
+                Class<?> destinationClass, Class<?> sourceClass) {
+                return sourceFieldValue != null;
+            }
+            
+        });
+
+        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConvertersOrderTest.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, converters);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         

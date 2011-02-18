@@ -14,7 +14,7 @@ public class FieldMappingConditionsTest {
     public void fieldMapConditionSupportTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/conditions/FieldMappingConditionsTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("a-string");
@@ -35,7 +35,7 @@ public class FieldMappingConditionsTest {
     public void externalFieldMapConditionSupportTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/conditions/ExternalFieldMappingConditionTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("a-string");

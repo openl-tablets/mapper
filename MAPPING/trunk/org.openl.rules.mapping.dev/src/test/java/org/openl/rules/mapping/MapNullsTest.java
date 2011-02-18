@@ -15,7 +15,7 @@ public class MapNullsTest {
     public void mapNullValueTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/mapnulls/MapNullValueTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         B b = new B();

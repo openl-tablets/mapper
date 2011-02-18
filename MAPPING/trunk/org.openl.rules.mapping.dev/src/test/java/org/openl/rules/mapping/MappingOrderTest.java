@@ -14,7 +14,7 @@ public class MappingOrderTest {
     public void mappingOrderTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/order/MappingOrderTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAStringArray(new String[] {"a", "b"});

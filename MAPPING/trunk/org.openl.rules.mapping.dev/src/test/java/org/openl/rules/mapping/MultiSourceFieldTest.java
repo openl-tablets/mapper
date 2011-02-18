@@ -19,7 +19,7 @@ public class MultiSourceFieldTest {
     public void indexedListsWithoutGenericTypeTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/multisource/MultiSourceFieldTest1.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         C c = new C();
         c.setAString("root");
@@ -69,7 +69,7 @@ public class MultiSourceFieldTest {
     public void singleDestinationElementTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/multisource/MultiSourceFieldTest2.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         C c = new C();
         c.setAString("root");

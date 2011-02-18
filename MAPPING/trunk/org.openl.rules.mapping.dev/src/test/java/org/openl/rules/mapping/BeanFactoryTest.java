@@ -16,7 +16,7 @@ public class BeanFactoryTest {
     public void beanFactoryTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/beanfactory/BeanFactoryTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         C c = new C();
         c.setAString("c-string");

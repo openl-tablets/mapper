@@ -15,7 +15,7 @@ public class TrimStringsTest {
     public void trimStringsTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/trimstrings/TrimStringsTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString(" a-string ");

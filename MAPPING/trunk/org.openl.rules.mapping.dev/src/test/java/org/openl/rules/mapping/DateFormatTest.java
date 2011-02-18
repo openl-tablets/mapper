@@ -15,7 +15,7 @@ public class DateFormatTest {
     public void fieldDateFormatSupportTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/dateformat/FieldDateFormatSupportTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("2010-07-12");
@@ -38,7 +38,7 @@ public class DateFormatTest {
     public void globalDateFormatSupportTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/dateformat/GlobalDateFormatOptionTest.xlsx");
-        RulesBeanMapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();
         a.setAString("2010-07-12");

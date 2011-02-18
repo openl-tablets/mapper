@@ -2,8 +2,10 @@ package org.openl.rules.mapping.loader.dozer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.dozer.CustomConverter;
 import org.dozer.loader.api.BeanMappingBuilder;
 import org.dozer.loader.api.FieldDefinition;
 import org.dozer.loader.api.FieldsMappingOption;
@@ -13,12 +15,22 @@ import org.openl.rules.mapping.definition.ConditionDescriptor;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
 import org.openl.rules.mapping.definition.FieldMap;
 
+/**
+ * Builds Dozer's mapping model using rules mapping model.
+ */
 public class DozerMappingBuilder {
 
     private DozerMappingsContainer mappingsContainer = new DozerMappingsContainer();
     
     public DozerMappingBuilder mapping(BeanMap beanMapping) {
         addMapping(beanMapping);
+        return this;
+    }
+    
+    public DozerMappingBuilder customConvertersWithId(Map<String, CustomConverter> userConverters) {
+        if(userConverters != null) {
+            mappingsContainer.getConverters().putAll(userConverters);
+        }
         return this;
     }
     
