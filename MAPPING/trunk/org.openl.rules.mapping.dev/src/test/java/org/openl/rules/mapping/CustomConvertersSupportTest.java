@@ -185,7 +185,7 @@ public class CustomConvertersSupportTest {
         });
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConvertersWithIdTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, converters);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, converters, null);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         
@@ -230,7 +230,7 @@ public class CustomConvertersSupportTest {
         });
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConvertersOrderTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, converters);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, converters, null);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         

@@ -254,25 +254,25 @@ public class MappingProcessor implements Mapper {
         Collection<ClassMap> superClasses = checkForSuperTypeMapping(srcObj.getClass(), destObj.getClass());
         superMappings.addAll(superClasses);
 
-        List<String> overridedFieldMappings = getFieldMapKeys(destObj, classMap.getFieldMaps()); 
-        
+        List<String> overridedFieldMappings = getFieldMapKeys(destObj, classMap.getFieldMaps());
+
         if (!superMappings.isEmpty()) {
             mappedParentFields = processSuperTypeMapping(superMappings, srcObj, destObj, mapId, overridedFieldMappings);
         }
-        
+
         return mappedParentFields;
     }
 
     private List<String> getFieldMapKeys(Object destObj, List<FieldMap> fieldMaps) {
         List<String> keys = new ArrayList<String>();
-        
+
         for (FieldMap fieldMap : fieldMaps) {
             String key = MappingUtils.getMappedParentFieldKey(destObj, fieldMap);
             if (!keys.contains(key)) {
                 keys.add(key);
             }
         }
-        
+
         return keys;
     }
 
@@ -360,7 +360,8 @@ public class MappingProcessor implements Mapper {
         if (!MappingUtils.isBlankOrNull(fieldMapping.getMappingConditionId())) {
             // check condition using condition id
             if (conditionObjectsWithId != null && conditionObjectsWithId.containsKey(fieldMapping
-                .getMappingConditionId())) {
+                .getMappingConditionId()) && conditionObjectsWithId.get(fieldMapping.getMappingConditionId()) != null) {
+
                 Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping
                     .getSrcFieldType(srcObj.getClass());
                 FieldMappingCondition conditionInstance = conditionObjectsWithId.get(fieldMapping
@@ -390,9 +391,11 @@ public class MappingProcessor implements Mapper {
         if (!MappingUtils.isBlankOrNull(fieldMapping.getCustomConverterId())) {
             if (customConverterObjectsWithId != null && customConverterObjectsWithId.containsKey(fieldMapping
                 .getCustomConverterId()) && customConverterObjectsWithId.get(fieldMapping.getCustomConverterId()) != null) {
+
                 Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping
                     .getSrcFieldType(srcObj.getClass());
-                CustomConverter converterInstance = customConverterObjectsWithId.get(fieldMapping.getCustomConverterId());
+                CustomConverter converterInstance = customConverterObjectsWithId.get(fieldMapping
+                    .getCustomConverterId());
                 destFieldValue = mapUsingCustomConverterInstance(converterInstance, srcFieldClass, srcFieldValue,
                     destFieldType, destObj, fieldMapping, false);
             } else {
@@ -416,7 +419,7 @@ public class MappingProcessor implements Mapper {
 
         Object destDefaultValue = null;
         if (fieldMapping.getDestFieldDefaultValue() != null) {
-            
+
             if (DozerConstants.SELF_KEYWORD.equals(fieldMapping.getDestFieldDefaultValue())) {
                 // If default value of destination field is "this" keyword we
                 // create new instance of destination field type
@@ -424,8 +427,8 @@ public class MappingProcessor implements Mapper {
                 //
                 Class<?> srcFieldClass = fieldMapping.getSrcFieldType(srcObj.getClass());
                 destDefaultValue = DestBeanCreator.create(new BeanCreationDirective(srcFieldValue, srcFieldClass,
-                    destFieldType, destFieldType, null, null, fieldMapping
-                        .getDestFieldCreateMethod() != null ? fieldMapping.getDestFieldCreateMethod() : null));
+                    destFieldType, destFieldType, null, null,
+                    fieldMapping.getDestFieldCreateMethod() != null ? fieldMapping.getDestFieldCreateMethod() : null));
             } else {
                 // If default value is provided we use appropriate converter to
                 // convert string value to appropriate object
@@ -603,14 +606,14 @@ public class MappingProcessor implements Mapper {
             // Check to see if explicit map-id has been specified for the field
             // mapping
             String mapId = fieldMap.getMapId();
-                        
+
             Class<? extends Object> targetClass;
             if (fieldMap.getDestHintContainer() != null && fieldMap.getDestHintContainer().getHint() != null) {
                 targetClass = fieldMap.getDestHintContainer().getHint();
             } else {
                 targetClass = destFieldType;
             }
-            
+
             classMap = getClassMap(srcFieldValue.getClass(), targetClass, mapId);
 
             result = DestBeanCreator.create(new BeanCreationDirective(srcFieldValue, classMap.getSrcClassToMap(),
@@ -636,7 +639,7 @@ public class MappingProcessor implements Mapper {
                 HintContainer destHintContainer = new HintContainer();
                 destHintContainer.setHintName(genericType.getName());
                 FieldMap cloneFieldMap = (FieldMap) fieldMap.clone();
-                cloneFieldMap.setDestHintContainer(destHintContainer); 
+                cloneFieldMap.setDestHintContainer(destHintContainer);
                 // should affect only this time as fieldMap is cloned
                 fieldMap = cloneFieldMap;
             }
@@ -657,7 +660,7 @@ public class MappingProcessor implements Mapper {
         if (Collection.class.getName().equals(destCollectionType.getName())) {
             destCollectionType = List.class;
         }
-        
+
         // Array to Array
         if (CollectionUtils.isArray(srcFieldType) && (CollectionUtils.isArray(destCollectionType))) {
             result = mapArrayToArray(srcObj, srcCollectionValue, fieldMap, destObj);
@@ -1187,7 +1190,8 @@ public class MappingProcessor implements Mapper {
         for (ClassMap map : superClasses) {
             // create copy of super class map which will be modified farther
             ClassMap copy = map.copyOf();
-            // remove from field mappings list entries that overridden by child class
+            // remove from field mappings list entries that overridden by child
+            // class
             removeOverriddenFieldMappings(copy, overriddenFieldMappings, destObj);
             // map classes using field mappings for super classes
             map(copy, srcObj, destObj, true, mapId);
@@ -1197,7 +1201,7 @@ public class MappingProcessor implements Mapper {
                 mappedFieldKeys.add(key);
             }
         }
-        
+
         return mappedFieldKeys;
     }
 
@@ -1210,14 +1214,14 @@ public class MappingProcessor implements Mapper {
      */
     private void removeOverriddenFieldMappings(ClassMap copy, List<String> overriddenFieldMappings, Object destObj) {
         List<FieldMap> result = new ArrayList<FieldMap>();
-        
-        for(FieldMap fieldMap : copy.getFieldMaps()) {
+
+        for (FieldMap fieldMap : copy.getFieldMaps()) {
             String key = MappingUtils.getMappedParentFieldKey(destObj, fieldMap);
             if (!overriddenFieldMappings.contains(key)) {
                 result.add(fieldMap);
             }
         }
-        
+
         copy.setFieldMaps(result);
     }
 
@@ -1264,5 +1268,5 @@ public class MappingProcessor implements Mapper {
 
         return mapping;
     }
-    
+
 }

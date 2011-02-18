@@ -472,7 +472,12 @@ public class RulesMappingsLoader {
         reverseMapping.setConvertMethodBA(mapping.getConvertMethodAB());
         reverseMapping.setConditionAB(mapping.getConditionBA());
         reverseMapping.setConditionBA(mapping.getConditionAB());
+        reverseMapping.setConvertMethodABId(mapping.getConvertMethodBAId());
+        reverseMapping.setConvertMethodBAId(mapping.getConvertMethodABId());
+        reverseMapping.setConditionABId(mapping.getConditionBAId());
+        reverseMapping.setConditionBAId(mapping.getConditionABId());
 
+        
         if (mapping.getFieldBType() != null) {
             reverseMapping.setFieldAType(new Class<?>[] { mapping.getFieldBType() });
         }
@@ -546,7 +551,11 @@ public class RulesMappingsLoader {
             fieldMapping.setConverter(converterDescriptor);
         }
 
-        if (!StringUtils.isBlank(mapping.getConditionAB())) {
+        if (!StringUtils.isBlank(mapping.getConditionABId())) {
+            // create converter descriptor for current field mapping.
+            ConditionDescriptor conditionDescriptor = createConditionDescriptor(mapping.getConditionABId(), null);
+            fieldMapping.setCondition(conditionDescriptor);
+        } else if (!StringUtils.isBlank(mapping.getConditionAB())) {
             String conditionId = MappingIdFactory.createMappingId(mapping);
             ConditionDescriptor conditionDescriptor = createConditionDescriptor(conditionId, mapping.getConditionAB());
             fieldMapping.setCondition(conditionDescriptor);
@@ -562,7 +571,7 @@ public class RulesMappingsLoader {
         // proxy objects which invokes appropriate convert method at runtime
         CustomConverter converter = null;
 
-        // Check that user defined convert method using method name. 
+        // Check that user defined convert method using method name.
         // If convert method is not defined we are does't try to resolve convert
         // method and using only method ID value to create descriptor.
         //
@@ -589,18 +598,21 @@ public class RulesMappingsLoader {
         // condition instances. To reduce count of condition methods we are
         // using proxies objects which invokes appropriate condition method at
         // runtime
-        FieldMappingCondition condition;
-        String typeName = getTypeName(conditionMethod);
+        FieldMappingCondition condition = null;
 
-        if (typeName != null) {
-            Class<?> conditionClass = typeResolver.findClass(typeName);
-            if (conditionClass == null) {
-                throw new RulesMappingException(String.format("Type '%s' not found", typeName));
+        if (StringUtils.isNotEmpty(conditionMethod)) {
+            String typeName = getTypeName(conditionMethod);
+
+            if (typeName != null) {
+                Class<?> conditionClass = typeResolver.findClass(typeName);
+                if (conditionClass == null) {
+                    throw new RulesMappingException(String.format("Type '%s' not found", typeName));
+                }
+
+                condition = ConditionFactory.createCondition(getMethodName(conditionMethod), conditionClass, instance);
+            } else {
+                condition = ConditionFactory.createCondition(conditionMethod, instanceClass, instance);
             }
-
-            condition = ConditionFactory.createCondition(getMethodName(conditionMethod), conditionClass, instance);
-        } else {
-            condition = ConditionFactory.createCondition(conditionMethod, instanceClass, instance);
         }
 
         return new ConditionDescriptor(conditionId, condition);

@@ -37,6 +37,8 @@ public class Mapping {
     private Boolean fieldBRequired;
     private String conditionAB;
     private String conditionBA;
+    private String conditionABId;
+    private String conditionBAId;
 
     public Class<?> getClassA() {
         return classA;
@@ -246,6 +248,22 @@ public class Mapping {
         this.convertMethodBAId = convertMethodBAId;
     }
 
+    public String getConditionABId() {
+        return conditionABId;
+    }
+
+    public void setConditionABId(String conditionABId) {
+        this.conditionABId = conditionABId;
+    }
+
+    public String getConditionBAId() {
+        return conditionBAId;
+    }
+
+    public void setConditionBAId(String conditionBAId) {
+        this.conditionBAId = conditionBAId;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("classA", classA).append("classB",
@@ -258,7 +276,8 @@ public class Mapping {
                 fieldADateFormat).append("fieldBDateFormat", fieldBDateFormat).append("fieldAHint", fieldAHint).append(
                 "fieldBHint", fieldBHint).append("fieldAType", fieldAType).append("fieldBType", fieldBType).append(
                 "fieldARequired", fieldARequired).append("fieldBRequired", fieldBRequired).append("conditionAB",
-                conditionAB).append("conditionBA", conditionBA).toString();
+                conditionAB).append("conditionBA", conditionBA).append("conditionABId", conditionABId).append(
+                "conditionBAId", conditionBAId).toString();
     }
 
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
+import org.dozer.fieldmap.FieldMappingCondition;
 import org.dozer.loader.api.BeanMappingBuilder;
 import org.dozer.loader.api.FieldDefinition;
 import org.dozer.loader.api.FieldsMappingOption;
@@ -30,6 +31,13 @@ public class DozerMappingBuilder {
     public DozerMappingBuilder customConvertersWithId(Map<String, CustomConverter> userConverters) {
         if(userConverters != null) {
             mappingsContainer.getConverters().putAll(userConverters);
+        }
+        return this;
+    }
+    
+    public DozerMappingBuilder conditionsWithId(Map<String, FieldMappingCondition> conditionsWithId) {
+        if(conditionsWithId != null) {
+            mappingsContainer.getConditions().putAll(conditionsWithId);
         }
         return this;
     }

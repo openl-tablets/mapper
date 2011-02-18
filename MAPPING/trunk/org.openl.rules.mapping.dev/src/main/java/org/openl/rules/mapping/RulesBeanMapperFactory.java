@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import org.dozer.CustomConverter;
+import org.dozer.fieldmap.FieldMappingCondition;
 import org.openl.conf.IOpenLConfiguration;
 import org.openl.conf.OpenLConfiguration;
 import org.openl.rules.mapping.exception.RulesMappingException;
@@ -29,17 +30,19 @@ public final class RulesBeanMapperFactory {
      * @return mapper instance
      */
     public static Mapper createMapperInstance(File source) {
-        return createMapperInstance(source, null);
+        return createMapperInstance(source, null, null);
     }
-    
+
     /**
      * Creates mapper instance using file with mapping rule definitions.
      * 
      * @param source file with mapping rule definitions
      * @param customConvertersWithId external custom converters
+     * @param conditionsWithId external conditions
      * @return mapper instance
      */
-    public static Mapper createMapperInstance(File source, Map<String, CustomConverter> customConvertersWithId) {
+    public static Mapper createMapperInstance(File source, Map<String, CustomConverter> customConvertersWithId,
+        Map<String, FieldMappingCondition> conditionsWithId) {
         ApiBasedRulesEngineFactory factory = new ApiBasedRulesEngineFactory(source);
         factory.setExecutionMode(true);
         Class<?> instanceClass;
@@ -68,7 +71,7 @@ public final class RulesBeanMapperFactory {
             IOpenLConfiguration openLConfiguration = getOpenLConfiguration(factory);
             TypeResolver typeResolver = new RulesTypeResolver(openLConfiguration);
 
-            return new RulesBeanMapper(instanceClass, instance, typeResolver, customConvertersWithId);
+            return new RulesBeanMapper(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId);
         } catch (Exception e) {
             throw new RulesMappingException(String.format("Cannot load mapping definitions from file: %s", source
                 .getAbsolutePath()), e);
@@ -78,7 +81,7 @@ public final class RulesBeanMapperFactory {
 
     private static IOpenLConfiguration getOpenLConfiguration(ASourceCodeEngineFactory factory) {
         String configName = DEFAULT_OPENL_CONFIGURATION_PREFIX + factory.getSourceCode().getUri(0);
-        
+
         return OpenLConfiguration.getInstance(configName, factory.getUserContext());
     }
 }
