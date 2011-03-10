@@ -61,7 +61,7 @@ public class MultiSourceFieldMap extends FieldMap {
                 getDestFieldTheGetMethod(), getDestFieldTheSetMethod(), getDestFieldMapGetMethod(),
                 getDestFieldMapSetMethod(), isDestFieldAccessible(), isDestFieldIndexed(), getDestFieldIndex(),
                 getDestFieldName(), getDestFieldKey(), isDestSelfReferencing(), getSrcFieldName(),
-                null, getDestDeepIndexHintContainer(), getClassMap().getDestClassBeanFactory());
+                getDestDeepIndexHintContainer(), getClassMap().getDestClassBeanFactory());
 
             getDestPropertyDescriptorMap().putIfAbsent(runtimeDestClass, descriptor);
             result = descriptor;

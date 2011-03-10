@@ -32,13 +32,13 @@ public class XmlBeanPropertyDescriptor implements DozerPropertyDescriptor {
     private final JavaBeanPropertyDescriptor isSetFieldPropertyDescriptor;
 
     public XmlBeanPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, String index,
-        HintContainer srcDeepIndexHintContainer, HintContainer destDeepIndexHintContainer) {
+        HintContainer deepIndexHintContainer) {
 
         fieldPropertyDescriptor = new JavaBeanPropertyDescriptor(clazz, fieldName, isIndexed, index,
-            srcDeepIndexHintContainer, destDeepIndexHintContainer);
+            deepIndexHintContainer);
 
         isSetFieldPropertyDescriptor = new JavaBeanPropertyDescriptor(clazz, getIsSetFieldName(fieldName), isIndexed,
-            index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
+            index, deepIndexHintContainer);
     }
 
     public Class<?> getPropertyType() {

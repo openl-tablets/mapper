@@ -51,8 +51,8 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
     private Class<?> propertyType;
 
     public GetterSetterPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, String index,
-        HintContainer srcDeepIndexHintContainer, HintContainer destDeepIndexHintContainer) {
-        super(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
+        HintContainer deepIndexHintContainer) {
+        super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
     }
 
     public abstract Method getWriteMethod() throws NoSuchMethodException;
@@ -125,7 +125,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
         Object hierarchyValue = parentObj;
         // get deep hierarchy for current source object
         // 
-        DeepHierarchyElement[] hierarchy = getDeepFieldHierarchy(srcObj, srcDeepIndexHintContainer);
+        DeepHierarchyElement[] hierarchy = getDeepFieldHierarchy(srcObj, deepIndexHintContainer);
         int hierarchyLength = hierarchy.length;
 
         // Iterate thru each deep element in the hierarchy to obtain field value

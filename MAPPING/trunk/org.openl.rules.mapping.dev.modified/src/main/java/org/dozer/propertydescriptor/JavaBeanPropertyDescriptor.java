@@ -36,13 +36,13 @@ public class JavaBeanPropertyDescriptor extends GetterSetterPropertyDescriptor {
     private PropertyDescriptor pd;
 
     public JavaBeanPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, String index,
-        HintContainer srcDeepIndexHintContainer, HintContainer destDeepIndexHintContainer) {
-        super(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
+        HintContainer deepIndexHintContainer) {
+        super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
     }
 
     @Override
     public Method getWriteMethod() throws NoSuchMethodException {
-        Method writeMethod = getPropertyDescriptor(destDeepIndexHintContainer).getWriteMethod();
+        Method writeMethod = getPropertyDescriptor(deepIndexHintContainer).getWriteMethod();
         if (writeMethod == null) {
             throw new NoSuchMethodException(
                 "Unable to determine write method for Field: " + fieldName + " in Class: " + clazz);
@@ -58,7 +58,7 @@ public class JavaBeanPropertyDescriptor extends GetterSetterPropertyDescriptor {
 
     @Override
     protected Method getReadMethod() throws NoSuchMethodException {
-        Method result = getPropertyDescriptor(srcDeepIndexHintContainer).getReadMethod();
+        Method result = getPropertyDescriptor(deepIndexHintContainer).getReadMethod();
         if (result == null) {
             throw new NoSuchMethodException(
                 "Unable to determine read method for Field: " + fieldName + " in Class: " + clazz);
