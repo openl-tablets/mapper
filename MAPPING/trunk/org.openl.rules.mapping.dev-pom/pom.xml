@@ -15,7 +15,6 @@
     <version>5.7.5-SNAPSHOT</version>
     <name>OpenL - Rules - Mapping - Dev POM</name>
     <description>Dev</description>
-    <url>http://openl-tablets.sourceforge.net/ws-toc401.shtml</url>
 
     <modules>
         <module>../org.openl.rules.mapping.dev.modified</module>
@@ -26,10 +25,10 @@
 
     <scm>
         <connection>
-            scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/tags/release-5.7.4.001
+            scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/trunk
         </connection>
         <developerConnection>
-            scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/MAPPING/tags/release-5.7.4.001
+            scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/MAPPING/trunk
         </developerConnection>
     </scm>
 
@@ -113,7 +112,7 @@
             <dependency>
                 <groupId>org.openl.rules</groupId>
                 <artifactId>org.openl.rules</artifactId>
-                <version>${version}</version>
+                <version>${openl.version.maven}</version>
             </dependency>
 
             <dependency>
