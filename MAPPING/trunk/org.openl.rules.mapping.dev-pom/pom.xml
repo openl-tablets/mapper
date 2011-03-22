@@ -21,6 +21,7 @@
         <module>../org.openl.rules.mapping.dev.modified.test</module>
         <module>../org.openl.rules.mapping.dev</module>
         <module>../org.openl.rules.mapping.dev.test</module>
+        <module>../org.openl.rules.mapping.lib</module>
     </modules>
 
     <scm>
