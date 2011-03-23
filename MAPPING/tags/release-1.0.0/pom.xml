@@ -14,9 +14,18 @@
     <developerConnection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/tags/release-1.0.0</developerConnection>
   </scm>
 
+  <distributionManagement>
+    <repository>
+      <id>exigen-repo-release</id>
+      <name>Exigen Release Repository</name>
+      <url>file:////bldrix02.exigengroup.lv/maven-repo/exigen-repo-release</url>
+    </repository>
+  </distributionManagement>
+
   <modules>
     <module>org.openl.rules.mapping.dev-pom</module>
   </modules>
+
   <build>
     <pluginManagement>
       <plugins>
@@ -32,6 +41,12 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-plugin</artifactId>
           <version>1.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
