@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OpenL Rules Mapping Modified Plug-in
+Bundle-SymbolicName: org.openl.rules.mapping.dev.modified
+Bundle-Version: 1.0.0
+Bundle-ClassPath: bin/
+Require-Bundle: org.openl.rules.mapping.lib;visibility:=reexport
+Export-Package: org.dozer,
+ org.dozer.converters,
+ org.dozer.fieldmap,
+ org.dozer.loader,
+ org.dozer.loader.api,
+ org.dozer.loader.xml,
+ org.dozer.propertydescriptor,
+ org.dozer.util
