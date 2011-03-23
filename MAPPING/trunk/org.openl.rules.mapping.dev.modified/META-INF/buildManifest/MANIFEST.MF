@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OpenL Rules Mapping Modified Plug-in
 Bundle-SymbolicName: org.openl.rules.mapping.dev.modified
-Bundle-Version: 5.7.4
+Bundle-Version: 1.0.0
 Export-Package: org.dozer,
  org.dozer.fieldmap,
  org.dozer.loader,
