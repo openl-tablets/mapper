@@ -6,6 +6,7 @@
         <groupId>org.openl.rules</groupId>
         <artifactId>org.openl.rules.base-pom</artifactId>
         <version>5.7.6-SNAPSHOT</version>
+    <relativePath></relativePath><!-- Workaround to prevent warning. See: http://jira.codehaus.org/browse/MNG-4687-->
     </parent>
 
     <groupId>org.openl.rules</groupId>
@@ -99,13 +100,13 @@
             <dependency>
                 <groupId>org.openl.rules</groupId>
                 <artifactId>org.openl.rules.mapping.dev.modified</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.openl.rules</groupId>
                 <artifactId>org.openl.rules.mapping.dev</artifactId>
-                <version>${version}</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
