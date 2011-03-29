@@ -3,6 +3,7 @@ package org.openl.rules.mapping;
 import static org.junit.Assert.assertEquals;
 
 import org.dozer.Mapper;
+import org.dozer.MappingContext;
 import org.dozer.MappingException;
 import org.junit.Test;
 import org.openl.rules.mapping.data.Dest;
@@ -16,7 +17,9 @@ public class RequiredFieldsMappingTest extends AbstractFunctionalTest {
         Mapper mapper = getMapper("required-fields-mapping.xml");
         Source source = new Source(null, 1);
 
-        Dest result = mapper.map(source, Dest.class, "map-wo-required");
+        MappingContext context = new MappingContext();
+        context.setMapId("map-wo-required");
+        Dest result = mapper.map(source, Dest.class, context);
         assertEquals(null, result.getStringField());
         assertEquals(1, result.getIntField());
     }
@@ -25,7 +28,9 @@ public class RequiredFieldsMappingTest extends AbstractFunctionalTest {
     public void test2() {
         Mapper mapper = getMapper("required-fields-mapping.xml");
         Source source = new Source(null, 1);
-        mapper.map(source, Dest.class, "map-w-required");
+        MappingContext context = new MappingContext();
+        context.setMapId("map-w-required");
+        mapper.map(source, Dest.class, context);
     }
 
     @Test
@@ -33,7 +38,9 @@ public class RequiredFieldsMappingTest extends AbstractFunctionalTest {
         Mapper mapper = getMapper("required-fields-mapping.xml");
         Source source = new Source("some string", 1);
 
-        Dest result = mapper.map(source, Dest.class, "map-w-required");
+        MappingContext context = new MappingContext();
+        context.setMapId("map-w-required");
+        Dest result = mapper.map(source, Dest.class, context);
         assertEquals("some string", result.getStringField());
         assertEquals(1, result.getIntField());
     }

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
-import org.dozer.fieldmap.FieldMappingCondition;
+import org.dozer.FieldMappingCondition;
 import org.dozer.loader.api.BeanMappingBuilder;
 import org.dozer.loader.api.FieldDefinition;
 import org.dozer.loader.api.FieldsMappingOption;

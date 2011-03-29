@@ -3,6 +3,7 @@ package org.openl.rules.mapping;
 import static org.junit.Assert.assertEquals;
 
 import org.dozer.Mapper;
+import org.dozer.MappingContext;
 import org.junit.Test;
 import org.openl.rules.mapping.data.Dest;
 import org.openl.rules.mapping.data.Source;
@@ -15,11 +16,13 @@ public class MultiSourceFieldMappingTest extends AbstractFunctionalTest {
         Mapper mapper = getMapper("multi-source-field-mapping.xml");
         Source source = new Source(null, 1);
 
-        Dest result = mapper.map(source, Dest.class, "w-wildcard");
+        MappingContext context = new MappingContext();
+        context.setMapId("w-wildcard");
+        Dest result = mapper.map(source, Dest.class, context);
         assertEquals(";1", result.getStringField());
         assertEquals(1, result.getIntField());
         
-        Source result1 = mapper.map(result, Source.class, "w-wildcard");
+        Source result1 = mapper.map(result, Source.class, context);
         assertEquals(";1", result1.getStringField());
         assertEquals(1, result1.getIntField());
     }
@@ -29,11 +32,13 @@ public class MultiSourceFieldMappingTest extends AbstractFunctionalTest {
         Mapper mapper = getMapper("multi-source-field-mapping.xml");
         Source source = new Source(null, 1);
 
-        Dest result = mapper.map(source, Dest.class, "wo-wildcard");
+        MappingContext context = new MappingContext();
+        context.setMapId("wo-wildcard");
+        Dest result = mapper.map(source, Dest.class, context);
         assertEquals(";1", result.getStringField());
         assertEquals(1, result.getIntField());
         
-        Source result1 = mapper.map(result, Source.class, "wo-wildcard");
+        Source result1 = mapper.map(result, Source.class, context);
         assertEquals(null, result1.getStringField());
         assertEquals(1, result1.getIntField());
     }

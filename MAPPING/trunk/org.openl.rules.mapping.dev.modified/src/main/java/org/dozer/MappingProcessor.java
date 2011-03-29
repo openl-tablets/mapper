@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.dozer.cache.Cache;
@@ -54,7 +54,6 @@ import org.dozer.factory.DestBeanCreator;
 import org.dozer.fieldmap.CustomGetSetMethodFieldMap;
 import org.dozer.fieldmap.ExcludeFieldMap;
 import org.dozer.fieldmap.FieldMap;
-import org.dozer.fieldmap.FieldMappingCondition;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.fieldmap.MapFieldMap;
 import org.dozer.fieldmap.MultiSourceFieldMap;
@@ -74,7 +73,7 @@ import org.slf4j.LoggerFactory;
  * Internal Mapping Engine. Not intended for direct use by Application code.
  * This class does most of the heavy lifting and is very recursive in nature.
  * <p/>
- * This class is not threadsafe and is instantiated for each new mapping
+ * This class is not thread-safe and is instantiated for each new mapping
  * request.
  * 
  * @author garsombke.franz
@@ -128,18 +127,18 @@ public class MappingProcessor implements Mapper {
         return map(srcObj, destClass, null);
     }
 
-    public <T> T map(final Object srcObj, final Class<T> destClass, final String mapId) {
+    public <T> T map(final Object srcObj, final Class<T> destClass, final MappingContext context) {
         MappingValidator.validateMappingRequest(srcObj, destClass);
-        return map(srcObj, destClass, null, mapId);
+        return map(srcObj, destClass, null, context);
     }
 
     public void map(final Object srcObj, final Object destObj) {
         map(srcObj, destObj, null);
     }
 
-    public void map(final Object srcObj, final Object destObj, final String mapId) {
+    public void map(final Object srcObj, final Object destObj, final MappingContext context) {
         MappingValidator.validateMappingRequest(srcObj, destObj);
-        map(srcObj, null, destObj, mapId);
+        map(srcObj, null, destObj, context);
     }
 
     /* End of Mapper Interface Implementation */
@@ -150,11 +149,11 @@ public class MappingProcessor implements Mapper {
      * @param srcObj source object
      * @param destClass destination class
      * @param destObj destination object
-     * @param mapId mapping identifier
+     * @param context mapping context
      * @param <T> destination object type
      * @return new or updated destination object
      */
-    private <T> T map(Object srcObj, final Class<T> destClass, final T destObj, final String mapId) {
+    private <T> T map(Object srcObj, final Class<T> destClass, final T destObj, final MappingContext mappingContext) {
         srcObj = MappingUtils.deProxy(srcObj);
 
         Class<T> destType;
@@ -168,21 +167,23 @@ public class MappingProcessor implements Mapper {
         }
 
         ClassMap classMap = null;
+
         try {
-            classMap = getClassMap(srcObj.getClass(), destType, mapId);
+            // Find appropriate class mapping.
+            classMap = getClassMap(srcObj.getClass(), destType, getMapId(mappingContext));
 
             eventMgr.fireEvent(new DozerEvent(DozerEventType.MAPPING_STARTED, classMap, null, srcObj, result, null));
 
             // TODO Check if any proxy issues are here
+
             // Check to see if custom converter has been specified for this
-            // mapping
-            // combination. If so, just use it.
+            // mapping combination. If so, just use it.
             CustomConverter converter = MappingUtils.findCustomConverter(converterByDestTypeCache,
                 customConverterObjects, classMap.getCustomConverters(), srcObj.getClass(), destType);
 
             if (converter != null) {
                 return (T) mapUsingCustomConverterInstance(converter, srcObj.getClass(), srcObj, destType, result,
-                    null, true);
+                    null, getUserParams(mappingContext), true);
             }
 
             if (result == null) {
@@ -190,16 +191,34 @@ public class MappingProcessor implements Mapper {
                     classMap.getDestClassToMap(), destType, classMap.getDestClassBeanFactory(), classMap
                         .getDestClassBeanFactoryId(), classMap.getDestClassCreateMethod()));
             }
-            map(classMap, srcObj, result, false, null);
+
+            // Map source to destination using appropriate mapping description.
+            // mapId parameter is null for this invocation because we already
+            // used it to find
+            // appropriate mapping description.
+            map(classMap, srcObj, result, false, null, getUserParams(mappingContext));
         } catch (Throwable e) {
             MappingUtils.throwMappingException(e);
         }
+
         eventMgr.fireEvent(new DozerEvent(DozerEventType.MAPPING_FINISHED, classMap, null, srcObj, result, null));
 
         return result;
     }
 
-    private void map(ClassMap classMap, Object srcObj, Object destObj, boolean bypassSuperMappings, String mapId) {
+    /**
+     * Maps source to destination using given class mapping description.
+     * 
+     * @param classMap
+     * @param srcObj
+     * @param destObj
+     * @param bypassSuperMappings
+     * @param mapId
+     * @param params
+     */
+    private void map(ClassMap classMap, Object srcObj, Object destObj, boolean bypassSuperMappings, String mapId,
+        MappingParameters params) {
+
         srcObj = MappingUtils.deProxy(srcObj);
 
         // 1596766 - Recursive object mapping issue. Prevent recursive mapping
@@ -224,7 +243,7 @@ public class MappingProcessor implements Mapper {
         CustomConverter converter = MappingUtils.findCustomConverter(converterByDestTypeCache, customConverterObjects,
             classMap.getCustomConverters(), srcClass, destClass);
         if (converter != null) {
-            mapUsingCustomConverterInstance(converter, srcClass, srcObj, destClass, destObj, null, true);
+            mapUsingCustomConverterInstance(converter, srcClass, srcObj, destClass, destObj, null, params, true);
             return;
         }
 
@@ -232,7 +251,7 @@ public class MappingProcessor implements Mapper {
         // first.
         List<String> mappedParentFields = null;
         if (!bypassSuperMappings) {
-            mappedParentFields = mapParentFields(classMap, srcObj, destObj, mapId);
+            mappedParentFields = mapParentFields(classMap, srcObj, destObj, mapId, params);
         }
 
         // Perform mappings for each field. Iterate through Fields Maps for this
@@ -244,11 +263,13 @@ public class MappingProcessor implements Mapper {
             if (mappedParentFields != null && mappedParentFields.contains(key)) {
                 continue;
             }
-            mapField(fieldMapping, srcObj, destObj);
+            mapField(fieldMapping, srcObj, destObj, params);
         }
     }
 
-    private List<String> mapParentFields(ClassMap classMap, Object srcObj, Object destObj, String mapId) {
+    private List<String> mapParentFields(ClassMap classMap, Object srcObj, Object destObj, String mapId,
+        MappingParameters params) {
+
         Collection<ClassMap> superMappings = new ArrayList<ClassMap>();
         List<String> mappedParentFields = new ArrayList<String>();
         Collection<ClassMap> superClasses = checkForSuperTypeMapping(srcObj.getClass(), destObj.getClass());
@@ -257,7 +278,8 @@ public class MappingProcessor implements Mapper {
         List<String> overridedFieldMappings = getFieldMapKeys(destObj, classMap.getFieldMaps());
 
         if (!superMappings.isEmpty()) {
-            mappedParentFields = processSuperTypeMapping(superMappings, srcObj, destObj, mapId, overridedFieldMappings);
+            mappedParentFields = processSuperTypeMapping(superMappings, srcObj, destObj, mapId, params,
+                overridedFieldMappings);
         }
 
         return mappedParentFields;
@@ -276,8 +298,7 @@ public class MappingProcessor implements Mapper {
         return keys;
     }
 
-    private void mapField(FieldMap fieldMapping, Object srcObj, Object destObj) {
-
+    private void mapField(FieldMap fieldMapping, Object srcObj, Object destObj, MappingParameters params) {
         // The field has been explicitly excluded from mapping. So just return,
         // as
         // no further processing is needed for this field
@@ -304,12 +325,11 @@ public class MappingProcessor implements Mapper {
                 if (!(fieldMapping instanceof MultiSourceFieldMap) && fieldMapping.getDestFieldType() != null && fieldMapping
                     .getDestFieldType().equals(ITERATE)) {
                     // special logic for iterate feature
-                    mapFromIterateMethodFieldMap(srcObj, destObj, srcFieldValue, fieldMapping);
+                    mapFromIterateMethodFieldMap(srcObj, destObj, srcFieldValue, fieldMapping, params);
                 } else {
                     // either deep field map or generic map. The is the most
-                    // likely
-                    // scenario
-                    mapFromFieldMap(srcObj, destObj, srcFieldValue, fieldMapping);
+                    // likely scenario
+                    mapFromFieldMap(srcObj, destObj, srcFieldValue, fieldMapping, params);
                 }
             }
 
@@ -336,8 +356,11 @@ public class MappingProcessor implements Mapper {
         }
     }
 
-    private void mapFromFieldMap(Object srcObj, Object destObj, Object srcFieldValue, FieldMap fieldMapping) {
+    private void mapFromFieldMap(Object srcObj, Object destObj, Object srcFieldValue, FieldMap fieldMapping,
+        MappingParameters params) {
+
         Class<?> destFieldType;
+
         if (fieldMapping instanceof CustomGetSetMethodFieldMap) {
             try {
                 destFieldType = fieldMapping.getDestFieldWriteMethod(destObj.getClass()).getParameterTypes()[0];
@@ -355,8 +378,8 @@ public class MappingProcessor implements Mapper {
         // recurse the object as normal
         // 1770440 - fdg - Using multiple instances of CustomConverter
         Object destFieldValue;
-
         boolean mapField = true;
+
         if (!MappingUtils.isBlankOrNull(fieldMapping.getMappingConditionId())) {
             // check condition using condition id
             if (conditionObjectsWithId != null && conditionObjectsWithId.containsKey(fieldMapping
@@ -368,10 +391,10 @@ public class MappingProcessor implements Mapper {
                     .getMappingConditionId());
                 Object existingValue = getExistingValue(fieldMapping, destObj, destFieldType);
                 mapField = evaluateConditionInstance(conditionInstance, srcFieldClass, srcFieldValue, destFieldType,
-                    existingValue);
+                    existingValue, params);
             } else {
-                throw new MappingException("Mapping condition instance not found with id:" + fieldMapping
-                    .getMappingConditionId());
+                throw new MappingException(
+                    "Mapping condition instance not found with id:" + fieldMapping.getMappingConditionId());
             }
         } else if (!MappingUtils.isBlankOrNull(fieldMapping.getMappingCondition())) {
             Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping
@@ -379,7 +402,7 @@ public class MappingProcessor implements Mapper {
             Class<?> conditionClass = MappingUtils.loadClass(fieldMapping.getMappingCondition());
             Object existingValue = getExistingValue(fieldMapping, destObj, destFieldType);
             mapField = evaluateCondition(conditionClass, srcFieldClass, srcFieldValue, destFieldType, existingValue,
-                fieldMapping);
+                fieldMapping, params);
         }
 
         // If mapping condition have returned false value skip current field
@@ -397,16 +420,16 @@ public class MappingProcessor implements Mapper {
                 CustomConverter converterInstance = customConverterObjectsWithId.get(fieldMapping
                     .getCustomConverterId());
                 destFieldValue = mapUsingCustomConverterInstance(converterInstance, srcFieldClass, srcFieldValue,
-                    destFieldType, destObj, fieldMapping, false);
+                    destFieldType, destObj, fieldMapping, params, false);
             } else {
-                throw new MappingException("CustomConverter instance not found with id:" + fieldMapping
-                    .getCustomConverterId());
+                throw new MappingException(
+                    "CustomConverter instance not found with id:" + fieldMapping.getCustomConverterId());
             }
         } else if (MappingUtils.isBlankOrNull(fieldMapping.getCustomConverter())) {
             if (fieldMapping instanceof MultiSourceFieldMap) {
                 MappingUtils.throwMappingException("Custom converter should be provided");
             }
-            destFieldValue = mapOrRecurseObject(srcObj, srcFieldValue, destFieldType, fieldMapping, destObj);
+            destFieldValue = mapOrRecurseObject(srcObj, srcFieldValue, destFieldType, destObj, fieldMapping, params);
         } else {
             Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping
                 .getSrcFieldType(srcObj.getClass());
@@ -414,7 +437,7 @@ public class MappingProcessor implements Mapper {
 
             // get dest value using user defined converter for current field map
             destFieldValue = mapUsingCustomConverter(converterClass, srcFieldClass, srcFieldValue, destFieldType,
-                destObj, fieldMapping, false);
+                destObj, fieldMapping, params, false);
         }
 
         Object destDefaultValue = null;
@@ -441,19 +464,24 @@ public class MappingProcessor implements Mapper {
         writeDestinationValue(destObj, destFieldValue, fieldMapping, srcObj, destDefaultValue);
 
         if (log.isDebugEnabled()) {
-            log.debug(LogMsgFactory.createFieldMappingSuccessMsg(srcObj.getClass(), destObj.getClass(), fieldMapping
-                .getSrcFieldName(), fieldMapping.getDestFieldName(), srcFieldValue, destFieldValue, fieldMapping
-                .getClassMap().getMapId()));
+            log.debug(LogMsgFactory.createFieldMappingSuccessMsg(srcObj.getClass(), destObj.getClass(),
+                fieldMapping.getSrcFieldName(), fieldMapping.getDestFieldName(), srcFieldValue, destFieldValue,
+                fieldMapping.getClassMap().getMapId()));
         }
     }
 
     private boolean evaluateConditionInstance(FieldMappingCondition conditionInstance, Class<?> srcFieldClass,
-        Object srcFieldValue, Class<?> destFieldType, Object destFieldValue) {
+        Object srcFieldValue, Class<?> destFieldType, Object destFieldValue, MappingParameters params) {
+        
+        if (conditionInstance instanceof MappingParamsAwareFieldMappingCondition) {
+            ((MappingParamsAwareFieldMappingCondition) conditionInstance).setMappingParams(params);
+        }
+        
         return conditionInstance.mapField(srcFieldValue, destFieldValue, srcFieldClass, destFieldType);
     }
 
     private boolean evaluateCondition(Class<?> conditionClass, Class<?> srcFieldClass, Object srcFieldValue,
-        Class<?> destFieldType, Object destFieldValue, FieldMap fieldMapping) {
+        Class<?> destFieldType, Object destFieldValue, FieldMap fieldMapping, MappingParameters params) {
 
         FieldMappingCondition conditionInstance = null;
 
@@ -466,18 +494,19 @@ public class MappingProcessor implements Mapper {
             }
         }
         // if converter object instances were not injected, then create new
-        // instance
-        // of the converter for each conversion
+        // instance of the converter for each conversion
         // TODO : Should we really create it each time?
         if (conditionInstance == null) {
             conditionInstance = (FieldMappingCondition) ReflectionUtils.newInstance(conditionClass);
         }
 
-        return evaluateConditionInstance(conditionInstance, srcFieldClass, srcFieldValue, destFieldType, destFieldValue);
+        return evaluateConditionInstance(conditionInstance, srcFieldClass, srcFieldValue, destFieldType,
+            destFieldValue, params);
     }
 
-    private Object mapOrRecurseObject(Object srcObj, Object srcFieldValue, Class<?> destFieldType, FieldMap fieldMap,
-        Object destObj) {
+    private Object mapOrRecurseObject(Object srcObj, Object srcFieldValue, Class<?> destFieldType, Object destObj,
+        FieldMap fieldMap, MappingParameters params) {
+
         Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMap.getSrcFieldType(srcObj
             .getClass());
         CustomConverter converter = MappingUtils.determineCustomConverter(fieldMap, converterByDestTypeCache,
@@ -487,7 +516,7 @@ public class MappingProcessor implements Mapper {
         // #1563795
         if (converter != null) {
             return mapUsingCustomConverterInstance(converter, srcFieldClass, srcFieldValue, destFieldType, destObj,
-                fieldMap, false);
+                fieldMap, params, false);
         }
 
         if (srcFieldValue == null) {
@@ -517,7 +546,7 @@ public class MappingProcessor implements Mapper {
         boolean isSrcFieldClassSupportedMap = MappingUtils.isSupportedMap(srcFieldClass);
         boolean isDestFieldTypeSupportedMap = MappingUtils.isSupportedMap(destFieldType);
         if (isSrcFieldClassSupportedMap && isDestFieldTypeSupportedMap) {
-            return mapMap(srcObj, (Map<?, ?>) srcFieldValue, fieldMap, destObj);
+            return mapMap(srcObj, (Map<?, ?>) srcFieldValue, fieldMap, destObj, params);
         }
         if (fieldMap instanceof MapFieldMap && destFieldType.equals(Object.class)) {
             // TODO: find better place for this logic. try to encapsulate in
@@ -564,7 +593,7 @@ public class MappingProcessor implements Mapper {
             }
         }
         if (MappingUtils.isSupportedCollection(srcFieldClass) && (MappingUtils.isSupportedCollection(destFieldType))) {
-            return mapCollection(srcObj, srcFieldValue, fieldMap, destObj);
+            return mapCollection(srcObj, srcFieldValue, fieldMap, destObj, params);
         }
 
         if (MappingUtils.isEnumType(srcFieldClass, destFieldType)) {
@@ -573,7 +602,7 @@ public class MappingProcessor implements Mapper {
 
         // Default: Map from one custom data object to another custom data
         // object
-        return mapCustomObject(fieldMap, destObj, destFieldType, srcFieldValue);
+        return mapCustomObject(fieldMap, destObj, destFieldType, srcFieldValue, params);
     }
 
     private <T extends Enum<T>> T mapEnum(Enum<T> srcFieldValue, Class<T> destFieldType) {
@@ -581,7 +610,9 @@ public class MappingProcessor implements Mapper {
         return Enum.valueOf(destFieldType, name);
     }
 
-    private Object mapCustomObject(FieldMap fieldMap, Object destObj, Class<?> destFieldType, Object srcFieldValue) {
+    private Object mapCustomObject(FieldMap fieldMap, Object destObj, Class<?> destFieldType, Object srcFieldValue,
+        MappingParameters params) {
+
         srcFieldValue = MappingUtils.deProxy(srcFieldValue);
 
         // Custom java bean. Need to make sure that the destination object is
@@ -622,12 +653,13 @@ public class MappingProcessor implements Mapper {
                     .getDestFieldCreateMethod() : classMap.getDestClassCreateMethod()));
         }
 
-        map(classMap, srcFieldValue, result, false, fieldMap.getMapId());
+        map(classMap, srcFieldValue, result, false, fieldMap.getMapId(), params);
 
         return result;
     }
 
-    private Object mapCollection(Object srcObj, Object srcCollectionValue, FieldMap fieldMap, Object destObj) {
+    private Object mapCollection(Object srcObj, Object srcCollectionValue, FieldMap fieldMap, Object destObj,
+        MappingParameters params) {
         // since we are mapping some sort of collection now is a good time to
         // decide
         // if they provided hints
@@ -663,44 +695,45 @@ public class MappingProcessor implements Mapper {
 
         // Array to Array
         if (CollectionUtils.isArray(srcFieldType) && (CollectionUtils.isArray(destCollectionType))) {
-            result = mapArrayToArray(srcObj, srcCollectionValue, fieldMap, destObj);
+            result = mapArrayToArray(srcObj, srcCollectionValue, fieldMap, destObj, params);
             // Array to List
         } else if (CollectionUtils.isArray(srcFieldType) && (CollectionUtils.isList(destCollectionType))) {
-            result = mapArrayToList(srcObj, srcCollectionValue, fieldMap, destObj);
+            result = mapArrayToList(srcObj, srcCollectionValue, fieldMap, destObj, params);
         }
         // List to Array
         else if (CollectionUtils.isList(srcFieldType) && (CollectionUtils.isArray(destCollectionType))) {
-            result = mapListToArray(srcObj, (List<?>) srcCollectionValue, fieldMap, destObj);
+            result = mapListToArray(srcObj, (List<?>) srcCollectionValue, fieldMap, destObj, params);
             // List to List
         } else if (CollectionUtils.isList(srcFieldType) && (CollectionUtils.isList(destCollectionType))) {
-            result = mapListToList(srcObj, (List<?>) srcCollectionValue, fieldMap, destObj);
+            result = mapListToList(srcObj, (List<?>) srcCollectionValue, fieldMap, destObj, params);
         }
         // Set to Array
         else if (CollectionUtils.isSet(srcFieldType) && CollectionUtils.isArray(destCollectionType)) {
-            result = mapSetToArray(srcObj, (Set<?>) srcCollectionValue, fieldMap, destObj);
+            result = mapSetToArray(srcObj, (Set<?>) srcCollectionValue, fieldMap, destObj, params);
         }
         // Array to Set
         else if (CollectionUtils.isArray(srcFieldType) && CollectionUtils.isSet(destCollectionType)) {
-            result = addToSet(srcObj, fieldMap, Arrays.asList((Object[]) srcCollectionValue), destObj);
+            result = addToSet(srcObj, fieldMap, Arrays.asList((Object[]) srcCollectionValue), destObj, params);
         }
         // Set to List
         else if (CollectionUtils.isSet(srcFieldType) && CollectionUtils.isList(destCollectionType)) {
-            result = mapListToList(srcObj, (Set<?>) srcCollectionValue, fieldMap, destObj);
+            result = mapListToList(srcObj, (Set<?>) srcCollectionValue, fieldMap, destObj, params);
         }
         // Collection to Set
         else if (CollectionUtils.isCollection(srcFieldType) && CollectionUtils.isSet(destCollectionType)) {
-            result = addToSet(srcObj, fieldMap, (Collection<?>) srcCollectionValue, destObj);
+            result = addToSet(srcObj, fieldMap, (Collection<?>) srcCollectionValue, destObj, params);
         }
         // List to Map value
         else if (CollectionUtils.isCollection(srcFieldType) && MappingUtils.isSupportedMap(destCollectionType)) {
-            result = mapListToList(srcObj, (List<?>) srcCollectionValue, fieldMap, destObj);
+            result = mapListToList(srcObj, (List<?>) srcCollectionValue, fieldMap, destObj, params);
         }
         return result;
     }
 
-    private Object mapMap(Object srcObj, Map srcMapValue, FieldMap fieldMap, Object destObj) {
+    private Object mapMap(Object srcObj, Map srcMapValue, FieldMap fieldMap, Object destObj, MappingParameters params) {
         Map result;
         Map destinationMap = (Map) fieldMap.getDestValue(destObj);
+
         if (destinationMap == null) {
             result = DestBeanCreator.create(srcMapValue.getClass());
         } else {
@@ -718,11 +751,11 @@ public class MappingProcessor implements Mapper {
                 continue;
             }
 
-            Object destEntryValue = mapOrRecurseObject(srcObj, srcEntryValue, srcEntryValue.getClass(), fieldMap,
-                destObj);
+            Object destEntryValue = mapOrRecurseObject(srcObj, srcEntryValue, srcEntryValue.getClass(), destObj,
+                fieldMap, params);
             Object obj = result.get(srcEntry.getKey());
             if (obj != null && obj.equals(destEntryValue) && fieldMap.isNonCumulativeRelationship()) {
-                map(null, srcEntryValue, obj, false, null);
+                map(null, srcEntryValue, obj, false, null, params);
             } else {
                 result.put(srcEntry.getKey(), destEntryValue);
             }
@@ -730,30 +763,32 @@ public class MappingProcessor implements Mapper {
         return result;
     }
 
-    private Object mapArrayToArray(Object srcObj, Object srcCollectionValue, FieldMap fieldMap, Object destObj) {
+    private Object mapArrayToArray(Object srcObj, Object srcCollectionValue, FieldMap fieldMap, Object destObj,
+        MappingParameters params) {
+
         Class destEntryType = fieldMap.getDestFieldType(destObj.getClass()).getComponentType();
         int size = Array.getLength(srcCollectionValue);
+
         if (CollectionUtils.isPrimitiveArray(srcCollectionValue.getClass())) {
-            return addToPrimitiveArray(srcObj, fieldMap, size, srcCollectionValue, destObj, destEntryType);
+            return addToPrimitiveArray(srcObj, fieldMap, size, srcCollectionValue, destObj, destEntryType, params);
         } else {
             List<?> list = Arrays.asList((Object[]) srcCollectionValue);
             List<?> returnList;
             if (!BASE_CLASS.equals(destEntryType.getName())) {
-                returnList = addOrUpdateToList(srcObj, fieldMap, list, destObj, destEntryType);
+                returnList = addOrUpdateToList(srcObj, fieldMap, list, destObj, destEntryType, params);
             } else {
-                returnList = addOrUpdateToList(srcObj, fieldMap, list, destObj, null);
+                returnList = addOrUpdateToList(srcObj, fieldMap, list, destObj, null, params);
             }
             return CollectionUtils.convertListToArray(returnList, destEntryType);
         }
     }
 
-    private void mapFromIterateMethodFieldMap(Object srcObj, Object destObj, Object srcFieldValue, FieldMap fieldMapping) {
+    private void mapFromIterateMethodFieldMap(Object srcObj, Object destObj, Object srcFieldValue,
+        FieldMap fieldMapping, MappingParameters params) {
         // Iterate over the destFieldValue - iterating is fine unless we are
-        // mapping
-        // in the other direction.
+        // mapping in the other direction.
         // Verify that it is truly a collection if it is an iterator object turn
-        // it
-        // into a List
+        // it into a List
         if (srcFieldValue instanceof Iterator) {
             srcFieldValue = IteratorUtils.toList((Iterator<?>) srcFieldValue);
         }
@@ -773,7 +808,7 @@ public class MappingProcessor implements Mapper {
                 if (converter != null) {
                     Class<?> srcFieldClass = srcFieldValue.getClass();
                     value = mapUsingCustomConverterInstance(converter, srcFieldClass, value, fieldMapping
-                        .getDestHintContainer().getHint(), null, fieldMapping, false);
+                        .getDestHintContainer().getHint(), null, fieldMapping, params, false);
                 } else {
                     Object alreadyMappedValue = mappedFields.getMappedValue(value, fieldMapping.getDestHintContainer()
                         .getHint());
@@ -796,7 +831,7 @@ public class MappingProcessor implements Mapper {
     }
 
     private Object addToPrimitiveArray(Object srcObj, FieldMap fieldMap, int size, Object srcCollectionValue,
-        Object destObj, Class<?> destEntryType) {
+        Object destObj, Class<?> destEntryType, MappingParameters params) {
 
         Object result;
         Object field = fieldMap.getDestValue(destObj);
@@ -815,7 +850,8 @@ public class MappingProcessor implements Mapper {
             if (srcCollectionValue != null && copyByReferences.contains(srcCollectionValue.getClass())) {
                 toValue = srcCollectionValue;
             } else {
-                toValue = mapOrRecurseObject(srcObj, Array.get(srcCollectionValue, i), destEntryType, fieldMap, destObj);
+                toValue = mapOrRecurseObject(srcObj, Array.get(srcCollectionValue, i), destEntryType, destObj,
+                    fieldMap, params);
             }
             Array.set(result, arraySize, toValue);
             arraySize++;
@@ -823,22 +859,26 @@ public class MappingProcessor implements Mapper {
         return result;
     }
 
-    private Object mapListToArray(Object srcObj, Collection<?> srcCollectionValue, FieldMap fieldMap, Object destObj) {
+    private Object mapListToArray(Object srcObj, Collection<?> srcCollectionValue, FieldMap fieldMap, Object destObj,
+        MappingParameters params) {
+
         Class destEntryType = fieldMap.getDestFieldType(destObj.getClass()).getComponentType();
         List list;
         if (!destEntryType.getName().equals(BASE_CLASS)) {
-            list = addOrUpdateToList(srcObj, fieldMap, srcCollectionValue, destObj, destEntryType);
+            list = addOrUpdateToList(srcObj, fieldMap, srcCollectionValue, destObj, destEntryType, params);
         } else {
-            list = addOrUpdateToList(srcObj, fieldMap, srcCollectionValue, destObj);
+            list = addOrUpdateToList(srcObj, fieldMap, srcCollectionValue, destObj, params);
         }
         return CollectionUtils.convertListToArray(list, destEntryType);
     }
 
-    private List<?> mapListToList(Object srcObj, Collection<?> srcCollectionValue, FieldMap fieldMap, Object destObj) {
-        return addOrUpdateToList(srcObj, fieldMap, srcCollectionValue, destObj);
+    private List<?> mapListToList(Object srcObj, Collection<?> srcCollectionValue, FieldMap fieldMap, Object destObj,
+        MappingParameters params) {
+        return addOrUpdateToList(srcObj, fieldMap, srcCollectionValue, destObj, params);
     }
 
-    private Set<?> addToSet(Object srcObj, FieldMap fieldMap, Collection<?> srcCollectionValue, Object destObj) {
+    private Set<?> addToSet(Object srcObj, FieldMap fieldMap, Collection<?> srcCollectionValue, Object destObj,
+        MappingParameters params) {
         // create a list here so we can keep track of which elements we have
         // mapped, and remove all others if removeOrphans = true
         Set<Object> mappedElements = new HashSet<Object>();
@@ -865,7 +905,7 @@ public class MappingProcessor implements Mapper {
             if (srcValue != null && copyByReferences.contains(srcValue.getClass())) {
                 destValue = srcValue;
             } else {
-                destValue = mapOrRecurseObject(srcObj, srcValue, destEntryType, fieldMap, destObj);
+                destValue = mapOrRecurseObject(srcObj, srcValue, destEntryType, destObj, fieldMap, params);
             }
             prevDestEntryType = destEntryType;
 
@@ -876,7 +916,7 @@ public class MappingProcessor implements Mapper {
                 Object obj = resultAsList.get(index);
                 // make sure it is not a String
                 if (!obj.getClass().isAssignableFrom(String.class)) {
-                    map(null, srcValue, obj, false, null);
+                    map(null, srcValue, obj, false, null, params);
                     mappedElements.add(obj);
                 }
             } else {
@@ -908,7 +948,7 @@ public class MappingProcessor implements Mapper {
     }
 
     private List<?> addOrUpdateToList(Object srcObj, FieldMap fieldMap, Collection<?> srcCollectionValue,
-        Object destObj, Class<?> destEntryType) {
+        Object destObj, Class<?> destEntryType, MappingParameters params) {
         // create a Set here so we can keep track of which elements we have
         // mapped, and remove all others if removeOrphans = true
         List<Object> mappedElements = new ArrayList<Object>();
@@ -934,7 +974,7 @@ public class MappingProcessor implements Mapper {
             if (srcValue != null && copyByReferences.contains(srcValue.getClass())) {
                 destValue = srcValue;
             } else {
-                destValue = mapOrRecurseObject(srcObj, srcValue, destEntryType, fieldMap, destObj);
+                destValue = mapOrRecurseObject(srcObj, srcValue, destEntryType, destObj, fieldMap, params);
             }
             prevDestEntryType = destEntryType;
 
@@ -944,7 +984,7 @@ public class MappingProcessor implements Mapper {
                 Object obj = result.get(index);
                 // make sure it is not a String
                 if (obj != null && !obj.getClass().isAssignableFrom(String.class)) {
-                    map(null, srcValue, obj, false, null);
+                    map(null, srcValue, obj, false, null, params);
                     mappedElements.add(obj);
                 }
             } else {
@@ -991,15 +1031,19 @@ public class MappingProcessor implements Mapper {
         }
     }
 
-    private List<?> addOrUpdateToList(Object srcObj, FieldMap fieldMap, Collection<?> srcCollectionValue, Object destObj) {
-        return addOrUpdateToList(srcObj, fieldMap, srcCollectionValue, destObj, null);
+    private List<?> addOrUpdateToList(Object srcObj, FieldMap fieldMap, Collection<?> srcCollectionValue,
+        Object destObj, MappingParameters params) {
+        return addOrUpdateToList(srcObj, fieldMap, srcCollectionValue, destObj, null, params);
     }
 
-    private Object mapSetToArray(Object srcObj, Collection<?> srcCollectionValue, FieldMap fieldMap, Object destObj) {
-        return mapListToArray(srcObj, srcCollectionValue, fieldMap, destObj);
+    private Object mapSetToArray(Object srcObj, Collection<?> srcCollectionValue, FieldMap fieldMap, Object destObj,
+        MappingParameters params) {
+        return mapListToArray(srcObj, srcCollectionValue, fieldMap, destObj, params);
     }
 
-    private List<?> mapArrayToList(Object srcObj, Object srcCollectionValue, FieldMap fieldMap, Object destObj) {
+    private List<?> mapArrayToList(Object srcObj, Object srcCollectionValue, FieldMap fieldMap, Object destObj,
+        MappingParameters params) {
+
         Class<?> destEntryType;
         if (fieldMap.getDestHintContainer() != null) {
             destEntryType = fieldMap.getDestHintContainer().getHint();
@@ -1012,7 +1056,7 @@ public class MappingProcessor implements Mapper {
         } else {
             srcValueList = Arrays.asList((Object[]) srcCollectionValue);
         }
-        return addOrUpdateToList(srcObj, fieldMap, srcValueList, destObj, destEntryType);
+        return addOrUpdateToList(srcObj, fieldMap, srcValueList, destObj, destEntryType, params);
     }
 
     private void writeDestinationValue(Object destObj, Object destFieldValue, FieldMap fieldMap, Object srcObj,
@@ -1062,7 +1106,7 @@ public class MappingProcessor implements Mapper {
 
     private Object mapUsingCustomConverterInstance(CustomConverter converterInstance, Class<?> srcFieldClass,
         Object srcFieldValue, Class<?> destFieldClass, Object existingDestFieldValue, FieldMap fieldMap,
-        boolean topLevel) {
+        MappingParameters params, boolean topLevel) {
 
         // skip original implementation to obtain the following: custom
         // converter should process null source value as usual
@@ -1088,26 +1132,30 @@ public class MappingProcessor implements Mapper {
                 String param = fieldMap.getCustomConverterParam();
                 theConverter.setParameter(param);
             }
-
-            // if this is a top level mapping the destObj is the highest level
-            // mapping...not a recursive mapping
-            if (topLevel) {
-                result = theConverter.convert(existingDestFieldValue, srcFieldValue, destFieldClass, srcFieldClass);
-            } else {
-                Object existingValue = getExistingValue(fieldMap, existingDestFieldValue, destFieldClass);
-                result = theConverter.convert(existingValue, srcFieldValue, destFieldClass, srcFieldClass);
-            }
-        } else {
-            // if this is a top level mapping the destObj is the highest level
-            // mapping...not a recursive mapping
-            if (topLevel) {
-                result = converterInstance
-                    .convert(existingDestFieldValue, srcFieldValue, destFieldClass, srcFieldClass);
-            } else {
-                Object existingValue = getExistingValue(fieldMap, existingDestFieldValue, destFieldClass);
-                result = converterInstance.convert(existingValue, srcFieldValue, destFieldClass, srcFieldClass);
-            }
         }
+
+        if (converterInstance instanceof MappingParamsAwareCustomConverter) {
+            MappingParamsAwareCustomConverter theConverter = (MappingParamsAwareCustomConverter) converterInstance;
+            theConverter.setMappingParams(params);
+        }
+        /*
+         * // if this is a top level mapping the destObj is the highest level //
+         * mapping...not a recursive mapping if (topLevel) { result =
+         * theConverter.convert(existingDestFieldValue, srcFieldValue,
+         * destFieldClass, srcFieldClass); } else { Object existingValue =
+         * getExistingValue(fieldMap, existingDestFieldValue, destFieldClass);
+         * result = theConverter.convert(existingValue, srcFieldValue,
+         * destFieldClass, srcFieldClass); } } else {
+         */
+        // if this is a top level mapping the destObj is the highest level
+        // mapping...not a recursive mapping
+        if (topLevel) {
+            result = converterInstance.convert(existingDestFieldValue, srcFieldValue, destFieldClass, srcFieldClass);
+        } else {
+            Object existingValue = getExistingValue(fieldMap, existingDestFieldValue, destFieldClass);
+            result = converterInstance.convert(existingValue, srcFieldValue, destFieldClass, srcFieldClass);
+        }
+        // }
 
         long stop = System.currentTimeMillis();
         statsMgr.increment(StatisticType.CUSTOM_CONVERTER_SUCCESS_COUNT);
@@ -1117,13 +1165,14 @@ public class MappingProcessor implements Mapper {
     }
 
     private Object mapUsingCustomConverter(Class<?> customConverterClass, Class<?> srcFieldClass, Object srcFieldValue,
-        Class<?> destFieldClass, Object existingDestFieldValue, FieldMap fieldMap, boolean topLevel) {
+        Class<?> destFieldClass, Object existingDestFieldValue, FieldMap fieldMap, MappingParameters params,
+        boolean topLevel) {
 
         CustomConverter converterInstance = MappingUtils.findCustomConverterByClass(customConverterClass,
             customConverterObjects);
 
         return mapUsingCustomConverterInstance(converterInstance, srcFieldClass, srcFieldValue, destFieldClass,
-            existingDestFieldValue, fieldMap, topLevel);
+            existingDestFieldValue, fieldMap, params, topLevel);
     }
 
     private Collection<ClassMap> checkForSuperTypeMapping(Class<?> srcClass, Class<?> destClass) {
@@ -1158,8 +1207,8 @@ public class MappingProcessor implements Mapper {
             }
         }
 
-        Collections.reverse(superClasses); // Done so base classes are processed
-        // first
+        Collections.reverse(superClasses);
+        // Done so base classes are processed first
 
         superTypeCache.put(cacheKey, superClasses);
 
@@ -1180,11 +1229,13 @@ public class MappingProcessor implements Mapper {
      * @param srcObj source
      * @param destObj destination
      * @param mapId map id
+     * @param params user parameters
      * @param overriddenFieldMappings overridden field mappings
      * @return list of mapped field keys
      */
     private List<String> processSuperTypeMapping(Collection<ClassMap> superClasses, Object srcObj, Object destObj,
-        String mapId, List<String> overriddenFieldMappings) {
+        String mapId, MappingParameters params, List<String> overriddenFieldMappings) {
+
         List<String> mappedFieldKeys = new ArrayList<String>();
 
         for (ClassMap map : superClasses) {
@@ -1194,7 +1245,7 @@ public class MappingProcessor implements Mapper {
             // class
             removeOverriddenFieldMappings(copy, overriddenFieldMappings, destObj);
             // map classes using field mappings for super classes
-            map(copy, srcObj, destObj, true, mapId);
+            map(copy, srcObj, destObj, true, mapId, params);
             for (FieldMap fieldMapping : copy.getFieldMaps()) {
                 // remember mapped fields
                 String key = MappingUtils.getMappedParentFieldKey(destObj, fieldMapping);
@@ -1269,4 +1320,19 @@ public class MappingProcessor implements Mapper {
         return mapping;
     }
 
+    private String getMapId(MappingContext context) {
+        if (context != null) {
+            return context.getMapId();
+        }
+
+        return null;
+    }
+
+    private MappingParameters getUserParams(MappingContext context) {
+        if (context != null) {
+            return context.getParams();
+        }
+
+        return null;
+    }
 }

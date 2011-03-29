@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dozer.CustomConverter;
+import org.dozer.MappingContext;
+import org.dozer.MappingParameters;
 import org.junit.Test;
 import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.C;
@@ -260,6 +262,70 @@ public class CustomConvertersSupportTest {
         result = mapper.map(purchaseOrder, PurchaseOrderTO.class);
         
         assertEquals(false, result.isHasSingleLineItem());
+    }
+
+    @Test
+    public void converterRroxyReusageTest() {
+
+        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConverterProxyCacheTest.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        A a = new A();
+        a.setAString("100");
+        a.setAnInteger(10);
+
+        C c = mapper.map(a, C.class);
+        assertEquals("10", c.getB().getAString());
+        assertEquals(Integer.valueOf(100), c.getB().getAnInteger());
+
+        c = mapper.map(a, C.class);
+        assertEquals("10", c.getB().getAString());
+        assertEquals(Integer.valueOf(100), c.getB().getAnInteger());
+
+        A a1 = mapper.map(c, A.class);
+        
+        assertEquals("100", a1.getAString());
+        assertEquals(Integer.valueOf(10), a1.getAnInteger());
+        
+        a1 = mapper.map(c, A.class);
+        
+        assertEquals("100", a1.getAString());
+        assertEquals(Integer.valueOf(10), a1.getAnInteger());
+    }
+
+    @Test
+    public void mappingParamsAwareConverterTest() {
+
+        File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/MappingParamsAwareCustomConverterTest.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        A a_original = new A();
+        a_original.setAString("100");
+        a_original.setAnInteger(10);
+
+        C c = mapper.map(a_original, C.class);
+        assertEquals("10", c.getB().getAString());
+        assertEquals(Integer.valueOf(100), c.getB().getAnInteger());
+
+        MappingParameters params = new MappingParameters();
+        params.put("string", "1");
+        params.put("int", 1000);
+        MappingContext context = new MappingContext();
+        context.setParams(params);
+        
+        C c1 = mapper.map(a_original, C.class, context);
+        assertEquals("1", c1.getB().getAString());
+        assertEquals(Integer.valueOf(1000), c1.getB().getAnInteger());
+
+        A a = mapper.map(c, A.class);
+        
+        assertEquals("100", a.getAString());
+        assertEquals(Integer.valueOf(10), a.getAnInteger());
+        
+        A a1 = mapper.map(c, A.class, context);
+        
+        assertEquals("1", a1.getAString());
+        assertEquals(Integer.valueOf(1000), a1.getAnInteger());
     }
 
 }

@@ -1,7 +1,11 @@
-package org.openl.rules.mapping.loader;
+package org.openl.rules.mapping.loader.converter;
 
 import org.openl.rules.mapping.Converter;
 
+/**
+ * Defines methods what are used to create ID for converter object.
+ * 
+ */
 public final class ConverterIdFactory {
 
     private ConverterIdFactory() {
@@ -15,8 +19,8 @@ public final class ConverterIdFactory {
         result.append(converter.getClassA().getName());
         result.append(" DST-CLASS->");
         result.append(converter.getClassB().getName());
-        
+
         return result.toString();
     }
-    
+
 }

@@ -5,8 +5,9 @@ import java.util.Map;
 
 import org.dozer.CustomConverter;
 import org.dozer.DozerBeanMapper;
+import org.dozer.FieldMappingCondition;
+import org.dozer.MappingContext;
 import org.dozer.MappingException;
-import org.dozer.fieldmap.FieldMappingCondition;
 import org.openl.rules.mapping.definition.BeanMap;
 import org.openl.rules.mapping.definition.BeanMapConfiguration;
 import org.openl.rules.mapping.definition.Configuration;
@@ -96,4 +97,19 @@ class MappingProcessor {
         }
     }
 
+    public void map(Object source, Object destination, MappingContext context) {
+        try {
+            beanMapper.map(source, destination, context);
+        } catch (MappingException e) {
+            throw new RulesMappingException(e);
+        }
+    }
+
+    public <T> T map(Object source, Class<T> destination, MappingContext context) {
+        try {
+            return beanMapper.map(source, destination, context);
+        } catch (MappingException e) {
+            throw new RulesMappingException(e);
+        }
+    }
 }

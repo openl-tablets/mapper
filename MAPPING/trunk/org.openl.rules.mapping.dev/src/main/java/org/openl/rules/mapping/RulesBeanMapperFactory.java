@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import org.dozer.CustomConverter;
-import org.dozer.fieldmap.FieldMappingCondition;
+import org.dozer.FieldMappingCondition;
 import org.openl.conf.IOpenLConfiguration;
 import org.openl.conf.OpenLConfiguration;
 import org.openl.rules.mapping.exception.RulesMappingException;

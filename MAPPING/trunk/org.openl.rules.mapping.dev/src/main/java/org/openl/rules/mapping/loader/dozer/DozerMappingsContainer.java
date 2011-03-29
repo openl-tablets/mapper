@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.dozer.CustomConverter;
-import org.dozer.fieldmap.FieldMappingCondition;
+import org.dozer.FieldMappingCondition;
 import org.dozer.loader.api.BeanMappingBuilder;
 
 /**

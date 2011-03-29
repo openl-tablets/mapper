@@ -2,7 +2,7 @@ package org.openl.rules.mapping.definition;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.dozer.fieldmap.FieldMappingCondition;
+import org.dozer.FieldMappingCondition;
 
 public class ConditionDescriptor {
 

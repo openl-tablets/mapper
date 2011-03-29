@@ -1,4 +1,4 @@
-package org.dozer.fieldmap;
+package org.dozer;
 
 /**
  * Public field map condition interface.

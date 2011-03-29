@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 
 import org.dozer.DozerBeanMapper;
 import org.dozer.Mapper;
+import org.dozer.MappingContext;
 import org.dozer.MappingException;
 import org.dozer.loader.api.BeanMappingBuilder;
 import org.junit.Test;
@@ -40,7 +41,9 @@ public class XpathFieldsMappingTest extends AbstractFunctionalTest {
 
         source.setField2(inner);
 
-        XpathDest result = mapper.map(source, XpathDest.class, "map1");
+        MappingContext context = new MappingContext();
+        context.setMapId("map1");
+        XpathDest result = mapper.map(source, XpathDest.class, context);
 
         assertNotNull(result);
         assertEquals("test", result.getField1());
@@ -55,7 +58,7 @@ public class XpathFieldsMappingTest extends AbstractFunctionalTest {
         assertEquals("test", result.getField6().getField1());
         assertEquals(5, result.getField6().getField2());
         
-        XpathSource result1 = mapper.map(result, XpathSource.class, "map1");
+        XpathSource result1 = mapper.map(result, XpathSource.class, context);
         
         assertNotNull(result1);
         assertEquals("test", result1.getField2().getField1());
@@ -88,8 +91,9 @@ public class XpathFieldsMappingTest extends AbstractFunctionalTest {
         inner.setField4(new InnerInnerObj[] { ininner1, ininner2 });
 
         source.setField2(inner);
-
-        XpathDest result = mapper.map(source, XpathDest.class, "map2");
+        MappingContext context = new MappingContext();
+        context.setMapId("map2");
+        XpathDest result = mapper.map(source, XpathDest.class, context);
 
         assertNotNull(result);
         assertEquals("inner-inner1.field1", result.getField1());
@@ -121,7 +125,9 @@ public class XpathFieldsMappingTest extends AbstractFunctionalTest {
 
         source.setField2(inner);
 
-        XpathDest result = mapper.map(source, XpathDest.class, "map3");
+        MappingContext context = new MappingContext();
+        context.setMapId("map3");
+        XpathDest result = mapper.map(source, XpathDest.class, context);
 
         assertNotNull(result);
         assertNull(result.getField1());
@@ -132,7 +138,10 @@ public class XpathFieldsMappingTest extends AbstractFunctionalTest {
         Mapper mapper = getMapper("xpath-index-field-mapping.xml");
         XpathDest source = new XpathDest();
         source.setField1("value");
-        mapper.map(source, XpathSource.class, "map4");
+        
+        MappingContext context = new MappingContext();
+        context.setMapId("map4");
+        mapper.map(source, XpathSource.class, context);
     }
     
     @Test
@@ -183,7 +192,9 @@ public class XpathFieldsMappingTest extends AbstractFunctionalTest {
         Mapper mapper = getMapper("xpath-index-field-mapping.xml");
         XpathDest source = new XpathDest();
         
-        XpathSource result = mapper.map(source, XpathSource.class, "map5");
+        MappingContext context = new MappingContext();
+        context.setMapId("map5");
+        XpathSource result = mapper.map(source, XpathSource.class, context);
         
         assertEquals(null, result.getField2().getField4()[0]);
         
@@ -191,7 +202,7 @@ public class XpathFieldsMappingTest extends AbstractFunctionalTest {
         field6.setField1("abc");
         source.setField6(field6);
         
-        result = mapper.map(source, XpathSource.class, "map5");
+        result = mapper.map(source, XpathSource.class, context);
         assertEquals("abc", result.getField2().getField4()[0].getField1());
     }
 

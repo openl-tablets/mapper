@@ -3,7 +3,8 @@ package org.openl.rules.mapping;
 import java.util.Map;
 
 import org.dozer.CustomConverter;
-import org.dozer.fieldmap.FieldMappingCondition;
+import org.dozer.FieldMappingCondition;
+import org.dozer.MappingContext;
 
 /**
  * The OpenL Rules Tablets based public implementation of the {@link Mapper}
@@ -37,6 +38,14 @@ public class RulesBeanMapper implements Mapper {
 
     public void map(Object source, Object destination) {
         getMappingProcessor().map(source, destination);
+    }
+    
+    public <T> T map(Object source, Class<T> destinationClass, MappingContext context) {
+        return getMappingProcessor().map(source, destinationClass, context);
+    }
+
+    public void map(Object source, Object destination, MappingContext context) {
+        getMappingProcessor().map(source, destination, context);
     }
 
     private MappingProcessor getMappingProcessor() {

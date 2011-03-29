@@ -12,7 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
-import org.dozer.fieldmap.FieldMappingCondition;
+import org.dozer.FieldMappingCondition;
 import org.openl.rules.mapping.ClassMappingConfiguration;
 import org.openl.rules.mapping.Converter;
 import org.openl.rules.mapping.GlobalConfiguration;
@@ -25,6 +25,9 @@ import org.openl.rules.mapping.definition.Configuration;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
 import org.openl.rules.mapping.definition.FieldMap;
 import org.openl.rules.mapping.exception.RulesMappingException;
+import org.openl.rules.mapping.loader.condition.ConditionFactory;
+import org.openl.rules.mapping.loader.converter.ConverterFactory;
+import org.openl.rules.mapping.loader.converter.ConverterIdFactory;
 
 /**
  * Intended for internal use only.

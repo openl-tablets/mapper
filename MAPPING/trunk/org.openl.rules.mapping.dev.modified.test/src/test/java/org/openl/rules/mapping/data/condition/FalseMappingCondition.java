@@ -1,6 +1,6 @@
 package org.openl.rules.mapping.data.condition;
 
-import org.dozer.fieldmap.FieldMappingCondition;
+import org.dozer.FieldMappingCondition;
 
 public class FalseMappingCondition implements FieldMappingCondition {
 

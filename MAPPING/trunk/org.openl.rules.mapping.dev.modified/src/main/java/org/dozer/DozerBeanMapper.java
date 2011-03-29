@@ -24,7 +24,6 @@ import org.dozer.classmap.MappingFileData;
 import org.dozer.config.GlobalSettings;
 import org.dozer.event.DozerEventManager;
 import org.dozer.factory.DestBeanCreator;
-import org.dozer.fieldmap.FieldMappingCondition;
 import org.dozer.loader.CustomMappingsLoader;
 import org.dozer.loader.LoadMappingsResult;
 import org.dozer.loader.api.BeanMappingBuilder;
@@ -101,15 +100,15 @@ public class DozerBeanMapper implements Mapper {
     /**
      * {@inheritDoc}
      */
-    public void map(Object source, Object destination, String mapId) throws MappingException {
-        getMappingProcessor().map(source, destination, mapId);
+    public void map(Object source, Object destination, MappingContext mappingContext) throws MappingException {
+        getMappingProcessor().map(source, destination, mappingContext);
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T> T map(Object source, Class<T> destinationClass, String mapId) throws MappingException {
-        return getMappingProcessor().map(source, destinationClass, mapId);
+    public <T> T map(Object source, Class<T> destinationClass, MappingContext mappingContext) throws MappingException {
+        return getMappingProcessor().map(source, destinationClass, mappingContext);
     }
 
     /**
