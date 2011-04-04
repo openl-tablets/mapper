@@ -1,6 +1,7 @@
 package org.dozer.fieldmap;
 
 import org.dozer.classmap.ClassMap;
+import org.dozer.classmap.MappingDirection;
 import org.dozer.propertydescriptor.DozerPropertyDescriptor;
 import org.dozer.propertydescriptor.PropertyDescriptorFactory;
 import org.dozer.util.MappingUtils;
@@ -33,6 +34,11 @@ public class EmptySourceFieldMap extends FieldMap {
     @Override
     public String getSrcFieldName() {
         return null;
+    }
+
+    @Override
+    public MappingDirection getType() {
+        return MappingDirection.ONE_WAY;
     }
 
 }

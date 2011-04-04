@@ -14,7 +14,7 @@ import org.openl.rules.mapping.to.containers.ListContainer;
 import org.openl.rules.mapping.to.containers.ListOfTypeBContainer;
 import org.openl.rules.mapping.to.containers.ListOfTypeCContainer;
 
-public class MapToCollectionWithoutIndexTest {
+public class MapCollectionIndexTest {
 
     @Test
     public void mappingWithArrayTest() {
@@ -171,6 +171,111 @@ public class MapToCollectionWithoutIndexTest {
         array.setArray(new B[] { b1, b2 });
 
         ListContainer result = mapper.map(array, ListContainer.class);
+    }
+    
+    @Test
+    public void mappingIntoLastElementTest1() {
+
+        File source = new File("src/test/resources/org/openl/rules/mapping/index/MappingIntoLastElementTest1.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        C c1 = new C();
+        c1.setAString("c1");
+
+        B b1 = new B();
+        b1.setAString("b1");
+
+        c1.setB(b1);
+
+        C c2 = new C();
+        c2.setAString("c2");
+
+        B b2 = new B();
+        b2.setAString("b2");
+
+        c2.setB(b2);
+
+        C c3 = new C();
+        c3.setAString("c3");
+
+        B b3 = new B();
+        b3.setAString("b3");
+
+        c3.setB(b3);
+
+        ArrayOfTypeCContainer array = new ArrayOfTypeCContainer();
+        array.setArray(new C[] { c1, c2, c3 });
+
+        ArrayOfTypeBContainer a = mapper.map(array, ArrayOfTypeBContainer.class);
+
+        assertEquals(3, a.getArray().length);
+        assertEquals("b1", a.getArray()[0].getAString());
+        assertEquals("b2", a.getArray()[1].getAString());
+        assertEquals("b3", a.getArray()[2].getAString());
+    }
+
+    @Test
+    public void mappingIntoLastElementTest2() {
+
+        File source = new File("src/test/resources/org/openl/rules/mapping/index/MappingIntoLastElementTest2.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        C c1 = new C();
+        c1.setAString("c1");
+
+        B b1 = new B();
+        b1.setAString("b1");
+
+        c1.setB(b1);
+
+        C c2 = new C();
+        c2.setAString("c2");
+
+        B b2 = new B();
+        b2.setAString("b2");
+
+        c2.setB(b2);
+
+        C c3 = new C();
+        c3.setAString("c3");
+
+        B b3 = new B();
+        b3.setAString("b3");
+
+        c3.setB(b3);
+
+        ListOfTypeCContainer list = new ListOfTypeCContainer();
+        list.setList(Arrays.asList(c1, c2, c3));
+
+        ListOfTypeBContainer a = mapper.map(list, ListOfTypeBContainer.class);
+
+        assertEquals(3, a.getList().size());
+        assertEquals("b1", a.getList().get(0).getAString());
+        assertEquals("b2", a.getList().get(1).getAString());
+        assertEquals("b3", a.getList().get(2).getAString());
+    }
+
+    @Test
+    public void mappingIntoLastElementTest3() {
+
+        File source = new File("src/test/resources/org/openl/rules/mapping/index/MappingIntoLastElementTest1.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        B b1 = new B();
+        b1.setAString("b1");
+
+        B b2 = new B();
+        b2.setAString("b2");
+
+        B b3 = new B();
+        b3.setAString("b3");
+
+        ArrayOfTypeBContainer array = new ArrayOfTypeBContainer();
+        array.setArray(new B[] { b1, b2, b3 });
+
+        ArrayOfTypeCContainer a = mapper.map(array, ArrayOfTypeCContainer.class);
+
+        assertEquals(3, a.getArray().length);
     }
 
 }

@@ -123,15 +123,15 @@ public final class MappingsParser {
                     // be mapped
                     // one way class mappings we do not need to add any fields
                     if (!MappingDirection.ONE_WAY.equals(classMap.getType())) {
-                        if (fieldMap instanceof MultiSourceFieldMap && !MappingDirection.ONE_WAY.equals(fieldMap
-                            .getType())) {
-                            MappingUtils.throwMappingException("n to 1 field mapping type should be one way");
-                        }
-
-                        if (fieldMap instanceof EmptySourceFieldMap && !MappingDirection.ONE_WAY.equals(fieldMap
-                            .getType())) {
-                            MappingUtils.throwMappingException("Empty source field mapping type should be one way");
-                        }
+//                        if (fieldMap instanceof MultiSourceFieldMap && !MappingDirection.ONE_WAY.equals(fieldMap
+//                            .getType())) {
+//                            MappingUtils.throwMappingException("n to 1 field mapping type should be one way");
+//                        }
+//
+//                        if (fieldMap instanceof EmptySourceFieldMap && !MappingDirection.ONE_WAY.equals(fieldMap
+//                            .getType())) {
+//                            MappingUtils.throwMappingException("Empty source field mapping type should be one way");
+//                        }
 
                         if (!(MappingDirection.ONE_WAY.equals(fieldMap.getType()) && !(fieldMap instanceof ExcludeFieldMap))) {
                             // make a prime field map
@@ -187,7 +187,11 @@ public final class MappingsParser {
                         MappingUtils.applyGlobalCopyByReference(globalConfiguration, oneWayFieldMap, classMap);
                         // check to see if we need to exclude the map
                         if (MappingDirection.ONE_WAY.equals(oneWayFieldMap.getType())) {
-                            fieldMapPrime = new ExcludeFieldMap(classMapPrime);
+                            if (!(fieldMap instanceof MultiSourceFieldMap)) {
+                                fieldMapPrime = new ExcludeFieldMap(classMapPrime);
+                            } else {
+                                fieldMapPrime = new MultiFieldsExcludeFieldMap(classMapPrime);
+                            }
                             MappingUtils.reverseFields(oneWayFieldMap, fieldMapPrime);
                             classMapPrime.addFieldMapping(fieldMapPrime);
                         }

@@ -69,7 +69,7 @@ public class DozerApiTest {
 
         BeanMappingBuilder builder = new BeanMappingBuilder() {
             protected void configure() {
-                mapping(Source.class, Dest.class, wildcard(false), oneWay()).fields(
+                mapping(Source.class, Dest.class, wildcard(false)).fields(
                     multi("intField", "stringField"),
                     field("stringField").required(true).defaultValue("default value"),
                     customConverterId("testConverter"));
@@ -105,6 +105,10 @@ public class DozerApiTest {
 
         assertEquals("10;", dest.getStringField());
         assertEquals(0, dest.getIntField());
+        
+        Source source1 = mapper.map(dest, Source.class);
+        assertEquals(null, source1.getStringField());
+        assertEquals(0, source1.getIntField());
     }
 
     @Test(expected = MappingException.class)
@@ -279,7 +283,7 @@ public class DozerApiTest {
         assertEquals(0, dest.getIntField());
     }
 
-    @Test(expected = MappingException.class)
+    @Test
     public void test9() {
 
         BeanMappingBuilder builder = new BeanMappingBuilder() {
@@ -291,7 +295,7 @@ public class DozerApiTest {
                 )
                 .fields(
                     multi("intField", "stringField"),
-                    field("stringField").required(true).defaultValue("default value"),
+                    field("stringField"),
                     customConverterId("testConverter")
                 );
             }
@@ -301,7 +305,7 @@ public class DozerApiTest {
         customConvertersWithId.put("testConverter", new CustomConverter() {
             public Object convert(Object existingDestinationFieldValue, Object sourceFieldValue,
                 Class<?> destinationClass, Class<?> sourceClass) {
-                   throw new RuntimeException("Converter shouldn't be invoked");
+                   return "";
             }
         });
 
@@ -309,7 +313,8 @@ public class DozerApiTest {
         mapper.addMapping(builder);
 
         Source source = new Source(null, 10);
-        mapper.map(source, Dest.class);
+        Dest dest = mapper.map(source, Dest.class);
+        assertEquals(null, dest.getStringField());
     }
     
     @Test
@@ -611,7 +616,7 @@ public class DozerApiTest {
         assertEquals(0, dest.getIntField());
     }
 
-    @Test(expected = MappingException.class)
+    @Test
     public void test17() {
 
         BeanMappingBuilder builder = new BeanMappingBuilder() {
@@ -623,7 +628,7 @@ public class DozerApiTest {
                 )
                 .fields(
                     field(""),
-                    field("stringField").required(true).defaultValue("default value")
+                    field("stringField")
                 );
             }
         };
@@ -631,7 +636,11 @@ public class DozerApiTest {
         mapper.addMapping(builder);
         
         Source source = new Source(null, 10);
-        mapper.map(source, Dest.class);
+        Dest dest = mapper.map(source, Dest.class);
+        assertEquals(null, dest.getStringField());
+        Source source1 = mapper.map(dest, Source.class);
+        assertEquals(null, source1.getStringField());
+        assertEquals(0, source1.getIntField());
     }
 
     @Test

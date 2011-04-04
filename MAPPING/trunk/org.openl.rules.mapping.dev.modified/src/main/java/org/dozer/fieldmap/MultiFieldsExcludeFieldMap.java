@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.dozer.classmap.ClassMap;
+import org.dozer.classmap.MappingDirection;
 import org.dozer.propertydescriptor.DozerPropertyDescriptor;
 import org.dozer.propertydescriptor.PropertyDescriptorFactory;
 import org.dozer.util.MappingUtils;
@@ -325,5 +326,10 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
     public void writeDestValue(Object runtimeDestObj, Object destFieldValue) {
         throw new UnsupportedOperationException();
     }
+
+//    @Override
+//    public MappingDirection getType() {
+//        return MappingDirection.ONE_WAY;
+//    }
 
 }
