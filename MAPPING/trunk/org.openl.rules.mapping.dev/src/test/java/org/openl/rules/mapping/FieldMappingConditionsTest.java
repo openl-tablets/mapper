@@ -6,10 +6,10 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.dozer.BaseMappingParamsAwareFieldMappingCondition;
 import org.dozer.FieldMappingCondition;
 import org.dozer.MappingContext;
 import org.dozer.MappingParameters;
-import org.dozer.MappingParamsAwareFieldMappingCondition;
 import org.junit.Test;
 import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.C;
@@ -140,33 +140,24 @@ public class FieldMappingConditionsTest {
     public void fieldMapConditionWithIdSupportTest() {
 
         Map<String, FieldMappingCondition> conditions = new HashMap<String, FieldMappingCondition>();
-        conditions.put("map", new MappingParamsAwareFieldMappingCondition() {
-
-            private MappingParameters params;
-
-            public void setMappingParams(MappingParameters params) {
-                this.params = params;
-            }
-
-            public boolean mapField(Object sourceFieldValue, Object destFieldValue, Class<?> sourceType,
-                Class<?> destType) {
+        conditions.put("map", new BaseMappingParamsAwareFieldMappingCondition() {
+            
+            @Override
+            public boolean mapField(MappingParameters params, Object sourceFieldValue, Object destFieldValue,
+                Class<?> sourceType, Class<?> destType) {
                 if (params != null && params.contains("true")) {
                     return (Boolean) params.get("true");
                 }
 
                 return true;
-            }
+            }        
         });
 
-        conditions.put("dontMap", new MappingParamsAwareFieldMappingCondition() {
-            private MappingParameters params;
-
-            public void setMappingParams(MappingParameters params) {
-                this.params = params;
-            }
-
-            public boolean mapField(Object sourceFieldValue, Object destFieldValue, Class<?> sourceType,
-                Class<?> destType) {
+        conditions.put("dontMap", new BaseMappingParamsAwareFieldMappingCondition() {
+            
+            @Override
+            public boolean mapField(MappingParameters params, Object sourceFieldValue, Object destFieldValue,
+                Class<?> sourceType, Class<?> destType) {
                 if (params != null && params.contains("false")) {
                     return (Boolean) params.get("false");
                 }
