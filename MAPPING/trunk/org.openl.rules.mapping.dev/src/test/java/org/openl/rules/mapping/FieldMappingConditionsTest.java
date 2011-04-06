@@ -240,5 +240,41 @@ public class FieldMappingConditionsTest {
         assertEquals(null, a1.getAnInteger());
     }
 
+    @Test
+    public void conditionMethodUsageOrderTest() {
+
+        File source = new File("src/test/resources/org/openl/rules/mapping/conditions/FieldMappingConditionsUsageOrderTest.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        MappingContext context = new MappingContext();
+        MappingParameters params = new MappingParameters();
+        params.put("true", true);
+        params.put("false", false);
+        context.setParams(params);
+        
+        A a = new A();
+        a.setAString("a-string");
+        a.setAnInteger(100);
+
+        C c = mapper.map(a, C.class);
+        assertEquals("a-string", c.getAString());
+        assertEquals("a-string", c.getB().getAString());
+        assertEquals(Integer.valueOf(100), c.getB().getAnInteger());
+
+        C c1 = mapper.map(a, C.class, context);
+        assertEquals("a-string", c1.getAString());
+        assertEquals("a-string", c1.getB().getAString());
+        assertEquals(Integer.valueOf(100), c1.getB().getAnInteger());
+
+        A a1 = mapper.map(c, A.class);
+
+        assertEquals("a-string", a1.getAString());
+        assertEquals(null, a1.getAnInteger());
+        
+        A a2 = mapper.map(c1, A.class, context);
+
+        assertEquals("a-string", a2.getAString());
+        assertEquals(null, a2.getAnInteger());
+    }
 
 }

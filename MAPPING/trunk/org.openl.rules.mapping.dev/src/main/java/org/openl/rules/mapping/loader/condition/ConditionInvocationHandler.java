@@ -13,7 +13,7 @@ import org.openl.rules.mapping.loader.ProxyMethodHandler;
 final class ConditionInvocationHander implements InvocationHandler {
 
     private static final ProxyMethodHandler[] handlers = new ProxyMethodHandler[] {
-            new MappingParamsAwareConditionHandler(), new SimpleConditionHandler() };
+            new MappingParamsAwareConditionHandler(), new SimpleConditionHandler(), new DefaultConditionHandler() };
 
     private String condition;
     private Class<?> instanceClass;

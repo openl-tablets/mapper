@@ -13,7 +13,7 @@ import org.openl.rules.mapping.loader.ProxyMethodHandler;
 final class CustomConverterInvocationHandler implements InvocationHandler {
 
     private static final ProxyMethodHandler[] handlers = new ProxyMethodHandler[] {
-            new MappingParamsAwareConvertMethodHandler(), new SimpleConvertMethodHandler() };
+            new MappingParamsAwareConvertMethodHandler(), new SimpleConvertMethodHandler(), new DefaultConvertMethodHandler() };
 
     private final Class<?> instanceClass;
     private final Object instance;
