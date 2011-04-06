@@ -72,7 +72,7 @@ public class ThreadSafetyTest {
             public void setMappingParams(MappingParameters params) {
                 super.setMappingParams(params);
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -156,7 +156,7 @@ public class ThreadSafetyTest {
             public void setMappingParams(MappingParameters params) {
                 super.setMappingParams(params);
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
