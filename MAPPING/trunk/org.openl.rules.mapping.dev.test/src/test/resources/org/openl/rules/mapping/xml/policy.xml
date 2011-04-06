@@ -1,4 +1,4 @@
-<org.openl.rules.mapping.to.model1.PolicyEntity>
+<org.openl.rules.mapping.performance.to.model1.PolicyEntity>
   <id>0</id>
   <policyNumber>policy-01</policyNumber>
   <contractTerm>
@@ -13,26 +13,26 @@
   <policyDetail>
     <id>0</id>
     <riskItems class="java.util.Arrays$ArrayList">
-      <a class="org.openl.rules.mapping.to.model1.RiskItem-array">
-        <org.openl.rules.mapping.to.model1.RiskItem>
+      <a class="org.openl.rules.mapping.performance.to.model1.RiskItem-array">
+        <org.openl.rules.mapping.performance.to.model1.RiskItem>
           <id>0</id>
           <seqNo>1</seqNo>
           <forms class="java.util.Arrays$ArrayList">
-            <a class="org.openl.rules.mapping.to.model1.Form-array">
-              <org.openl.rules.mapping.to.model1.Form>
+            <a class="org.openl.rules.mapping.performance.to.model1.Form-array">
+              <org.openl.rules.mapping.performance.to.model1.Form>
                 <id>0</id>
                 <formCd>formCd</formCd>
                 <formText>form text</formText>
                 <parameters class="java.util.Arrays$ArrayList">
-                  <a class="org.openl.rules.mapping.to.model1.FormParameter-array">
-                    <org.openl.rules.mapping.to.model1.FormParameter>
+                  <a class="org.openl.rules.mapping.performance.to.model1.FormParameter-array">
+                    <org.openl.rules.mapping.performance.to.model1.FormParameter>
                       <id>0</id>
                       <seqNo>1</seqNo>
                       <value>param11</value>
-                    </org.openl.rules.mapping.to.model1.FormParameter>
+                    </org.openl.rules.mapping.performance.to.model1.FormParameter>
                   </a>
                 </parameters>
-              </org.openl.rules.mapping.to.model1.Form>
+              </org.openl.rules.mapping.performance.to.model1.Form>
             </a>
           </forms>
           <location>
@@ -54,7 +54,7 @@
             <liabilityPremiumFactorFlatAmount>1.1</liabilityPremiumFactorFlatAmount>
           </premiumOverrideInfo>
           <defaultDeductibleAmount>0.0</defaultDeductibleAmount>
-        </org.openl.rules.mapping.to.model1.RiskItem>
+        </org.openl.rules.mapping.performance.to.model1.RiskItem>
       </a>
     </riskItems>
   </policyDetail>
@@ -62,14 +62,14 @@
   <additionalFields>
     <entry>
       <string>externalNo</string>
-      <org.openl.rules.mapping.to.model1.ExtendedField>
+      <org.openl.rules.mapping.performance.to.model1.ExtendedField>
         <id>0</id>
         <stringValue>1223455666</stringValue>
-      </org.openl.rules.mapping.to.model1.ExtendedField>
+      </org.openl.rules.mapping.performance.to.model1.ExtendedField>
     </entry>
   </additionalFields>
   <customer>
     <id>0</id>
     <customerNumber>cust01</customerNumber>
   </customer>
-</org.openl.rules.mapping.to.model1.PolicyEntity>
+</org.openl.rules.mapping.performance.to.model1.PolicyEntity>

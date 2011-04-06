@@ -63,6 +63,14 @@
             <artifactId>xstream</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>easypo</groupId>
+            <artifactId>easypo</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/easypo.jar</systemPath>    
+        </dependency> 
+        
     </dependencies>
 
 </project>
