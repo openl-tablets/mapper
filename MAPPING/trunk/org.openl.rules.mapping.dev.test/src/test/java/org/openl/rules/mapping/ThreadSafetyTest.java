@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,13 +23,9 @@ import org.openl.rules.mapping.to.B;
 public class ThreadSafetyTest {
 
     @Test
-    public void emptyTest() {
-    }
-
-    //@Test
     public void threadSafetyTest() {
 
-        int threadsCount = 5;
+        int threadsCount = 50;
         final ExecutionStatus status = new ExecutionStatus();
 
         File source = new File("src/test/resources/org/openl/rules/mapping/thread/ThreadSafetyTest.xlsx");
@@ -49,9 +46,9 @@ public class ThreadSafetyTest {
                         mapper.map(a, b);
                         assertEquals(Integer.valueOf(20), b.getAnInteger());
                     } catch (Exception e) {
-                        status.getExceptions().add(e);
+                        status.appendException(e);
                     } finally {
-                        status.setCounter(status.getCounter() + 1);
+                        status.increaseCounter();
                     }
                 }
             });
@@ -66,7 +63,7 @@ public class ThreadSafetyTest {
         assertTrue(status.getExceptions().isEmpty());
     }
     
-    //@Test
+    @Test
     public void fieldMapConditionWithIdSupportTest() {
 
         Map<String, FieldMappingCondition> conditions = new HashMap<String, FieldMappingCondition>();
@@ -109,9 +106,9 @@ public class ThreadSafetyTest {
                     B b1 = mapper.map(a, B.class, context1);
                     assertEquals("a-string", b1.getAString());
                 } catch (Exception e) {
-                    status.getExceptions().add(e);
+                    status.appendException(e);
                 } finally {
-                    status.setCounter(status.getCounter() + 1);
+                    status.increaseCounter();
                 }
             }
         });
@@ -127,9 +124,9 @@ public class ThreadSafetyTest {
                     B b2 = mapper.map(a, B.class, context2);
                     assertEquals(null, b2.getAString());
                 } catch (Exception e) {
-                    status.getExceptions().add(e);
+                    status.appendException(e);
                 } finally {
-                    status.setCounter(status.getCounter() + 1);
+                    status.increaseCounter();
                 }
             }
         });
@@ -144,7 +141,7 @@ public class ThreadSafetyTest {
         assertTrue(status.getExceptions().isEmpty());
     }
 
-    //@Test
+    @Test
     public void convertersWithIdSupportTest() {
 
         Map<String, CustomConverter> convertersMap = new HashMap<String, CustomConverter>();
@@ -187,9 +184,9 @@ public class ThreadSafetyTest {
                     B b1 = mapper.map(a, B.class, context1);
                     assertEquals("value1", b1.getAString());
                 } catch (Exception e) {
-                    status.getExceptions().add(e);
+                    status.appendException(e);
                 } finally {
-                    status.setCounter(status.getCounter() + 1);
+                    status.increaseCounter();
                 }
             }
         });
@@ -205,9 +202,9 @@ public class ThreadSafetyTest {
                     B b2 = mapper.map(a, B.class, context2);
                     assertEquals("value2", b2.getAString());
                 } catch (Exception e) {
-                    status.getExceptions().add(e);
+                    status.appendException(e);
                 } finally {
-                    status.setCounter(status.getCounter() + 1);
+                    status.increaseCounter();
                 }
             }
         });
@@ -222,6 +219,7 @@ public class ThreadSafetyTest {
         assertTrue(status.getExceptions().isEmpty());
     }
     
+    
     private static class ExecutionStatus {
         private int counter;
         private List<Exception> exceptions = new ArrayList<Exception>();
@@ -229,15 +227,16 @@ public class ThreadSafetyTest {
         public int getCounter() {
             return counter;
         }
-        public void setCounter(int counter) {
-            this.counter = counter;
-        }
         public List<Exception> getExceptions() {
-            return exceptions;
-        }
-        public void setExceptions(List<Exception> exceptions) {
-            this.exceptions = exceptions;
+            return Collections.unmodifiableList(exceptions);
         }
         
+        public synchronized void increaseCounter() {
+            counter += 1;
+        }
+        
+        public synchronized void appendException(Exception ex) {
+            exceptions.add(ex);
+        }
     }
 }
