@@ -82,7 +82,7 @@ public final class MappingUtils {
         return CollectionUtils.isCollection(aClass) || CollectionUtils.isArray(aClass);
     }
     
-    private static Class<?> getSupportedCollectionEntryType(Class<?> collectionClass) {
+    public static Class<?> getSupportedCollectionEntryType(Class<?> collectionClass) {
         Class<?> entryType = null;
         if (collectionClass.isArray()) {
             entryType = collectionClass.getComponentType();

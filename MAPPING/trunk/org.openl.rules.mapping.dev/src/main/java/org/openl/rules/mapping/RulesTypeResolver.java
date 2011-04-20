@@ -8,7 +8,7 @@ import org.openl.types.IOpenClass;
  * class and can provide appropriate {@link Class} object.
  * 
  */
-final class RulesTypeResolver implements TypeResolver {
+public final class RulesTypeResolver implements TypeResolver {
 
     private static final String DEFAULT_OPENL_NAMESPACE = "org.openl.this";
     

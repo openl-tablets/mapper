@@ -106,7 +106,7 @@ public class RulesMappingsLoader {
 
             // If user defined class mapping configuration earlier we override
             // that configuration with new one.
-            // 
+            //
             String key = BeanMapKeyFactory.createKey(srcClass, destClass);
             beanMapConfigs.put(key, beanMapConfiguration);
         }
@@ -211,8 +211,8 @@ public class RulesMappingsLoader {
 
         Map<String, BeanMap> beanMappings = getPreDefinedBeanMappingsByConfiguration(mappingConfigurations);
 
-        for (Mapping mapping : mappings) {
-            normalizeMapping(mapping);
+        for (Mapping originalMapping : mappings) {
+            Mapping mapping = MappingDefinitionUtils.normalizeMapping(originalMapping);
 
             Class<?> classA = mapping.getClassA();
             Class<?> classB = mapping.getClassB();
@@ -226,7 +226,7 @@ public class RulesMappingsLoader {
                 beanMapping = createBeanMap(classA, classB);
                 // If user didn't define bean map configuration create new one
                 // with reference to a global configuration.
-                // 
+                //
                 BeanMapConfiguration beanMappingConfiguration = createBeanMapConfiguration(classA, classB,
                     globalConfiguration);
 
@@ -255,7 +255,7 @@ public class RulesMappingsLoader {
 
                 // Create reverse mapping
                 //
-                Mapping reverseMapping = reverseMapping(mapping);
+                Mapping reverseMapping = MappingDefinitionUtils.reverseMapping(mapping);
                 reverseBeanMapping.getFieldMappings().add(createFieldMap(reverseMapping, reverseBeanMapping));
             }
         }
@@ -289,7 +289,7 @@ public class RulesMappingsLoader {
         // Global configuration must be only one. If user defined several
         // configuration we should inform him that global configuration can be
         // only one.
-        // 
+        //
         // TODO: in future a global configuration can be defined for each module
         // (module scope global configurations). In case of this we have to add
         // processor which will load configurations properly.
@@ -302,7 +302,7 @@ public class RulesMappingsLoader {
         // in current implementation we iterate thru definitions and fill
         // configuration instance with
         // definition values.
-        // 
+        //
         for (GlobalConfiguration globalConfiguration : globalConfigurations) {
             configuration.setDateFormat(globalConfiguration.getDateFormat());
             configuration.setMapEmptyStrings(globalConfiguration.getMapEmptyStrings());
@@ -313,94 +313,6 @@ public class RulesMappingsLoader {
         }
 
         return configuration;
-    }
-
-    /**
-     * Helper method that makes several actions with loaded mappings to remove
-     * OpenL data loading specific.
-     * 
-     * @param mapping mapping object
-     */
-    private void normalizeMapping(Mapping mapping) {
-        Class<?>[][] fieldAHint = getAHint(mapping.getFieldAHint(), mapping.getFieldA());
-
-        if (fieldAHint != null) {
-            for (int i = 0; i < fieldAHint.length; i++) {
-                Class<?>[] element = fieldAHint[i];
-                if (isEmpty(element)) {
-                    fieldAHint[i] = null;
-                }
-            }
-        }
-
-        if (mapping.getFieldA() != null) {
-            fieldAHint = resizeHintIfRequired(fieldAHint, mapping.getFieldA().length);
-        }
-
-        mapping.setFieldAHint(fieldAHint);
-
-        Class<?>[] fieldBHint = mapping.getFieldBHint();
-        if (isEmpty(fieldBHint)) {
-            mapping.setFieldBHint(null);
-        }
-
-        Class<?>[] fieldAType = mapping.getFieldAType();
-        if (isEmpty(fieldAType)) {
-            mapping.setFieldAType(null);
-        }
-    }
-
-    private Class<?>[][] resizeHintIfRequired(Class<?>[][] existedHint, int size) {
-        if (existedHint == null || size < 1) {
-            return null;
-        }
-
-        if (existedHint.length != size) {
-            Class<?>[][] newHint = new Class<?>[size][];
-            System.arraycopy(existedHint, 0, newHint, 0, existedHint.length);
-
-            return newHint;
-        }
-
-        return existedHint;
-    }
-
-    private boolean isEmpty(Class<?>[] array) {
-        if (array == null || array.length == 0) {
-            return true;
-        }
-
-        for (Class<?> element : array) {
-            if (element != null) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private Class<?>[][] getAHint(Class<?>[][] fieldAHint, String[] field) {
-
-        if (field == null || field.length == 0 || fieldAHint == null) {
-            return null;
-        }
-
-        if (field.length > 1) {
-            return fieldAHint;
-        }
-
-        Class<?>[][] hint = new Class<?>[1][fieldAHint.length];
-
-        for (int i = 0; i < fieldAHint.length; i++) {
-            if (fieldAHint[i] != null && fieldAHint[i].length > 0) {
-                hint[0][i] = fieldAHint[i][0];
-            } else {
-                hint[0][i] = null;
-            }
-
-        }
-
-        return hint;
     }
 
     private Collection<ConverterDescriptor> processDefaultConverters(List<Converter> defaultConverters) {
@@ -439,71 +351,6 @@ public class RulesMappingsLoader {
     }
 
     /**
-     * Reverses {@link Mapping} object.
-     * 
-     * @param mapping prime mapping
-     * @return revered mapping
-     */
-    private Mapping reverseMapping(Mapping mapping) {
-        if (mapping == null) {
-            throw new RulesMappingException("An empty field mapping is found");
-        }
-
-        String[] fieldA = mapping.getFieldA();
-        if (fieldA == null || fieldA.length == 0) {
-            throw new RulesMappingException("Empty source mapping should be one way");
-        }
-
-        if (fieldA.length > 1) {
-            throw new RulesMappingException("Multi source mapping should be one way");
-        }
-
-        Mapping reverseMapping = new Mapping();
-        reverseMapping.setClassA(mapping.getClassB());
-        reverseMapping.setClassB(mapping.getClassA());
-        reverseMapping.setFieldA(new String[] { mapping.getFieldB() });
-        reverseMapping.setFieldB(fieldA[0]);
-        reverseMapping.setFieldACreateMethod(mapping.getFieldBCreateMethod());
-        reverseMapping.setFieldBCreateMethod(mapping.getFieldACreateMethod());
-        reverseMapping.setFieldADefaultValue(mapping.getFieldBDefaultValue());
-        reverseMapping.setFieldBDefaultValue(mapping.getFieldADefaultValue());
-        reverseMapping.setFieldARequired(mapping.getFieldBRequired());
-        reverseMapping.setFieldBRequired(mapping.getFieldARequired());
-        reverseMapping.setMapNulls(mapping.getMapNulls());
-        reverseMapping.setOneWay(mapping.getOneWay());
-        reverseMapping.setConvertMethodAB(mapping.getConvertMethodBA());
-        reverseMapping.setConvertMethodBA(mapping.getConvertMethodAB());
-        reverseMapping.setConditionAB(mapping.getConditionBA());
-        reverseMapping.setConditionBA(mapping.getConditionAB());
-        reverseMapping.setConvertMethodABId(mapping.getConvertMethodBAId());
-        reverseMapping.setConvertMethodBAId(mapping.getConvertMethodABId());
-        reverseMapping.setConditionABId(mapping.getConditionBAId());
-        reverseMapping.setConditionBAId(mapping.getConditionABId());
-
-        
-        if (mapping.getFieldBType() != null) {
-            reverseMapping.setFieldAType(new Class<?>[] { mapping.getFieldBType() });
-        }
-        if (mapping.getFieldAType() != null && mapping.getFieldAType()[0] != null) {
-            reverseMapping.setFieldBType(mapping.getFieldAType()[0]);
-        }
-        if (mapping.getFieldBHint() != null) {
-            reverseMapping.setFieldAHint(new Class<?>[][] { mapping.getFieldBHint() });
-        }
-        if (mapping.getFieldAHint() != null && mapping.getFieldAHint()[0] != null) {
-            reverseMapping.setFieldBHint(mapping.getFieldAHint()[0]);
-        }
-        if (mapping.getFieldADateFormat() != null && mapping.getFieldADateFormat()[0] != null) {
-            reverseMapping.setFieldBDateFormat(mapping.getFieldADateFormat()[0]);
-        }
-        if (mapping.getFieldBDateFormat() != null) {
-            reverseMapping.setFieldADateFormat(new String[] { mapping.getFieldBDateFormat() });
-        }
-
-        return reverseMapping;
-    }
-
-    /**
      * Creates a single field mapping descriptor using field mapping definition.
      * 
      * @param mapping mapping definition
@@ -529,14 +376,14 @@ public class RulesMappingsLoader {
         // Update type name because if user defined create method with class
         // name without package prefix we should use type resolver to load
         // appropriate class.
-        if (StringUtils.isNotEmpty(mapping.getFieldBCreateMethod()) && getTypeName(mapping.getFieldBCreateMethod()) != null) {
-            String typeName = getTypeName(mapping.getFieldBCreateMethod());
+        if (StringUtils.isNotEmpty(mapping.getFieldBCreateMethod()) && MappingDefinitionUtils.getTypeName(mapping.getFieldBCreateMethod()) != null) {
+            String typeName = MappingDefinitionUtils.getTypeName(mapping.getFieldBCreateMethod());
             Class<?> clazz = typeResolver.findClass(typeName);
             if (clazz == null) {
                 throw new RulesMappingException(String.format("Type '%s' not found", typeName));
             }
 
-            fieldMapping.setCreateMethod(clazz.getName() + "." + getMethodName(mapping.getFieldBCreateMethod()));
+            fieldMapping.setCreateMethod(clazz.getName() + "." + MappingDefinitionUtils.getMethodName(mapping.getFieldBCreateMethod()));
         } else {
             fieldMapping.setCreateMethod(mapping.getFieldBCreateMethod());
         }
@@ -549,8 +396,8 @@ public class RulesMappingsLoader {
         } else if (!StringUtils.isBlank(mapping.getConvertMethodAB())) {
             // create converter descriptor for current field mapping.
             String converterId = MappingIdFactory.createMappingId(mapping);
-            ConverterDescriptor converterDescriptor = createConverterDescriptor(converterId, mapping
-                .getConvertMethodAB(), mapping.getClassA(), mapping.getClassB());
+            ConverterDescriptor converterDescriptor = createConverterDescriptor(converterId,
+                mapping.getConvertMethodAB(), mapping.getClassA(), mapping.getClassB());
             fieldMapping.setConverter(converterDescriptor);
         }
 
@@ -579,7 +426,7 @@ public class RulesMappingsLoader {
         // method and using only method ID value to create descriptor.
         //
         if (StringUtils.isNotEmpty(convertMethod)) {
-            String typeName = getTypeName(convertMethod);
+            String typeName = MappingDefinitionUtils.getTypeName(convertMethod);
 
             if (typeName != null) {
                 Class<?> convertClass = typeResolver.findClass(typeName);
@@ -587,7 +434,7 @@ public class RulesMappingsLoader {
                     throw new RulesMappingException(String.format("Type '%s' not found", typeName));
                 }
 
-                converter = ConverterFactory.createConverter(getMethodName(convertMethod), convertClass, null);
+                converter = ConverterFactory.createConverter(MappingDefinitionUtils.getMethodName(convertMethod), convertClass, null);
             } else {
                 converter = ConverterFactory.createConverter(convertMethod, instanceClass, instance);
             }
@@ -604,7 +451,7 @@ public class RulesMappingsLoader {
         FieldMappingCondition condition = null;
 
         if (StringUtils.isNotEmpty(conditionMethod)) {
-            String typeName = getTypeName(conditionMethod);
+            String typeName = MappingDefinitionUtils.getTypeName(conditionMethod);
 
             if (typeName != null) {
                 Class<?> conditionClass = typeResolver.findClass(typeName);
@@ -612,7 +459,7 @@ public class RulesMappingsLoader {
                     throw new RulesMappingException(String.format("Type '%s' not found", typeName));
                 }
 
-                condition = ConditionFactory.createCondition(getMethodName(conditionMethod), conditionClass, instance);
+                condition = ConditionFactory.createCondition(MappingDefinitionUtils.getMethodName(conditionMethod), conditionClass, instance);
             } else {
                 condition = ConditionFactory.createCondition(conditionMethod, instanceClass, instance);
             }
@@ -621,20 +468,5 @@ public class RulesMappingsLoader {
         return new ConditionDescriptor(conditionId, condition);
     }
 
-    private String getMethodName(String methodName) {
-        if (!methodName.contains(".")) {
-            return methodName;
-        }
-
-        return methodName.substring(methodName.lastIndexOf('.') + 1);
-    }
-
-    private String getTypeName(String methodName) {
-        if (!methodName.contains(".")) {
-            return null;
-        }
-
-        return methodName.substring(0, methodName.lastIndexOf('.'));
-    }
 
 }

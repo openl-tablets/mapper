@@ -20,7 +20,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dozer.MappingException;
-import org.dozer.config.BeanContainer;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.propertydescriptor.DeepHierarchyElement;
 
@@ -116,7 +115,6 @@ public final class ReflectionUtils {
             }
 
             PropertyDescriptor propDescriptor = findPropertyDescriptor(latestClass, theFieldName, deepIndexHintContainer);
-            DeepHierarchyElement r = new DeepHierarchyElement(propDescriptor, indexExpression);
 
             if (propDescriptor == null) {
                 MappingUtils
@@ -157,6 +155,8 @@ public final class ReflectionUtils {
                     }
                 }
             }
+            DeepHierarchyElement r = new DeepHierarchyElement(propDescriptor, indexExpression, latestClass);
+
             hierarchy[index++] = r;
         }
 

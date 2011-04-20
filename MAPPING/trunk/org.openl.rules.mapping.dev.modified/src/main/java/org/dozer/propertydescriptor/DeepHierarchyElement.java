@@ -20,10 +20,12 @@ import java.beans.PropertyDescriptor;
 public class DeepHierarchyElement {
     private PropertyDescriptor propDescriptor;
     private String index;
+    private Class<?> hintType;
 
-    public DeepHierarchyElement(PropertyDescriptor propDescriptor, String index) {
+    public DeepHierarchyElement(PropertyDescriptor propDescriptor, String index, Class<?> hintType) {
         this.propDescriptor = propDescriptor;
         this.index = index;
+        this.hintType = hintType;
     }
 
     public String getIndex() {
@@ -32,6 +34,10 @@ public class DeepHierarchyElement {
 
     public PropertyDescriptor getPropDescriptor() {
         return propDescriptor;
+    }
+
+    public Class<?> getHintType() {
+        return hintType;
     }
     
 }

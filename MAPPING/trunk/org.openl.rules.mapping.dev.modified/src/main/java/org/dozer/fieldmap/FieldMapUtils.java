@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.dozer.classmap.ClassMap;
 import org.dozer.util.MappingUtils;
-import org.dozer.util.ReflectionUtils;
 
 public final class FieldMapUtils {
 
@@ -32,11 +31,6 @@ public final class FieldMapUtils {
         return key;
     }
     
-    public static HintContainer hint(final Class<?>... types) {
-        String hintName = ReflectionUtils.mergeTypeNames(types);
-        return hint(hintName);
-    }
-
     public static HintContainer hint(String types) {
         if (StringUtils.isNotEmpty(types)) {
             HintContainer hintContainer = new HintContainer();

@@ -455,20 +455,20 @@ public class DozerBuilder {
             field.setDefaultValue(attribute);
         }
 
-        public void hint(Class<?>... types) {
-            HintContainer hintContainer = FieldMapUtils.hint(types);
-            field.setHintContainer(hintContainer);
-        }
+//        public void hint(Class<?>... types) {
+//            HintContainer hintContainer = FieldMapUtils.hint(types);
+//            field.setHintContainer(hintContainer);
+//        }
 
         public void hint(String types) {
             HintContainer hintContainer = FieldMapUtils.hint(types);
             field.setHintContainer(hintContainer);
         }
 
-        public void deepHint(Class<?>... types) {
-            HintContainer hintContainer = FieldMapUtils.hint(types);
-            field.setDeepIndexHintContainer(hintContainer);
-        }
+//        public void deepHint(Class<?>... types) {
+//            HintContainer hintContainer = FieldMapUtils.hint(types);
+//            field.setDeepIndexHintContainer(hintContainer);
+//        }
 
         public void deepHint(String types) {
             HintContainer hintContainer = FieldMapUtils.hint(types);
