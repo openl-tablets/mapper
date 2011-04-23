@@ -1,0 +1,28 @@
+<assembly>
+	<id>bin</id>
+	<formats>
+		<format>jar</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
+			<unpack>true</unpack>
+			<scope>runtime</scope>
+
+			<includes>
+				<include>*:jar:*</include>
+			</includes>
+			<excludes>
+				<exclude>*:sources</exclude>
+			</excludes>
+		</dependencySet>
+	</dependencySets>
+	<fileSets>
+		<fileSet>
+			<directory>target/classes</directory>
+			<outputDirectory></outputDirectory>
+		</fileSet>
+	</fileSets>
+
+</assembly>

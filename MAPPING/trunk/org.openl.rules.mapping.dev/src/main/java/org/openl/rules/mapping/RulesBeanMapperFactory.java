@@ -1,10 +1,13 @@
 package org.openl.rules.mapping;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.dozer.CustomConverter;
 import org.dozer.FieldMappingCondition;
+import org.openl.ICompileContext;
+import org.openl.message.OpenLMessage;
 import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.validation.MappingBeanValidator;
 import org.openl.rules.mapping.validation.OpenLDataBeanValidator;
@@ -13,7 +16,6 @@ import org.openl.runtime.AOpenLEngineFactory;
 import org.openl.runtime.ASourceCodeEngineFactory;
 import org.openl.syntax.exception.CompositeOpenlException;
 import org.openl.syntax.exception.SyntaxNodeException;
-import org.openl.types.IOpenClass;
 import org.openl.validation.IOpenLValidator;
 
 /**
@@ -42,8 +44,9 @@ public final class RulesBeanMapperFactory {
      * @param conditionsWithId external conditions
      * @return mapper instance
      */
-    public static Mapper createMapperInstance(File source, Map<String, CustomConverter> customConvertersWithId,
-        Map<String, FieldMappingCondition> conditionsWithId) {
+    public static Mapper createMapperInstance(File source,
+            Map<String, CustomConverter> customConvertersWithId,
+            Map<String, FieldMappingCondition> conditionsWithId) {
         return createMapperInstance(source, customConvertersWithId, conditionsWithId, true);
     }
 
@@ -56,30 +59,22 @@ public final class RulesBeanMapperFactory {
      * @param executionMode execution mode flag
      * @return mapper instance
      */
-    public static Mapper createMapperInstance(File source, Map<String, CustomConverter> customConvertersWithId,
-        Map<String, FieldMappingCondition> conditionsWithId, boolean executionMode) {
-        ApiBasedRulesEngineFactory factory = new ApiBasedRulesEngineFactory(source);
-        factory.setExecutionMode(executionMode);
-
-        boolean validationEnabled = factory.getOpenL().getCompileContext() != null &&  factory.getOpenL().getCompileContext().isValidationEnabled();
-
-        if (!executionMode && validationEnabled) {
-            registerTypeValidator(factory, new MappingBeanValidator());
-        }
-
-        Class<?> instanceClass;
-        Object instance;
+    public static Mapper createMapperInstance(File source,
+            Map<String, CustomConverter> customConvertersWithId,
+            Map<String, FieldMappingCondition> conditionsWithId,
+            boolean executionMode) {
 
         try {
-            instanceClass = factory.getInterfaceClass();
-            instance = factory.makeInstance();
+            ApiBasedRulesEngineFactory factory = initEngine(source, executionMode);
+
+            Class<?> instanceClass = factory.getInterfaceClass();
+            Object instance = factory.makeInstance();
 
             // Check that compilation process completed successfully.
             if (factory.getCompiledOpenClass().hasErrors()) {
                 // TODO: remove OpenL specific exception
-                //
-                throw new CompositeOpenlException("Compilation failed", new SyntaxNodeException[0], factory
-                    .getCompiledOpenClass().getMessages());
+                List<OpenLMessage> messages = factory.getCompiledOpenClass().getMessages();
+                throw new CompositeOpenlException("Compilation failed", new SyntaxNodeException[0], messages);
             }
 
             // Get OpenL configuration object. The OpenL configuration object is
@@ -90,12 +85,11 @@ public final class RulesBeanMapperFactory {
             // name (e.g. MyClass.myConvertMethod) we will not have enough
             // information to get convert method.
             //
-            IOpenClass openClass = factory.getCompiledOpenClass().getOpenClass();
             TypeResolver typeResolver = null;
             if (executionMode) {
                 typeResolver = getTypeResolver(factory);
             } else {
-                typeResolver = OpenLReflectionUtils.getTypeResolver(openClass);
+                typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getCompiledOpenClass().getOpenClass());
             }
 
             return new RulesBeanMapper(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId);
@@ -103,10 +97,33 @@ public final class RulesBeanMapperFactory {
             throw new RulesMappingException(String.format("Cannot load mapping definitions from file: %s",
                 source.getAbsolutePath()), e);
         }
-
     }
 
-    private synchronized static void registerTypeValidator(AOpenLEngineFactory factory, OpenLDataBeanValidator<?> validator) {
+    /**
+     * Initializes OpenL engine.
+     * 
+     * @param source OpenL project source file
+     * @param executionMode execution mode flag
+     * @return rules engine instance
+     */
+    public static ApiBasedRulesEngineFactory initEngine(File source, boolean executionMode) {
+        
+        ApiBasedRulesEngineFactory factory = new ApiBasedRulesEngineFactory(source);
+        factory.setExecutionMode(executionMode);
+
+        ICompileContext compileContext = factory.getOpenL().getCompileContext();
+        boolean validationEnabled = compileContext != null && compileContext.isValidationEnabled();
+
+        if (!executionMode && validationEnabled) {
+            registerTypeValidator(factory, new MappingBeanValidator());
+        }
+
+        return factory;
+    }
+
+    private synchronized static void registerTypeValidator(AOpenLEngineFactory factory,
+            OpenLDataBeanValidator<?> validator) {
+
         for (IOpenLValidator regValidator : factory.getOpenL().getCompileContext().getValidators()) {
             if (regValidator.getClass() == validator.getClass()) {
                 return;

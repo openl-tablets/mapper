@@ -10,7 +10,6 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.dozer.MappingException;
 import org.dozer.MappingParameters;
 import org.dozer.util.MappingUtils;
 import org.openl.rules.mapping.Mapping;
@@ -117,6 +116,7 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         return fieldBType;
     }
 
+    // TODO: remove code duplication
     private Set<ConstraintViolation> validateConvertMethod(String propertyName, String convertMethod,
         IOpenClass openClass, Class<?> fieldA, Class<?> fieldB) {
 
@@ -291,6 +291,7 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         return ValidationUtils.findMatchingAccessibleMethod(clazz, methodName, paramTypes);
     }
 
+    // TODO: remove code duplication
     private Set<ConstraintViolation> validateFieldPaths(Mapping bean) {
         Set<ConstraintViolation> violations = new HashSet<ConstraintViolation>();
 
@@ -309,8 +310,13 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
                 FieldPathHierarchyElement[] hierarchy = null;
                 try {
                     hierarchy = ValidationUtils.getFieldHierarchy(classAType, field, fieldTypeHint);
-                } catch (MappingException ex) {
-                    violations.add(createPropertyViolation("fieldA", field, ex.getMessage()));
+                } catch (Exception ex) {
+                    String message = ex.getMessage();
+                    if (StringUtils.isBlank(message)) {
+                        message = String.format("Exception occurred determining field hierarchy for Class --> %s, Field --> %s", classAType == null ? null : classAType.getName() , field);
+                    }
+                    
+                    violations.add(createPropertyViolation("fieldA", field, message));
                 }
 
                 if (hierarchy != null) {
@@ -345,8 +351,13 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         FieldPathHierarchyElement[] hierarchy = null;
         try {
             hierarchy = ValidationUtils.getFieldHierarchy(classBType, fieldB, fieldBTypeHint);
-        } catch (MappingException ex) {
-            violations.add(createPropertyViolation("fieldB", fieldB, ex.getMessage()));
+        } catch (Exception ex) {
+            String message = ex.getMessage();
+            if (StringUtils.isBlank(message)) {
+                message = String.format("Exception occurred determining field hierarchy for Class --> %s, Field --> %s", classBType == null ? null : classBType.getName() , fieldB);
+            }
+
+            violations.add(createPropertyViolation("fieldB", fieldB, message));
         }
 
         if (hierarchy != null) {
