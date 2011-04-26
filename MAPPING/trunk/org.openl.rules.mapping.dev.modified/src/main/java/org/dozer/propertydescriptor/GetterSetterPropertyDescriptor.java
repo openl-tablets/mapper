@@ -246,7 +246,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                             hintType = fieldMap.getDestDeepIndexHintContainer().getHint(i);
                         }
                         
-                        Class<?> collectionEntryType = getComponentType(clazz, pd, hintType);
+                        Class<?> collectionEntryType = ReflectionUtils.getComponentType(clazz, pd, hintType);
 
                         o = MappingUtils.prepareIndexedCollection(clazz, null, DestBeanCreator
                             .create(collectionEntryType), collectionIndex);
@@ -294,7 +294,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                         hintType = fieldMap.getDestDeepIndexHintContainer().getHint(i);
                     }
 
-                    Class<?> componentType = getComponentType(pd.getPropertyType(), pd, hintType);
+                    Class<?> componentType = ReflectionUtils.getComponentType(pd.getPropertyType(), pd, hintType);
                     value = MappingUtils.prepareIndexedCollection(pd.getPropertyType(), value, DestBeanCreator
                         .create(componentType), collectionIndex);
                     ReflectionUtils.invoke(pd.getWriteMethod(), parentObj, new Object[] { value });
@@ -343,23 +343,6 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                 writeIndexedValue(parentObj, destFieldValue);
             }
         }
-    }
-
-    private Class<?> getComponentType(Class<?> container, PropertyDescriptor pd, Class<?> hintType) {
-
-        Class<?> componentType = null;
-        if (container.isArray()) {
-            componentType = container.getComponentType();
-        } else if (Collection.class.isAssignableFrom(container)) {
-            Class<?> genericType = ReflectionUtils.determineGenericsType(pd);
-            if (genericType != null) {
-                componentType = genericType;
-            } else {
-                componentType = hintType;
-            }
-        }
-
-        return componentType;
     }
 
     protected Object invokeReadMethod(Object target) {

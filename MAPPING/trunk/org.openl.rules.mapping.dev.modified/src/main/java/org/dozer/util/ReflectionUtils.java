@@ -441,4 +441,21 @@ public final class ReflectionUtils {
 
         return null;
     }
+    
+    public static Class<?> getComponentType(Class<?> container, PropertyDescriptor pd, Class<?> hintType) {
+
+        Class<?> componentType = null;
+        if (container.isArray()) {
+            componentType = container.getComponentType();
+        } else if (Collection.class.isAssignableFrom(container)) {
+            Class<?> genericType = ReflectionUtils.determineGenericsType(pd);
+            if (genericType != null) {
+                componentType = genericType;
+            } else {
+                componentType = hintType;
+            }
+        }
+
+        return componentType;
+    }
 }

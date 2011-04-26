@@ -2,14 +2,21 @@ package org.openl.rules.mapping.plugin;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
@@ -18,10 +25,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openl.CompiledOpenClass;
+import org.openl.binding.impl.module.ModuleOpenClass;
 import org.openl.rules.mapping.RulesBeanMapperFactory;
 import org.openl.rules.mapping.plugin.classpath.AdaptorClassLoader;
+import org.openl.rules.mapping.plugin.serialize.ClassSerializer;
+import org.openl.rules.mapping.plugin.serialize.xml.XmlWriter;
+import org.openl.rules.mapping.plugin.util.AdaptorUtils;
 import org.openl.rules.runtime.ApiBasedRulesEngineFactory;
+import org.openl.types.IOpenClass;
+import org.openl.types.java.OpenClassHelper;
 
+// TODO: replace utils method to separate class.
 public class PluginAdaptor {
 
     private static final Log LOG = LogFactory.getLog(PluginAdaptor.class);
@@ -75,8 +89,33 @@ public class PluginAdaptor {
 
         ApiBasedRulesEngineFactory engine = RulesBeanMapperFactory.initEngine(source, false);
         CompiledOpenClass compiledOpenClass = engine.getCompiledOpenClass();
-        // out data processing goes here
+        ModuleOpenClass openClass = (ModuleOpenClass)compiledOpenClass.getOpenClassWithErrors();
+        Collection<IOpenClass> values = openClass.getTypes().values();
+        IOpenClass[] internalTypes = values.toArray(new IOpenClass[values.size()]);
+        
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.addAll(Arrays.asList(OpenClassHelper.getInstanceClasses(internalTypes)));
+        classes.addAll(AdaptorUtils.loadClassesFromJars(jarURLs, cl));
+        
+        OutputStream out = null;
+        if (StringUtils.isNotBlank(outFilename)) {
+            try {
+                out = new FileOutputStream(outFilename);
+            } catch (FileNotFoundException e) {
+                LOG.error(String.format("File '%s' is not found", outFilename), e);
+            }
+        } 
 
+        if (out == null) {
+            out = System.out;
+        }
+        
+        try {
+            new XmlWriter().write(ClassSerializer.serialize(classes), out);
+        } catch (IOException e) {
+            LOG.error(e);
+        }
+        
         Thread.currentThread().setContextClassLoader(originalClassLoader);
     }
 
@@ -147,6 +186,11 @@ public class PluginAdaptor {
 
             CommandLine commandLine = cmdLineParser.parse(cmdOptions, args);
 
+            if (commandLine.hasOption(HELP_OPTION_NAME)) {
+                printUsage();
+                return;
+            }
+
             if (commandLine.hasOption(JAR_PATH_OPTION_NAME)) {
                 jarpath = commandLine.getOptionValue(JAR_PATH_OPTION_NAME);
             }
@@ -199,4 +243,8 @@ public class PluginAdaptor {
         return cmdOptions;
     }
 
+    private static void printUsage() {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("java -jar org.openl.rules.mapping.dev.plugin-<version>.jar <openl_project_source> [options]", getCmdOptions());
+    }
 }
