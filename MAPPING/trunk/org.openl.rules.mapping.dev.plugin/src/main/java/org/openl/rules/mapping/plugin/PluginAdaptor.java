@@ -150,6 +150,10 @@ public class PluginAdaptor {
             }
         });
 
+        if (jarFiles == null || jarFiles.length == 0) {
+            return new ArrayList<URL>();
+        }
+        
         List<URL> jarURLs = new ArrayList<URL>(jarFiles.length);
 
         for (File jar : jarFiles) {
