@@ -42,6 +42,10 @@ public class XmlWriter {
 
         xStream.alias("message", MessageEntry.class);
         xStream.useAttributeFor(MessageEntry.class, "message");
+        xStream.useAttributeFor(MessageEntry.class, "severity");
+        xStream.useAttributeFor(MessageEntry.class, "filename");
+        xStream.useAttributeFor(MessageEntry.class, "sheet");
+        xStream.useAttributeFor(MessageEntry.class, "cell");
         xStream.aliasField("value", MessageEntry.class, "message");
         
         out.write(xStream.toXML(document).getBytes());

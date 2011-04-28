@@ -6,6 +6,7 @@ public class MessageEntry {
     private String sheet;
     private String cell;
     private String message;
+    private String severity;
 
     public String getFilename() {
         return filename;
@@ -37,6 +38,14 @@ public class MessageEntry {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(String severity) {
+        this.severity = severity;
     }
 
 }

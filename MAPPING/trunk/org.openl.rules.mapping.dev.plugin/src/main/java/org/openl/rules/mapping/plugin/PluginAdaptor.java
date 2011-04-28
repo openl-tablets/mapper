@@ -21,14 +21,11 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openl.CompiledOpenClass;
 import org.openl.binding.impl.module.ModuleOpenClass;
-import org.openl.message.OpenLErrorMessage;
 import org.openl.message.OpenLMessage;
 import org.openl.rules.mapping.RulesBeanMapperFactory;
 import org.openl.rules.mapping.plugin.classpath.AdaptorClassLoader;
@@ -41,6 +38,7 @@ import org.openl.rules.mapping.plugin.util.AdaptorUtils;
 import org.openl.rules.runtime.ApiBasedRulesEngineFactory;
 import org.openl.types.IOpenClass;
 import org.openl.types.java.OpenClassHelper;
+import org.springframework.util.AntPathMatcher;
 
 // TODO: replace utils method to separate class.
 public class PluginAdaptor {
@@ -62,7 +60,9 @@ public class PluginAdaptor {
     private static final String HELP_OPTION_LONG_NAME = "help";
     private static final String HELP_OPTION_NAME = "h";
 
-    private static final String FOLDER_PATH_DELIMITER = ";";
+    private static final String PATH_DELIMITER = ";";
+    private static final String FILTER_DELIMITER = "\\|";
+
     private static final String JAR_FILE_EXTENSION = "jar";
     private static final String FILE_EXTENSION_DELIMITER = ".";
     private static final String JAR_FILE_SUFFIX = FILE_EXTENSION_DELIMITER + JAR_FILE_EXTENSION;
@@ -100,7 +100,7 @@ public class PluginAdaptor {
             return;
         }
 
-        String[] foldersToScan = getFoldersToScan(jarpath);
+        String[] foldersToScan = getPathesToScan(jarpath);
         URL[] jarURLs = scanDirs(foldersToScan);
 
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
@@ -148,13 +148,25 @@ public class PluginAdaptor {
         List<URL> urls = new ArrayList<URL>();
 
         for (String path : pathes) {
-            urls.addAll(scanDir(path));
+            String[] pathArgs = path.split(FILTER_DELIMITER);
+            String dir = pathArgs[0];
+
+            String filter = null;
+
+            if (pathArgs.length > 1) {
+                filter = pathArgs[1];
+            }
+            if (pathArgs.length > 2) {
+                LOG.warn(String.format("Only one filter expression can be applyed to path: %s", path));
+            }
+
+            urls.addAll(scanDir(dir, filter));
         }
 
         return urls.toArray(new URL[urls.size()]);
     }
 
-    private List<URL> scanDir(String path) {
+    private List<URL> scanDir(String path, final String filter) {
         File file = new File(path);
 
         // Check that file is exist.
@@ -167,19 +179,24 @@ public class PluginAdaptor {
             LOG.error(String.format("File '%s' is not a directory", file.getName()));
         }
 
-        // Select jar files from folder.
-        File[] jarFiles = file.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File arg) {
-                return arg.isFile() && arg.getName().endsWith(JAR_FILE_SUFFIX);
-            }
-        });
+        List<File> dirs = listFiles(file, true, new AntPathFileFilter(filter));
 
-        if (jarFiles == null || jarFiles.length == 0) {
-            return new ArrayList<URL>();
+        // Select jar files from folder.
+        List<File> jarFiles = new ArrayList<File>();
+
+        for (File dir : dirs) {
+
+            File[] jars = dir.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File arg) {
+                    return arg.isFile() && arg.getName().endsWith(JAR_FILE_SUFFIX);
+                }
+            });
+
+            jarFiles.addAll(Arrays.asList(jars));
         }
 
-        List<URL> jarURLs = new ArrayList<URL>(jarFiles.length);
+        List<URL> jarURLs = new ArrayList<URL>(jarFiles.size());
 
         for (File jar : jarFiles) {
             try {
@@ -194,9 +211,35 @@ public class PluginAdaptor {
         return jarURLs;
     }
 
-    private String[] getFoldersToScan(String folders) {
-        if (StringUtils.isNotBlank(folders)) {
-            return folders.split(FOLDER_PATH_DELIMITER);
+    private List<File> listFiles(File root, boolean recursive, FileFilter filter) {
+        List<File> files = new ArrayList<File>();
+
+        if (root == null) {
+            return files;
+        }
+
+        File[] rootFiles = root.listFiles();
+
+        if (rootFiles == null) {
+            return files;
+        }
+
+        for (File file : rootFiles) {
+            if (filter == null || filter.accept(file)) {
+                files.add(file);
+            }
+
+            if (file.isDirectory() && recursive) {
+                files.addAll(listFiles(file, recursive, filter));
+            }
+        }
+
+        return files;
+    }
+
+    private String[] getPathesToScan(String pathes) {
+        if (StringUtils.isNotBlank(pathes)) {
+            return pathes.split(PATH_DELIMITER);
         }
 
         return new String[0];
@@ -306,5 +349,28 @@ public class PluginAdaptor {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("java -jar org.openl.rules.mapping.dev.plugin-<version>.jar <openl_project_source> [options]",
             getCmdOptions());
+    }
+
+    private class AntPathFileFilter implements FileFilter {
+        private AntPathMatcher matcher = new AntPathMatcher();
+        private String filter;
+
+        public AntPathFileFilter(String filter) {
+            this.filter = filter;
+            
+            matcher.setPathSeparator(System.getProperty("file.separator"));
+        }
+
+        @Override
+        public boolean accept(File arg) {
+            if (arg.exists() && arg.isDirectory()) {
+                String path = arg.toURI().getPath();
+
+                return matcher.match(filter, path.substring(0, path.length() - 1));
+            }
+
+            return false;
+        }
+
     }
 }
