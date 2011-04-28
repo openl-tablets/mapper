@@ -21,14 +21,21 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openl.CompiledOpenClass;
 import org.openl.binding.impl.module.ModuleOpenClass;
+import org.openl.message.OpenLErrorMessage;
+import org.openl.message.OpenLMessage;
 import org.openl.rules.mapping.RulesBeanMapperFactory;
 import org.openl.rules.mapping.plugin.classpath.AdaptorClassLoader;
+import org.openl.rules.mapping.plugin.serialize.BeanEntry;
 import org.openl.rules.mapping.plugin.serialize.ClassSerializer;
+import org.openl.rules.mapping.plugin.serialize.MessageEntry;
+import org.openl.rules.mapping.plugin.serialize.MessageSerializer;
 import org.openl.rules.mapping.plugin.serialize.xml.XmlWriter;
 import org.openl.rules.mapping.plugin.util.AdaptorUtils;
 import org.openl.rules.runtime.ApiBasedRulesEngineFactory;
@@ -46,6 +53,12 @@ public class PluginAdaptor {
     private static final String OUTPUT_XML_PATH_OPTION_LONG_NAME = "output-xml";
     private static final String OUTPUT_XML_PATH_OPTION_NAME = "o";
 
+    private static final String TYPE_EXPORT_OPTION_LONG_NAME = "export-types";
+    private static final String TYPE_EXPORT_OPTION_NAME = "t";
+
+    private static final String MSG_EXPORT_OPTION_LONG_NAME = "export-messages";
+    private static final String MSG_EXPORT_OPTION_NAME = "m";
+
     private static final String HELP_OPTION_LONG_NAME = "help";
     private static final String HELP_OPTION_NAME = "h";
 
@@ -59,11 +72,19 @@ public class PluginAdaptor {
     private String jarpath;
     private String outFilename;
     private String inputFilename;
+    private boolean exportTypes;
+    private boolean exportMessages;
 
-    public PluginAdaptor(String jarpath, String outFilename, String inputFilename) {
+    private PluginAdaptor(String jarpath,
+            String outFilename,
+            String inputFilename,
+            boolean exportTypes,
+            boolean exportMessages) {
         this.jarpath = jarpath;
         this.outFilename = outFilename;
         this.inputFilename = inputFilename;
+        this.exportTypes = exportTypes;
+        this.exportMessages = exportMessages;
     }
 
     public void process() {
@@ -89,14 +110,18 @@ public class PluginAdaptor {
 
         ApiBasedRulesEngineFactory engine = RulesBeanMapperFactory.initEngine(source, false);
         CompiledOpenClass compiledOpenClass = engine.getCompiledOpenClass();
-        ModuleOpenClass openClass = (ModuleOpenClass)compiledOpenClass.getOpenClassWithErrors();
-        Collection<IOpenClass> values = openClass.getTypes().values();
-        IOpenClass[] internalTypes = values.toArray(new IOpenClass[values.size()]);
-        
-        List<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.addAll(Arrays.asList(OpenClassHelper.getInstanceClasses(internalTypes)));
-        classes.addAll(AdaptorUtils.loadClassesFromJars(jarURLs, cl));
-        
+
+        ModuleOpenClass openClass = (ModuleOpenClass) compiledOpenClass.getOpenClassWithErrors();
+
+        List<BeanEntry> types = new ArrayList<BeanEntry>();
+        List<MessageEntry> messages = new ArrayList<MessageEntry>();
+        if (exportTypes) {
+            types = exportTypes(openClass, jarURLs, cl);
+        }
+        if (exportMessages) {
+            messages = exportMessages(compiledOpenClass.getMessages());
+        }
+
         OutputStream out = null;
         if (StringUtils.isNotBlank(outFilename)) {
             try {
@@ -104,18 +129,18 @@ public class PluginAdaptor {
             } catch (FileNotFoundException e) {
                 LOG.error(String.format("File '%s' is not found", outFilename), e);
             }
-        } 
+        }
 
         if (out == null) {
             out = System.out;
         }
-        
+
         try {
-            new XmlWriter().write(ClassSerializer.serialize(classes), out);
+            new XmlWriter().write(types, messages, out);
         } catch (IOException e) {
             LOG.error(e);
         }
-        
+
         Thread.currentThread().setContextClassLoader(originalClassLoader);
     }
 
@@ -153,7 +178,7 @@ public class PluginAdaptor {
         if (jarFiles == null || jarFiles.length == 0) {
             return new ArrayList<URL>();
         }
-        
+
         List<URL> jarURLs = new ArrayList<URL>(jarFiles.length);
 
         for (File jar : jarFiles) {
@@ -177,10 +202,27 @@ public class PluginAdaptor {
         return new String[0];
     }
 
+    private List<BeanEntry> exportTypes(ModuleOpenClass openClass, URL[] jarURLs, ClassLoader cl) {
+        Collection<IOpenClass> values = openClass.getTypes().values();
+        IOpenClass[] internalTypes = values.toArray(new IOpenClass[values.size()]);
+
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        classes.addAll(Arrays.asList(OpenClassHelper.getInstanceClasses(internalTypes)));
+        classes.addAll(AdaptorUtils.loadClassesFromJars(jarURLs, cl));
+
+        return ClassSerializer.serialize(classes);
+    }
+
+    private List<MessageEntry> exportMessages(List<OpenLMessage> messages) {
+        return MessageSerializer.serialize(messages);
+    }
+
     public static void main(String[] args) {
         String jarpath = null;
         String outpath = null;
         String sourcepath = null;
+        boolean exportTypes = false;
+        boolean exportMessages = false;
 
         // Process command line arguments
         //
@@ -202,6 +244,9 @@ public class PluginAdaptor {
                 outpath = commandLine.getOptionValue(OUTPUT_XML_PATH_OPTION_NAME);
             }
 
+            exportTypes = commandLine.hasOption(TYPE_EXPORT_OPTION_NAME);
+            exportMessages = commandLine.hasOption(MSG_EXPORT_OPTION_NAME);
+
             String[] cmdArgs = commandLine.getArgs();
 
             if (cmdArgs.length != 1) {
@@ -214,7 +259,7 @@ public class PluginAdaptor {
         }
 
         // Create new instance of adaptor.
-        PluginAdaptor adaptor = new PluginAdaptor(jarpath, outpath, sourcepath);
+        PluginAdaptor adaptor = new PluginAdaptor(jarpath, outpath, sourcepath, exportTypes, exportMessages);
         adaptor.process();
     }
 
@@ -238,9 +283,19 @@ public class PluginAdaptor {
                 .withLongOpt(HELP_OPTION_LONG_NAME)
                 .create(HELP_OPTION_NAME);
 
+            Option exportTypes = OptionBuilder.withDescription("export types")
+                .withLongOpt(TYPE_EXPORT_OPTION_LONG_NAME)
+                .create(TYPE_EXPORT_OPTION_NAME);
+
+            Option exportMessages = OptionBuilder.withDescription("export errors and warinings")
+                .withLongOpt(MSG_EXPORT_OPTION_LONG_NAME)
+                .create(MSG_EXPORT_OPTION_NAME);
+
             cmdOptions = new Options();
             cmdOptions.addOption(out);
             cmdOptions.addOption(jarpath);
+            cmdOptions.addOption(exportTypes);
+            cmdOptions.addOption(exportMessages);
             cmdOptions.addOption(help);
         }
 
@@ -249,6 +304,7 @@ public class PluginAdaptor {
 
     private static void printUsage() {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("java -jar org.openl.rules.mapping.dev.plugin-<version>.jar <openl_project_source> [options]", getCmdOptions());
+        formatter.printHelp("java -jar org.openl.rules.mapping.dev.plugin-<version>.jar <openl_project_source> [options]",
+            getCmdOptions());
     }
 }
