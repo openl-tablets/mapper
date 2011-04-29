@@ -179,7 +179,9 @@ public class PluginAdaptor {
             LOG.error(String.format("File '%s' is not a directory", file.getName()));
         }
 
-        List<File> dirs = listFiles(file, true, new AntPathFileFilter(filter));
+        FileFilter dirFilter = new AntPathDirFilter(filter);
+        
+        List<File> dirs = listFiles(file, true, dirFilter);
 
         // Select jar files from folder.
         List<File> jarFiles = new ArrayList<File>();
@@ -218,19 +220,29 @@ public class PluginAdaptor {
             return files;
         }
 
+        if (filter == null || filter.accept(root)) {
+            files.add(root);
+        }
+        
+        files.addAll(internalListFiles(root, recursive, filter));
+
+        return files;
+    }
+    
+    private List<File> internalListFiles(File root, boolean recursive, FileFilter filter) {
+        List<File> files = new ArrayList<File>();
+
         File[] rootFiles = root.listFiles();
 
-        if (rootFiles == null) {
-            return files;
-        }
+        if (rootFiles != null) {
+            for (File file : rootFiles) {
+                if (filter == null || filter.accept(file)) {
+                    files.add(file);
+                }
 
-        for (File file : rootFiles) {
-            if (filter == null || filter.accept(file)) {
-                files.add(file);
-            }
-
-            if (file.isDirectory() && recursive) {
-                files.addAll(listFiles(file, recursive, filter));
+                if (file.isDirectory() && recursive) {
+                    files.addAll(internalListFiles(file, recursive, filter));
+                }
             }
         }
 
@@ -351,25 +363,28 @@ public class PluginAdaptor {
             getCmdOptions());
     }
 
-    private class AntPathFileFilter implements FileFilter {
+    private class AntPathDirFilter implements FileFilter {
         private AntPathMatcher matcher = new AntPathMatcher();
         private String filter;
 
-        public AntPathFileFilter(String filter) {
+        public AntPathDirFilter(String filter) {
             this.filter = filter;
-            
+
             matcher.setPathSeparator(System.getProperty("file.separator"));
         }
 
         @Override
         public boolean accept(File arg) {
-            if (arg.exists() && arg.isDirectory()) {
-                String path = arg.toURI().getPath();
+            if (arg.isFile()) {
+                return false;
+            }
 
+            if (StringUtils.isNotBlank(filter)) {
+                String path = arg.toURI().getPath();
                 return matcher.match(filter, path.substring(0, path.length() - 1));
             }
 
-            return false;
+            return true;
         }
 
     }

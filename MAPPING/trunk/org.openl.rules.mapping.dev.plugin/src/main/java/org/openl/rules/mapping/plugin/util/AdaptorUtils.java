@@ -66,6 +66,8 @@ public class AdaptorUtils {
                         classes.add(clazz);
                     } catch (ClassNotFoundException e) {
                         Log.error(String.format("Class '%s' is not found", className), e);
+                    } catch (Throwable e) {
+                        Log.error(String.format("Class '%s' cannot be loaded", className), e);
                     }
                 }
             }

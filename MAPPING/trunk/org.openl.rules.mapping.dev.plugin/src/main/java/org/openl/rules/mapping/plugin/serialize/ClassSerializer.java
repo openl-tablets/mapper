@@ -4,11 +4,15 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dozer.util.CollectionUtils;
 import org.dozer.util.ReflectionUtils;
 
 public class ClassSerializer {
 
+    private static final Log LOG = LogFactory.getLog(ClassSerializer.class); 
+    
     public static BeanEntry serialize(Class<?> clazz) {
 
         if (clazz == null) {
@@ -19,26 +23,39 @@ public class ClassSerializer {
         bean.setName(clazz.getName());
         bean.setExtendedType(getSuperclass(clazz));
 
-        PropertyDescriptor[] propDescriptors = ReflectionUtils.getPropertyDescriptors(clazz);
+        PropertyDescriptor[] propDescriptors = null;
+        try {
+            propDescriptors = ReflectionUtils.getPropertyDescriptors(clazz);
+        } catch (Throwable e) {
+            LOG.error(String.format("An error has occured while loading properties of class '%s'", clazz.getCanonicalName()), e);
+        }
+        
+        if (propDescriptors == null) {
+            return bean;
+        }
+        
         List<FieldEntry> fields = new ArrayList<FieldEntry>(propDescriptors.length);
 
         for (PropertyDescriptor propDescriptor : propDescriptors) {
             if (!"class".equals(propDescriptor.getName())) {
-                FieldEntry field = new FieldEntry();
-                field.setName(propDescriptor.getName());
                 Class<?> propertyType = propDescriptor.getPropertyType();
-                field.setType(propertyType);
+                
+                if (propertyType != null) {
+                    FieldEntry field = new FieldEntry();
+                    field.setName(propDescriptor.getName());
+                    field.setType(propertyType);
 
-                boolean isCollection = CollectionUtils.isCollection(propertyType);
-                boolean isArray = CollectionUtils.isArray(propertyType);
-                if (isCollection || isArray) {
-                    field.setCollectionType(isArray ? CollectionType.ARRAY : CollectionType.COLLECTION);
-                    field.setCollectionItemType(ReflectionUtils.getComponentType(propertyType,
-                        propDescriptor,
-                        Object.class));
+                    boolean isCollection = CollectionUtils.isCollection(propertyType);
+                    boolean isArray = CollectionUtils.isArray(propertyType);
+                    if (isCollection || isArray) {
+                        field.setCollectionType(isArray ? CollectionType.ARRAY : CollectionType.COLLECTION);
+                        field.setCollectionItemType(ReflectionUtils.getComponentType(propertyType,
+                            propDescriptor,
+                            Object.class));
+                    }
+
+                    fields.add(field);
                 }
-
-                fields.add(field);
             }
         }
 
