@@ -9,12 +9,18 @@ import org.apache.commons.logging.LogFactory;
 import org.dozer.util.CollectionUtils;
 import org.dozer.util.ReflectionUtils;
 
+/**
+ * Serializes {@link Class} objects into internal domain model.
+ * 
+ * Intended for internal use.
+ */
 public class ClassSerializer {
 
     private static final Log LOG = LogFactory.getLog(ClassSerializer.class); 
+   
+    private static final String[] ignoredProperties = new String [] {"class"};
     
     public static BeanEntry serialize(Class<?> clazz) {
-
         if (clazz == null) {
             return null;
         }
@@ -37,7 +43,7 @@ public class ClassSerializer {
         List<FieldEntry> fields = new ArrayList<FieldEntry>(propDescriptors.length);
 
         for (PropertyDescriptor propDescriptor : propDescriptors) {
-            if (!"class".equals(propDescriptor.getName())) {
+            if (!isIgnoredProperty(propDescriptor.getName())) {
                 Class<?> propertyType = propDescriptor.getPropertyType();
                 
                 if (propertyType != null) {
@@ -65,7 +71,6 @@ public class ClassSerializer {
     }
 
     public static List<BeanEntry> serialize(List<Class<?>> classes) {
-
         List<BeanEntry> beans = new ArrayList<BeanEntry>(classes.size());
 
         for (Class<?> clazz : classes) {
@@ -82,5 +87,15 @@ public class ClassSerializer {
         }
         
         return superclass;
+    }
+    
+    private static boolean isIgnoredProperty(String propName) {
+        for (String ignoredProperty : ignoredProperties) {
+            if (ignoredProperty.equals(propName)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

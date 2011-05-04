@@ -13,20 +13,23 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.extended.JavaClassConverter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+/**
+ * A writer which writes out specific information.
+ * 
+ * Intended for internal use.
+ */
 public class XmlWriter {
 
     public void write(List<BeanEntry> beans, List<MessageEntry> messages, OutputStream out) throws IOException {
-
         XmlDocument document = new XmlDocument();
         document.setTypes(beans);
         document.setMessages(messages);
-        
+
         XStream xStream = new XStream(new DomDriver());
         xStream.registerConverter(new ClassConverter());
-//        xStream.alias("types", BeanEntry[].class);
-        
+
         xStream.alias("root", XmlDocument.class);
-        
+
         xStream.alias("type", BeanEntry.class);
         xStream.useAttributeFor(BeanEntry.class, "name");
         xStream.useAttributeFor(BeanEntry.class, "extendedType");
@@ -47,10 +50,10 @@ public class XmlWriter {
         xStream.useAttributeFor(MessageEntry.class, "sheet");
         xStream.useAttributeFor(MessageEntry.class, "cell");
         xStream.aliasField("value", MessageEntry.class, "message");
-        
+
         out.write(xStream.toXML(document).getBytes());
     }
-    
+
     private class ClassConverter extends JavaClassConverter {
 
         @Override
@@ -59,7 +62,7 @@ public class XmlWriter {
             if (clazz.isArray()) {
                 return clazz.getCanonicalName();
             }
-            
+
             return super.toString(obj);
         }
     }

@@ -2,6 +2,12 @@ package org.openl.rules.mapping.plugin.serialize;
 
 import java.util.List;
 
+/**
+ * Root object in domain model which is used to encapsulate required
+ * information.
+ * 
+ * Intended for internal use.
+ */
 public class XmlDocument {
 
     private List<BeanEntry> types;

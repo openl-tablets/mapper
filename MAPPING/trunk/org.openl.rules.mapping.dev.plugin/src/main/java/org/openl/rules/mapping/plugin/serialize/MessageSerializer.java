@@ -13,6 +13,11 @@ import org.openl.message.OpenLMessage;
 import org.openl.message.OpenLWarnMessage;
 import org.openl.source.IOpenSourceCodeModule;
 
+/**
+ * Serializes {@link OpenLMessage} objects into internal domain model.
+ * 
+ * Intended for internal use.
+ */
 public class MessageSerializer {
 
     public static MessageEntry serialize(OpenLMessage message) {
@@ -24,19 +29,7 @@ public class MessageSerializer {
         if (message instanceof OpenLErrorMessage) {
             OpenLErrorMessage errorMessage = (OpenLErrorMessage) message;
             IOpenSourceCodeModule module = errorMessage.getError().getSourceModule();
-            
-            if (module != null && StringUtils.isNotBlank(module.getUri(0))) {
-                Map<String, String> params = getURIParams(module.getUri(0));
-                entry.setFilename(params.get("path"));
-                entry.setSheet(params.get("sheet"));
-                entry.setCell(params.get("cell"));
-            }
-        }
-        
-        if (message instanceof OpenLWarnMessage) {
-            OpenLWarnMessage warnMessage = (OpenLWarnMessage) message;
-            IOpenSourceCodeModule module = warnMessage.getSource().getModule();
-            
+
             if (module != null && StringUtils.isNotBlank(module.getUri(0))) {
                 Map<String, String> params = getURIParams(module.getUri(0));
                 entry.setFilename(params.get("path"));
@@ -45,6 +38,17 @@ public class MessageSerializer {
             }
         }
 
+        if (message instanceof OpenLWarnMessage) {
+            OpenLWarnMessage warnMessage = (OpenLWarnMessage) message;
+            IOpenSourceCodeModule module = warnMessage.getSource().getModule();
+
+            if (module != null && StringUtils.isNotBlank(module.getUri(0))) {
+                Map<String, String> params = getURIParams(module.getUri(0));
+                entry.setFilename(params.get("path"));
+                entry.setSheet(params.get("sheet"));
+                entry.setCell(params.get("cell"));
+            }
+        }
 
         return entry;
     }
@@ -58,20 +62,20 @@ public class MessageSerializer {
 
         return msgs;
     }
-    
+
     private static Map<String, String> getURIParams(String uri) {
         Map<String, String> params = new HashMap<String, String>();
-        
+
         try {
             URI u = new URI(uri);
             params.put("path", u.getPath());
             params.putAll(getQueryParams(u.getQuery()));
         } catch (URISyntaxException e) {
         }
-        
+
         return params;
     }
-    
+
     private static Map<String, String> getQueryParams(String query) {
         Map<String, String> params = new HashMap<String, String>();
 
@@ -81,7 +85,7 @@ public class MessageSerializer {
                 params.put(pair[0], pair[1]);
             }
         }
-        
+
         return params;
     }
 }

@@ -1,26 +1,16 @@
 package org.openl.rules.mapping.plugin;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,39 +25,17 @@ import org.openl.rules.mapping.plugin.serialize.MessageEntry;
 import org.openl.rules.mapping.plugin.serialize.MessageSerializer;
 import org.openl.rules.mapping.plugin.serialize.xml.XmlWriter;
 import org.openl.rules.mapping.plugin.util.AdaptorUtils;
+import org.openl.rules.mapping.plugin.util.ClassUtils;
 import org.openl.rules.runtime.ApiBasedRulesEngineFactory;
 import org.openl.types.IOpenClass;
 import org.openl.types.java.OpenClassHelper;
-import org.springframework.util.AntPathMatcher;
 
-// TODO: replace utils method to separate class.
+/**
+ * Provides methods to export OpenL specific information about mapping project.
+ */
 public class PluginAdaptor {
 
     private static final Log LOG = LogFactory.getLog(PluginAdaptor.class);
-
-    private static final String JAR_PATH_OPTION_LONG_NAME = "jar-path";
-    private static final String JAR_PATH_OPTION_NAME = "jp";
-
-    private static final String OUTPUT_XML_PATH_OPTION_LONG_NAME = "output-xml";
-    private static final String OUTPUT_XML_PATH_OPTION_NAME = "o";
-
-    private static final String TYPE_EXPORT_OPTION_LONG_NAME = "export-types";
-    private static final String TYPE_EXPORT_OPTION_NAME = "t";
-
-    private static final String MSG_EXPORT_OPTION_LONG_NAME = "export-messages";
-    private static final String MSG_EXPORT_OPTION_NAME = "m";
-
-    private static final String HELP_OPTION_LONG_NAME = "help";
-    private static final String HELP_OPTION_NAME = "h";
-
-    private static final String PATH_DELIMITER = ";";
-    private static final String FILTER_DELIMITER = "\\|";
-
-    private static final String JAR_FILE_EXTENSION = "jar";
-    private static final String FILE_EXTENSION_DELIMITER = ".";
-    private static final String JAR_FILE_SUFFIX = FILE_EXTENSION_DELIMITER + JAR_FILE_EXTENSION;
-
-    private static Options cmdOptions = null;
 
     private String jarpath;
     private String outFilename;
@@ -87,42 +55,68 @@ public class PluginAdaptor {
         this.exportMessages = exportMessages;
     }
 
+    /**
+     * Processes mapping project.
+     */
     public void process() {
         if (StringUtils.isBlank(inputFilename)) {
-            LOG.error("Input source file has to be provided");
-            return;
+            throw new RuntimeException("Input source file has to be provided");
         }
 
         File source = new File(inputFilename);
 
         if (!source.exists() || !source.canRead()) {
-            LOG.error(String.format("Input source file '%s' is not exist or cannot be read", source.getName()));
-            return;
+            throw new RuntimeException(String.format("Input source file '%s' is not exist or cannot be read",
+                source.getName()));
         }
 
-        String[] foldersToScan = getPathesToScan(jarpath);
-        URL[] jarURLs = scanDirs(foldersToScan);
+        String[] foldersToScan = AdaptorUtils.getPaths(jarpath);
+        URL[] jarURLs = AdaptorUtils.scanDirs(foldersToScan);
 
+        // Replace current class loader with new one which has extended
+        // classpath.
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         AdaptorClassLoader cl = new AdaptorClassLoader(jarURLs, originalClassLoader);
-
         Thread.currentThread().setContextClassLoader(cl);
 
-        ApiBasedRulesEngineFactory engine = RulesBeanMapperFactory.initEngine(source, false);
-        CompiledOpenClass compiledOpenClass = engine.getCompiledOpenClass();
+        try {
+            // Compile OpenL project.
+            ApiBasedRulesEngineFactory engine = RulesBeanMapperFactory.initEngine(source, false);
+            CompiledOpenClass compiledOpenClass = engine.getCompiledOpenClass();
 
-        ModuleOpenClass openClass = (ModuleOpenClass) compiledOpenClass.getOpenClassWithErrors();
+            ModuleOpenClass openClass = (ModuleOpenClass) compiledOpenClass.getOpenClassWithErrors();
 
-        List<BeanEntry> types = new ArrayList<BeanEntry>();
-        List<MessageEntry> messages = new ArrayList<MessageEntry>();
-        if (exportTypes) {
-            types = exportTypes(openClass, jarURLs, cl);
+            List<BeanEntry> types = new ArrayList<BeanEntry>();
+            List<MessageEntry> messages = new ArrayList<MessageEntry>();
+
+            // Get info about types and compilation messages.
+            if (exportTypes) {
+                types = exportTypes(openClass, jarURLs, cl);
+            }
+            if (exportMessages) {
+                messages = exportMessages(compiledOpenClass.getMessages());
+            }
+
+            // Write data.
+            OutputStream out = getOutputStream();
+            write(out, types, messages);
+        } finally {
+            // Return back original class loader.
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
         }
-        if (exportMessages) {
-            messages = exportMessages(compiledOpenClass.getMessages());
-        }
+    }
 
+    private void write(OutputStream out, List<BeanEntry> types, List<MessageEntry> messages) {
+        try {
+            new XmlWriter().write(types, messages, out);
+        } catch (IOException e) {
+            LOG.error(e);
+        }
+    }
+
+    private OutputStream getOutputStream() {
         OutputStream out = null;
+
         if (StringUtils.isNotBlank(outFilename)) {
             try {
                 out = new FileOutputStream(outFilename);
@@ -135,257 +129,62 @@ public class PluginAdaptor {
             out = System.out;
         }
 
-        try {
-            new XmlWriter().write(types, messages, out);
-        } catch (IOException e) {
-            LOG.error(e);
-        }
-
-        Thread.currentThread().setContextClassLoader(originalClassLoader);
+        return out;
     }
 
-    private URL[] scanDirs(String[] pathes) {
-        List<URL> urls = new ArrayList<URL>();
-
-        for (String path : pathes) {
-            String[] pathArgs = path.split(FILTER_DELIMITER);
-            String dir = pathArgs[0];
-
-            String filter = null;
-
-            if (pathArgs.length > 1) {
-                filter = pathArgs[1];
-            }
-            if (pathArgs.length > 2) {
-                LOG.warn(String.format("Only one filter expression can be applyed to path: %s", path));
-            }
-
-            urls.addAll(scanDir(dir, filter));
-        }
-
-        return urls.toArray(new URL[urls.size()]);
-    }
-
-    private List<URL> scanDir(String path, final String filter) {
-        File file = new File(path);
-
-        // Check that file is exist.
-        if (!file.exists()) {
-            LOG.error(String.format("File '%s' is not exist", file.getName()));
-        }
-
-        // Check that file is directory.
-        if (!file.isDirectory()) {
-            LOG.error(String.format("File '%s' is not a directory", file.getName()));
-        }
-
-        FileFilter dirFilter = new AntPathDirFilter(filter);
-        
-        List<File> dirs = listFiles(file, true, dirFilter);
-
-        // Select jar files from folder.
-        List<File> jarFiles = new ArrayList<File>();
-
-        for (File dir : dirs) {
-
-            File[] jars = dir.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File arg) {
-                    return arg.isFile() && arg.getName().endsWith(JAR_FILE_SUFFIX);
-                }
-            });
-
-            jarFiles.addAll(Arrays.asList(jars));
-        }
-
-        List<URL> jarURLs = new ArrayList<URL>(jarFiles.size());
-
-        for (File jar : jarFiles) {
-            try {
-                URL url = jar.toURI().toURL();
-                jarURLs.add(url);
-                LOG.debug(String.format("Loaded file: %s", url));
-            } catch (MalformedURLException e) {
-                LOG.error(String.format("File '%s' is invalid", file.getName()), e);
-            }
-        }
-
-        return jarURLs;
-    }
-
-    private List<File> listFiles(File root, boolean recursive, FileFilter filter) {
-        List<File> files = new ArrayList<File>();
-
-        if (root == null) {
-            return files;
-        }
-
-        if (filter == null || filter.accept(root)) {
-            files.add(root);
-        }
-        
-        files.addAll(internalListFiles(root, recursive, filter));
-
-        return files;
-    }
-    
-    private List<File> internalListFiles(File root, boolean recursive, FileFilter filter) {
-        List<File> files = new ArrayList<File>();
-
-        File[] rootFiles = root.listFiles();
-
-        if (rootFiles != null) {
-            for (File file : rootFiles) {
-                if (filter == null || filter.accept(file)) {
-                    files.add(file);
-                }
-
-                if (file.isDirectory() && recursive) {
-                    files.addAll(internalListFiles(file, recursive, filter));
-                }
-            }
-        }
-
-        return files;
-    }
-
-    private String[] getPathesToScan(String pathes) {
-        if (StringUtils.isNotBlank(pathes)) {
-            return pathes.split(PATH_DELIMITER);
-        }
-
-        return new String[0];
-    }
-
+    /**
+     * Exports types from compiled project into internal model.
+     * 
+     * @param openClass module open class
+     * @param jarURLs jar files
+     * @param cl class loader
+     * @return bean entries
+     */
     private List<BeanEntry> exportTypes(ModuleOpenClass openClass, URL[] jarURLs, ClassLoader cl) {
+        // Get types what are defined in project in declarative way.
         Collection<IOpenClass> values = openClass.getTypes().values();
         IOpenClass[] internalTypes = values.toArray(new IOpenClass[values.size()]);
 
+        // Composite required types.
         List<Class<?>> classes = new ArrayList<Class<?>>();
         classes.addAll(Arrays.asList(OpenClassHelper.getInstanceClasses(internalTypes)));
-        classes.addAll(AdaptorUtils.loadClassesFromJars(jarURLs, cl));
+        classes.addAll(ClassUtils.loadClassesFromJars(jarURLs, cl));
 
         return ClassSerializer.serialize(classes);
     }
 
+    /**
+     * Exports compilation messages.
+     * 
+     * @param messages messages
+     * @return message entries
+     */
     private List<MessageEntry> exportMessages(List<OpenLMessage> messages) {
         return MessageSerializer.serialize(messages);
     }
 
+    /**
+     * Console application entry point.
+     * 
+     * @param args cmd args
+     */
     public static void main(String[] args) {
-        String jarpath = null;
-        String outpath = null;
-        String sourcepath = null;
-        boolean exportTypes = false;
-        boolean exportMessages = false;
 
-        // Process command line arguments
-        //
-        try {
-            CommandLineParser cmdLineParser = new GnuParser();
-            Options cmdOptions = getCmdOptions();
+        CmdLineProcessor cmdLineProcessor = new CmdLineProcessor();
+        CmdLineArgs cmdLineArgs = cmdLineProcessor.parse(args);
 
-            CommandLine commandLine = cmdLineParser.parse(cmdOptions, args);
-
-            if (commandLine.hasOption(HELP_OPTION_NAME)) {
-                printUsage();
-                return;
-            }
-
-            if (commandLine.hasOption(JAR_PATH_OPTION_NAME)) {
-                jarpath = commandLine.getOptionValue(JAR_PATH_OPTION_NAME);
-            }
-            if (commandLine.hasOption(OUTPUT_XML_PATH_OPTION_NAME)) {
-                outpath = commandLine.getOptionValue(OUTPUT_XML_PATH_OPTION_NAME);
-            }
-
-            exportTypes = commandLine.hasOption(TYPE_EXPORT_OPTION_NAME);
-            exportMessages = commandLine.hasOption(MSG_EXPORT_OPTION_NAME);
-
-            String[] cmdArgs = commandLine.getArgs();
-
-            if (cmdArgs.length != 1) {
-                throw new RuntimeException("Source file is not defined");
-            }
-
-            sourcepath = cmdArgs[0];
-        } catch (ParseException parseException) {
-            System.err.println("Encountered exception while parsing command line arguments:\n" + parseException.getMessage());
+        if (cmdLineArgs.hasHelpOption()) {
+            cmdLineProcessor.printUsage();
+        } else {
+            // Create new instance of adaptor.
+            PluginAdaptor adaptor = new PluginAdaptor(cmdLineArgs.getJarpath(),
+                cmdLineArgs.getOutpath(),
+                cmdLineArgs.getSourcepath(),
+                cmdLineArgs.hasExportTypesOption(),
+                cmdLineArgs.hasExportMessagesOption());
+            // Start process
+            adaptor.process();
         }
-
-        // Create new instance of adaptor.
-        PluginAdaptor adaptor = new PluginAdaptor(jarpath, outpath, sourcepath, exportTypes, exportMessages);
-        adaptor.process();
     }
 
-    @SuppressWarnings("static-access")
-    private static Options getCmdOptions() {
-
-        if (cmdOptions == null) {
-            Option out = OptionBuilder.withDescription("output xml file path")
-                .withArgName("path")
-                .hasArg()
-                .withLongOpt(OUTPUT_XML_PATH_OPTION_LONG_NAME)
-                .create(OUTPUT_XML_PATH_OPTION_NAME);
-
-            Option jarpath = OptionBuilder.withDescription("folders list which will be scanned to find jar files")
-                .withArgName("path")
-                .hasArg()
-                .withLongOpt(JAR_PATH_OPTION_LONG_NAME)
-                .create(JAR_PATH_OPTION_NAME);
-
-            Option help = OptionBuilder.withDescription("print current message")
-                .withLongOpt(HELP_OPTION_LONG_NAME)
-                .create(HELP_OPTION_NAME);
-
-            Option exportTypes = OptionBuilder.withDescription("export types")
-                .withLongOpt(TYPE_EXPORT_OPTION_LONG_NAME)
-                .create(TYPE_EXPORT_OPTION_NAME);
-
-            Option exportMessages = OptionBuilder.withDescription("export errors and warinings")
-                .withLongOpt(MSG_EXPORT_OPTION_LONG_NAME)
-                .create(MSG_EXPORT_OPTION_NAME);
-
-            cmdOptions = new Options();
-            cmdOptions.addOption(out);
-            cmdOptions.addOption(jarpath);
-            cmdOptions.addOption(exportTypes);
-            cmdOptions.addOption(exportMessages);
-            cmdOptions.addOption(help);
-        }
-
-        return cmdOptions;
-    }
-
-    private static void printUsage() {
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp("java -jar org.openl.rules.mapping.dev.plugin-<version>.jar <openl_project_source> [options]",
-            getCmdOptions());
-    }
-
-    private class AntPathDirFilter implements FileFilter {
-        private AntPathMatcher matcher = new AntPathMatcher();
-        private String filter;
-
-        public AntPathDirFilter(String filter) {
-            this.filter = filter;
-
-            matcher.setPathSeparator(System.getProperty("file.separator"));
-        }
-
-        @Override
-        public boolean accept(File arg) {
-            if (arg.isFile()) {
-                return false;
-            }
-
-            if (StringUtils.isNotBlank(filter)) {
-                String path = arg.toURI().getPath();
-                return matcher.match(filter, path.substring(0, path.length() - 1));
-            }
-
-            return true;
-        }
-
-    }
 }
