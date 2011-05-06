@@ -33,7 +33,7 @@ public class ClassSerializer {
         try {
             propDescriptors = ReflectionUtils.getPropertyDescriptors(clazz);
         } catch (Throwable e) {
-            LOG.error(String.format("An error has occured while loading properties of class '%s'", clazz.getCanonicalName()), e);
+            LOG.error(String.format("An error has occured while loading properties of class '%s'", clazz.getName()), e);
         }
         
         if (propDescriptors == null) {
@@ -44,23 +44,27 @@ public class ClassSerializer {
 
         for (PropertyDescriptor propDescriptor : propDescriptors) {
             if (!isIgnoredProperty(propDescriptor.getName())) {
-                Class<?> propertyType = propDescriptor.getPropertyType();
-                
-                if (propertyType != null) {
-                    FieldEntry field = new FieldEntry();
-                    field.setName(propDescriptor.getName());
-                    field.setType(propertyType);
+                try {
+                    Class<?> propertyType = propDescriptor.getPropertyType();
+                    
+                    if (propertyType != null) {
+                        FieldEntry field = new FieldEntry();
+                        field.setName(propDescriptor.getName());
+                        field.setType(propertyType);
 
-                    boolean isCollection = CollectionUtils.isCollection(propertyType);
-                    boolean isArray = CollectionUtils.isArray(propertyType);
-                    if (isCollection || isArray) {
-                        field.setCollectionType(isArray ? CollectionType.ARRAY : CollectionType.COLLECTION);
-                        field.setCollectionItemType(ReflectionUtils.getComponentType(propertyType,
-                            propDescriptor,
-                            Object.class));
+                        boolean isCollection = CollectionUtils.isCollection(propertyType);
+                        boolean isArray = CollectionUtils.isArray(propertyType);
+                        if (isCollection || isArray) {
+                            field.setCollectionType(isArray ? CollectionType.ARRAY : CollectionType.COLLECTION);
+                            field.setCollectionItemType(ReflectionUtils.getComponentType(propertyType,
+                                propDescriptor,
+                                Object.class));
+                        }
+
+                        fields.add(field);
                     }
-
-                    fields.add(field);
+                } catch (Throwable e) {
+                    LOG.error(String.format("An error has occurred while processing property '%s' of class %s", propDescriptor.getName(), clazz.getName()), e);
                 }
             }
         }

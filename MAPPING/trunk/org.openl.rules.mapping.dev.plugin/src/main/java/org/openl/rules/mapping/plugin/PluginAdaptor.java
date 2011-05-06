@@ -78,6 +78,7 @@ public class PluginAdaptor {
         ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         AdaptorClassLoader cl = new AdaptorClassLoader(jarURLs, originalClassLoader);
         Thread.currentThread().setContextClassLoader(cl);
+        OutputStream out = null;
 
         try {
             // Compile OpenL project.
@@ -98,11 +99,19 @@ public class PluginAdaptor {
             }
 
             // Write data.
-            OutputStream out = getOutputStream();
+            out = getOutputStream();
             write(out, types, messages);
         } finally {
             // Return back original class loader.
             Thread.currentThread().setContextClassLoader(originalClassLoader);
+            
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    LOG.error(e);
+                }
+            }
         }
     }
 
