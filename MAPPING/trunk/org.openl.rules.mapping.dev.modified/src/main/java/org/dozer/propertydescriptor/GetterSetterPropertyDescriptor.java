@@ -279,15 +279,22 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
             // Check to see if collection needs to be resized
             if (MappingUtils.isSupportedCollection(value.getClass())) {
                 int currentSize = CollectionUtils.getLengthOfCollection(value);
-
                 String index = hierarchyElement.getIndex();
+
+                // We cannot use another type of collection index for
+                // destination field path except simple one because, for
+                // example, xpath filtered index can return different elements
+                // during mapping process. 
                 if (!MappingUtils.isSimpleCollectionIndex(index)) {
                     MappingUtils.throwMappingException("Destination field path should not contain filter expressions");
                 }
 
                 int collectionIndex = MappingUtils.getCollectionIndex(index);
-
-                if (currentSize < collectionIndex + 1) {
+                
+                // Check that collection should be resized if it has
+                // inappropriate length or element at the collectionIndex is
+                // null.
+                if (currentSize < collectionIndex + 1 || MappingUtils.getCollectionIndexedValue(value, collectionIndex) == null) {
                     Class<?> hintType = null;
 
                     if (fieldMap.getDestDeepIndexHintContainer() != null) {
@@ -295,11 +302,13 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                     }
 
                     Class<?> componentType = ReflectionUtils.getComponentType(pd.getPropertyType(), pd, hintType);
-                    value = MappingUtils.prepareIndexedCollection(pd.getPropertyType(), value, DestBeanCreator
-                        .create(componentType), collectionIndex);
+                    // Update collection with new one element.
+                    value = MappingUtils.prepareIndexedCollection(pd.getPropertyType(), value, DestBeanCreator.create(componentType), collectionIndex);
+                    // At previous step collection instance was changed so we
+                    // have to update appropriate property of parent object.  
                     ReflectionUtils.invoke(pd.getWriteMethod(), parentObj, new Object[] { value });
-                    // Re-read value object from parent object to avoid using invalid instance of property value.
-                    //
+                    // Re-read value object from parent object to avoid using
+                    // invalid instance of property value.
                     value = ReflectionUtils.invoke(pd.getReadMethod(), parentObj, null);
                 }
             }

@@ -26,6 +26,7 @@ public class FieldMap {
     private Class<?> destType;
     private ConverterDescriptor converter;
     private ConditionDescriptor condition;
+    private CollectionItemDiscriminatorDescriptor collectionItemDiscriminator;
 
     public BeanMap getBeanMap() {
         return beanMap;
@@ -180,14 +181,33 @@ public class FieldMap {
         this.destDateFormat = destDateFormat;
     }
 
+    public CollectionItemDiscriminatorDescriptor getCollectionItemDiscriminator() {
+        return collectionItemDiscriminator;
+    }
+
+    public void setCollectionItemDiscriminator(CollectionItemDiscriminatorDescriptor collectionItemDiscriminator) {
+        this.collectionItemDiscriminator = collectionItemDiscriminator;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("src", src).append("dest", dest)
-            .append("createMethod", createMethod).append("defaultValue", defaultValue).append("mapNulls", mapNulls)
-            .append("mapEmptyStrings", mapEmptyStrings).append("required", required).append("srcHint", srcHint).append(
-                "destHint", destHint).append("srcType", srcType).append("destType", destType).append("mapCondition",
-                condition).append("customConverter", converter).append("srcDateFormat", srcDateFormat).append(
-                "destDateFormat", destDateFormat).toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("src", src)
+            .append("dest", dest)
+            .append("createMethod", createMethod)
+            .append("defaultValue", defaultValue)
+            .append("mapNulls", mapNulls)
+            .append("mapEmptyStrings", mapEmptyStrings)
+            .append("required", required)
+            .append("srcHint", srcHint)
+            .append("destHint", destHint)
+            .append("srcType", srcType)
+            .append("destType", destType)
+            .append("customConverter", converter)
+            .append("mapCondition", condition)
+            .append("collectionItemDiscriminator", collectionItemDiscriminator)
+            .append("srcDateFormat", srcDateFormat)
+            .append("destDateFormat", destDateFormat)
+            .toString();
     }
 
 }

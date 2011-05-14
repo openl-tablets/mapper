@@ -1,8 +1,10 @@
 package org.openl.rules.mapping.definition;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
@@ -14,7 +16,7 @@ public class BeanMap {
 
     private Class<?> srcClass;
     private Class<?> destClass;
-    private List<FieldMap> fieldMappings = new ArrayList<FieldMap>();
+    private Map<String, FieldMap> fieldMappings = new LinkedHashMap<String, FieldMap>();
     private BeanMapConfiguration configuration;
 
     public Class<?> getSrcClass() {
@@ -33,14 +35,6 @@ public class BeanMap {
         this.destClass = destClass;
     }
 
-    public List<FieldMap> getFieldMappings() {
-        return fieldMappings;
-    }
-
-    public void setFieldMappings(List<FieldMap> fieldMappings) {
-        this.fieldMappings = fieldMappings;
-    }
-    
     public BeanMapConfiguration getConfiguration() {
         return configuration;
     }
@@ -49,6 +43,19 @@ public class BeanMap {
         this.configuration = configuration;
     }
 
+    @SuppressWarnings("unchecked")
+    public Collection<FieldMap> getFieldMappings() {
+        return CollectionUtils.unmodifiableCollection(fieldMappings.values());
+    }
+    
+    public void addFieldMap(String key, FieldMap fieldMap) {
+        fieldMappings.put(key, fieldMap);
+    }
+    
+    public boolean hasFieldMap(String key) {
+        return fieldMappings.containsKey(key);
+    }
+    
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("srcClass", srcClass).append(

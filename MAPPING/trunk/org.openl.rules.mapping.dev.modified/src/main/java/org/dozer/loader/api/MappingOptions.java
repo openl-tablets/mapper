@@ -98,6 +98,14 @@ public class MappingOptions {
         return FieldsMappingOptions.conditionId(id);
     }
 
+    public static FieldsMappingOption collectionItemDiscriminator(final String type) {
+        return FieldsMappingOptions.collectionItemDiscriminator(type);
+    }
+
+    public static FieldsMappingOption collectionItemDiscriminatorId(String id) {
+        return FieldsMappingOptions.collectionItemDiscriminatorId(id);
+    }
+
     public static FieldsMappingOption useMapId(String mapId) {
         return FieldsMappingOptions.useMapId(mapId);
     }

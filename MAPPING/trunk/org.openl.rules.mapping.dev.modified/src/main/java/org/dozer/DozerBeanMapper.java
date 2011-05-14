@@ -77,6 +77,9 @@ public class DozerBeanMapper implements Mapper {
     private final List<FieldMappingCondition> mappingConditions = new ArrayList<FieldMappingCondition>();
     private final Map<String, FieldMappingCondition> mappingConditionsWithId = new HashMap<String, FieldMappingCondition>();
 
+    private final List<CollectionItemDiscriminator> collectionItemDiscriminators = new ArrayList<CollectionItemDiscriminator>();
+    private final Map<String, CollectionItemDiscriminator> collectionItemDiscriminatorsWithId = new HashMap<String, CollectionItemDiscriminator>();
+
     private CustomFieldMapper customFieldMapper;
 
     /*
@@ -174,12 +177,26 @@ public class DozerBeanMapper implements Mapper {
         this.mappingConditions.addAll(mappingConditions);
     }
     
+    public void setCollectionItemDiscriminators(List<CollectionItemDiscriminator> collectionItemDiscriminators) {
+        checkIfInitialized();
+        this.collectionItemDiscriminators.clear();
+        this.collectionItemDiscriminators.addAll(collectionItemDiscriminators);
+    }
+    
     public List<FieldMappingCondition> getMappingConditions() {
         return Collections.unmodifiableList(mappingConditions);
     }
 
     public Map<String, FieldMappingCondition> getMappingConditionsWithId() {
         return Collections.unmodifiableMap(mappingConditionsWithId);
+    }
+    
+    public List<CollectionItemDiscriminator> getCollectionItemDiscriminators() {
+        return Collections.unmodifiableList(collectionItemDiscriminators);
+    }
+
+    public Map<String, CollectionItemDiscriminator> getCollectionItemDiscriminatorsWithId() {
+        return Collections.unmodifiableMap(collectionItemDiscriminatorsWithId);
     }
 
     private void init() {
@@ -218,7 +235,7 @@ public class DozerBeanMapper implements Mapper {
 
         Mapper processor = new MappingProcessor(customMappings, globalConfiguration, cacheManager, statsMgr,
             customConverters, eventManager, getCustomFieldMapper(), customConvertersWithId, mappingConditions, 
-            mappingConditionsWithId);
+            mappingConditionsWithId, collectionItemDiscriminators, collectionItemDiscriminatorsWithId);
 
         // If statistics are enabled, then Proxy the processor with a statistics
         // interceptor
@@ -243,9 +260,9 @@ public class DozerBeanMapper implements Mapper {
         builderMappings.add(mappingFileData);
     }
     
-    public void addDefaultCustomConverter(Class<?> defaultCustomConverter) {
-        
-    }
+//    public void addDefaultCustomConverter(Class<?> defaultCustomConverter) {
+//        
+//    }
 
     public List<? extends DozerEventListener> getEventListeners() {
         return Collections.unmodifiableList(eventListeners);
@@ -282,6 +299,12 @@ public class DozerBeanMapper implements Mapper {
         checkIfInitialized();
         this.mappingConditionsWithId.clear();
         this.mappingConditionsWithId.putAll(mappingConditionsWithId);
+    }
+    
+    public void setCollectionItemDiscriminatorsWithId(Map<String, CollectionItemDiscriminator> collectionItemDiscriminatorsWithId) {
+        checkIfInitialized();
+        this.collectionItemDiscriminatorsWithId.clear();
+        this.collectionItemDiscriminatorsWithId.putAll(collectionItemDiscriminatorsWithId);
     }
 
     private void checkIfInitialized() {

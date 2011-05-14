@@ -86,41 +86,42 @@ public class MapFieldMap extends FieldMap {
         propDescriptor.setPropertyValue(targetObject, destFieldValue, this);
     }
 
-    @Override
-    public Object getSrcFieldValue(Object srcObj) {
-        DozerPropertyDescriptor propDescriptor;
-        Object targetObject = srcObj;
-
-        if (getSrcFieldName().equals(DozerConstants.SELF_KEYWORD)) {
-            propDescriptor = super.getSrcPropertyDescriptor(srcObj.getClass());
-        } else {
-            Class<?> actualType = determineActualPropertyType(getSrcFieldName(), isSrcFieldIndexed(),
-                getSrcFieldIndex(), srcObj, false);
-            if ((getSrcFieldMapGetMethod() != null) || (this.getMapId() == null && MappingUtils
-                .isSupportedMap(actualType) && getSrcHintContainer() == null)) {
-                // Need to dig out actual map object by using getter on the
-                // field. Use actual map object to get the field value
-                targetObject = super.getSrcFieldValue(srcObj);
-
-                String setMethod = MappingUtils.isSupportedMap(actualType) ? "put" : getSrcFieldMapSetMethod();
-                String getMethod = MappingUtils.isSupportedMap(actualType) ? "get" : getSrcFieldMapGetMethod();
-                String key = getSrcFieldKey() != null ? getSrcFieldKey() : getDestFieldName();
-
-                propDescriptor = new MapPropertyDescriptor(actualType, getSrcFieldName(), isSrcFieldIndexed(),
-                    getDestFieldIndex(), setMethod, getMethod, key, getSrcDeepIndexHintContainer());
-            } else {
-                propDescriptor = super.getSrcPropertyDescriptor(srcObj.getClass());
-            }
-        }
-
-        Object result = null;
-        if (targetObject != null) {
-            result = propDescriptor.getPropertyValue(targetObject);
-        }
-
-        return result;
-
-    }
+//    @Override
+//    public Object getSrcFieldValue(Object srcObj) {
+//        DozerPropertyDescriptor propDescriptor;
+//        Object targetObject = srcObj;
+//
+//        if (DozerConstants.SELF_KEYWORD.equals(getSrcFieldName())) {
+//            propDescriptor = super.getSrcPropertyDescriptor(srcObj.getClass());
+//        } else {
+//            Class<?> actualType = determineActualPropertyType(getSrcFieldName(), isSrcFieldIndexed(),
+//                getSrcFieldIndex(), srcObj, false);
+//            if ((getSrcFieldMapGetMethod() != null) || (this.getMapId() == null && MappingUtils
+//                .isSupportedMap(actualType) && getSrcHintContainer() == null)) {
+//                // Need to dig out actual map object by using getter on the
+//                // field. Use actual map object to get the field value
+//                targetObject = super.getSrcFieldValue(srcObj);
+//
+//                String setMethod = MappingUtils.isSupportedMap(actualType) ? "put" : getSrcFieldMapSetMethod();
+//                String getMethod = MappingUtils.isSupportedMap(actualType) ? "get" : getSrcFieldMapGetMethod();
+//                String key = getSrcFieldKey() != null ? getSrcFieldKey() : getDestFieldName();
+//
+//                propDescriptor = new MapPropertyDescriptor(actualType, getSrcFieldName(), isSrcFieldIndexed(),
+//                    getDestFieldIndex(), setMethod, getMethod, key, getSrcDeepIndexHintContainer());
+//
+//            } else {
+//                propDescriptor = super.getSrcPropertyDescriptor(srcObj.getClass());
+//            }
+//        }
+//
+//        Object result = null;
+//        if (targetObject != null) {
+//            result = propDescriptor.getPropertyValue(targetObject);
+//        }
+//
+//        return result;
+//
+//    }
 
     private PrepareTargetObjectResult prepareTargetObject(Object destObj) {
         // Need to dig out actual destination Map object and use map property

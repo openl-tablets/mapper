@@ -39,6 +39,10 @@ public class Mapping {
     private String conditionBA;
     private String conditionABId;
     private String conditionBAId;
+    private String fieldADiscriminator;
+    private String fieldADiscriminatorId;
+    private String fieldBDiscriminator;
+    private String fieldBDiscriminatorId;
 
     public Class<?> getClassA() {
         return classA;
@@ -264,20 +268,74 @@ public class Mapping {
         this.conditionBAId = conditionBAId;
     }
 
+    public String getFieldADiscriminator() {
+        return fieldADiscriminator;
+    }
+
+    public void setFieldADiscriminator(String fieldADiscriminator) {
+        this.fieldADiscriminator = fieldADiscriminator;
+    }
+
+    public String getFieldADiscriminatorId() {
+        return fieldADiscriminatorId;
+    }
+
+    public void setFieldADiscriminatorId(String fieldADiscriminatorId) {
+        this.fieldADiscriminatorId = fieldADiscriminatorId;
+    }
+
+    public String getFieldBDiscriminator() {
+        return fieldBDiscriminator;
+    }
+
+    public void setFieldBDiscriminator(String fieldBDiscriminator) {
+        this.fieldBDiscriminator = fieldBDiscriminator;
+    }
+
+    public String getFieldBDiscriminatorId() {
+        return fieldBDiscriminatorId;
+    }
+
+    public void setFieldBDiscriminatorId(String fieldBDiscriminatorId) {
+        this.fieldBDiscriminatorId = fieldBDiscriminatorId;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("classA", classA).append("classB",
-            classB).append("fieldA", fieldA).append("fieldB", fieldB).append("convertMethodAB", convertMethodAB)
-            .append("convertMethodBA", convertMethodBA).append("convertMethodABId", convertMethodABId).append(
-                "convertMethodBAId", convertMethodBAId).append("oneWay", oneWay).append("mapNulls", mapNulls).append(
-                "mapEmptyStrings", mapEmptyStrings).append("trimStrings", trimStrings).append("fieldACreateMethod",
-                fieldACreateMethod).append("fieldBCreateMethod", fieldBCreateMethod).append("fieldADefaultValue",
-                fieldADefaultValue).append("fieldBDefaultValue", fieldBDefaultValue).append("fieldADateFormat",
-                fieldADateFormat).append("fieldBDateFormat", fieldBDateFormat).append("fieldAHint", fieldAHint).append(
-                "fieldBHint", fieldBHint).append("fieldAType", fieldAType).append("fieldBType", fieldBType).append(
-                "fieldARequired", fieldARequired).append("fieldBRequired", fieldBRequired).append("conditionAB",
-                conditionAB).append("conditionBA", conditionBA).append("conditionABId", conditionABId).append(
-                "conditionBAId", conditionBAId).toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("classA", classA)
+            .append("classB", classB)
+            .append("fieldA", fieldA)
+            .append("fieldB", fieldB)
+            .append("convertMethodAB", convertMethodAB)
+            .append("convertMethodBA", convertMethodBA)
+            .append("convertMethodABId", convertMethodABId)
+            .append("convertMethodBAId", convertMethodBAId)
+            .append("oneWay", oneWay)
+            .append("mapNulls", mapNulls)
+            .append("mapEmptyStrings", mapEmptyStrings)
+            .append("trimStrings", trimStrings)
+            .append("fieldACreateMethod", fieldACreateMethod)
+            .append("fieldBCreateMethod", fieldBCreateMethod)
+            .append("fieldADefaultValue", fieldADefaultValue)
+            .append("fieldBDefaultValue", fieldBDefaultValue)
+            .append("fieldADateFormat", fieldADateFormat)
+            .append("fieldBDateFormat", fieldBDateFormat)
+            .append("fieldAHint", fieldAHint)
+            .append("fieldBHint", fieldBHint)
+            .append("fieldAType", fieldAType)
+            .append("fieldBType", fieldBType)
+            .append("fieldARequired", fieldARequired)
+            .append("fieldBRequired", fieldBRequired)
+            .append("conditionAB", conditionAB)
+            .append("conditionBA", conditionBA)
+            .append("conditionABId", conditionABId)
+            .append("conditionBAId", conditionBAId)
+            .append("fieldADiscriminator", fieldADiscriminator)
+            .append("fieldBDiscriminator", fieldBDiscriminator)
+            .append("fieldADiscriminatorId", fieldADiscriminatorId)
+            .append("fieldBDiscriminatorId", fieldBDiscriminatorId)
+
+            .toString();
     }
 
 }

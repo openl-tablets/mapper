@@ -12,6 +12,7 @@ import org.dozer.loader.api.FieldDefinition;
 import org.dozer.loader.api.FieldsMappingOption;
 import org.dozer.loader.api.TypeMappingBuilder;
 import org.openl.rules.mapping.definition.BeanMap;
+import org.openl.rules.mapping.definition.CollectionItemDiscriminatorDescriptor;
 import org.openl.rules.mapping.definition.ConditionDescriptor;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
 import org.openl.rules.mapping.definition.FieldMap;
@@ -92,6 +93,13 @@ public class DozerMappingBuilder {
                 mappingsContainer.getConverters().put(fieldsMapping.getConverter().getConverterId(),
                     fieldsMapping.getConverter().getInstance());
             }
+            
+            if (fieldsMapping.getCollectionItemDiscriminator() != null && !mappingsContainer.getCollectionItemDiscriminators().containsKey(
+                fieldsMapping.getCollectionItemDiscriminator().getDiscriminatorId())) {
+                mappingsContainer.getCollectionItemDiscriminators().put(fieldsMapping.getCollectionItemDiscriminator().getDiscriminatorId(),
+                    fieldsMapping.getCollectionItemDiscriminator().getDiscriminator());
+            }
+
         }
 
         // Create Dozer's mapping model.
@@ -188,6 +196,11 @@ public class DozerMappingBuilder {
             fieldsMapping.setCondition(fieldMap.getCondition());
         }
         
+        if (fieldMap.getCollectionItemDiscriminator() != null) {
+            optionsBuilder.collectionItemDiscriminatorId(fieldMap.getCollectionItemDiscriminator().getDiscriminatorId());
+            fieldsMapping.setCollectionItemDiscriminator(fieldMap.getCollectionItemDiscriminator());
+        }
+        
         fieldsMapping.setDest(fieldDefBuilder.build());
         fieldsMapping.setOptions(optionsBuilder.build());
         
@@ -218,6 +231,7 @@ public class DozerMappingBuilder {
         private FieldsMappingOption[] options;
         private ConverterDescriptor converter;
         private ConditionDescriptor condition;
+        private CollectionItemDiscriminatorDescriptor collectionItemDiscriminator;
 
         public FieldDefinition[] getSrc() {
             return src;
@@ -258,6 +272,15 @@ public class DozerMappingBuilder {
         public void setCondition(ConditionDescriptor condition) {
             this.condition = condition;
         }
+
+        public CollectionItemDiscriminatorDescriptor getCollectionItemDiscriminator() {
+            return collectionItemDiscriminator;
+        }
+
+        public void setCollectionItemDiscriminator(CollectionItemDiscriminatorDescriptor collectionItemDiscriminator) {
+            this.collectionItemDiscriminator = collectionItemDiscriminator;
+        }
+        
     }
 
 }

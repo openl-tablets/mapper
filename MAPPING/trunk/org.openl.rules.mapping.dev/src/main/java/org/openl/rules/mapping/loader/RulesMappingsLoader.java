@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
+import org.dozer.CollectionItemDiscriminator;
 import org.dozer.CustomConverter;
 import org.dozer.FieldMappingCondition;
 import org.openl.rules.mapping.ClassMappingConfiguration;
@@ -23,11 +24,13 @@ import org.openl.rules.mapping.definition.BeanMapConfiguration;
 import org.openl.rules.mapping.definition.ConditionDescriptor;
 import org.openl.rules.mapping.definition.Configuration;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
+import org.openl.rules.mapping.definition.CollectionItemDiscriminatorDescriptor;
 import org.openl.rules.mapping.definition.FieldMap;
 import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.loader.condition.ConditionFactory;
 import org.openl.rules.mapping.loader.converter.ConverterFactory;
 import org.openl.rules.mapping.loader.converter.ConverterIdFactory;
+import org.openl.rules.mapping.loader.discriminator.CollectionItemDiscriminatorFactory;
 
 /**
  * Intended for internal use only.
@@ -218,8 +221,8 @@ public class RulesMappingsLoader {
             Class<?> classB = mapping.getClassB();
             // Find appropriate bean map for current field map.
             //
-            String key = BeanMapKeyFactory.createKey(classA, classB);
-            BeanMap beanMapping = beanMappings.get(key);
+            String beanMapKey = BeanMapKeyFactory.createKey(classA, classB);
+            BeanMap beanMapping = beanMappings.get(beanMapKey);
             // If bean map is not exists create new one
             //
             if (beanMapping == null) {
@@ -231,11 +234,13 @@ public class RulesMappingsLoader {
                     globalConfiguration);
 
                 beanMapping.setConfiguration(beanMappingConfiguration);
-                beanMappings.put(key, beanMapping);
+                beanMappings.put(beanMapKey, beanMapping);
             }
 
-            beanMapping.getFieldMappings().add(createFieldMap(mapping, beanMapping));
-
+            String mappingId = MappingIdFactory.createMappingId(mapping);
+            if (!beanMapping.hasFieldMap(mappingId)) {
+                beanMapping.addFieldMap(mappingId, createFieldMap(mapping, beanMapping));
+            }
             // TODO: review existing code. Can we use Dozer's mapping processor
             // instead of using this code?
             //
@@ -254,9 +259,12 @@ public class RulesMappingsLoader {
                 }
 
                 // Create reverse mapping
-                //
                 Mapping reverseMapping = MappingDefinitionUtils.reverseMapping(mapping);
-                reverseBeanMapping.getFieldMappings().add(createFieldMap(reverseMapping, reverseBeanMapping));
+                String reverseMappingId = MappingIdFactory.createMappingId(reverseMapping);
+
+                if (!reverseBeanMapping.hasFieldMap(reverseMappingId)) {
+                    reverseBeanMapping.addFieldMap(reverseMappingId, createFieldMap(reverseMapping, reverseBeanMapping));
+                }
             }
         }
 
@@ -378,10 +386,7 @@ public class RulesMappingsLoader {
         // appropriate class.
         if (StringUtils.isNotEmpty(mapping.getFieldBCreateMethod()) && MappingDefinitionUtils.getTypeName(mapping.getFieldBCreateMethod()) != null) {
             String typeName = MappingDefinitionUtils.getTypeName(mapping.getFieldBCreateMethod());
-            Class<?> clazz = typeResolver.findClass(typeName);
-            if (clazz == null) {
-                throw new RulesMappingException(String.format("Type '%s' not found", typeName));
-            }
+            Class<?> clazz = getType(typeName);
 
             fieldMapping.setCreateMethod(clazz.getName() + "." + MappingDefinitionUtils.getMethodName(mapping.getFieldBCreateMethod()));
         } else {
@@ -410,6 +415,15 @@ public class RulesMappingsLoader {
             ConditionDescriptor conditionDescriptor = createConditionDescriptor(conditionId, mapping.getConditionAB());
             fieldMapping.setCondition(conditionDescriptor);
         }
+        
+        if (!StringUtils.isBlank(mapping.getFieldBDiscriminatorId())) {
+            CollectionItemDiscriminatorDescriptor discriminatorDescriptor = createDiscriminatorDescriptor(mapping.getFieldBDiscriminatorId(), null);
+            fieldMapping.setCollectionItemDiscriminator(discriminatorDescriptor);
+        } else if (!StringUtils.isBlank(mapping.getFieldBDiscriminator())) {
+            String discriminatorId = MappingIdFactory.createMappingId(mapping);
+            CollectionItemDiscriminatorDescriptor discriminatorDescriptor = createDiscriminatorDescriptor(discriminatorId, mapping.getFieldBDiscriminator());
+            fieldMapping.setCollectionItemDiscriminator(discriminatorDescriptor);
+        }
 
         return fieldMapping;
     }
@@ -429,11 +443,7 @@ public class RulesMappingsLoader {
             String typeName = MappingDefinitionUtils.getTypeName(convertMethod);
 
             if (typeName != null) {
-                Class<?> convertClass = typeResolver.findClass(typeName);
-                if (convertClass == null) {
-                    throw new RulesMappingException(String.format("Type '%s' not found", typeName));
-                }
-
+                Class<?> convertClass = getType(typeName);
                 converter = ConverterFactory.createConverter(MappingDefinitionUtils.getMethodName(convertMethod), convertClass, null);
             } else {
                 converter = ConverterFactory.createConverter(convertMethod, instanceClass, instance);
@@ -454,11 +464,7 @@ public class RulesMappingsLoader {
             String typeName = MappingDefinitionUtils.getTypeName(conditionMethod);
 
             if (typeName != null) {
-                Class<?> conditionClass = typeResolver.findClass(typeName);
-                if (conditionClass == null) {
-                    throw new RulesMappingException(String.format("Type '%s' not found", typeName));
-                }
-
+                Class<?> conditionClass = getType(typeName);
                 condition = ConditionFactory.createCondition(MappingDefinitionUtils.getMethodName(conditionMethod), conditionClass, instance);
             } else {
                 condition = ConditionFactory.createCondition(conditionMethod, instanceClass, instance);
@@ -468,5 +474,30 @@ public class RulesMappingsLoader {
         return new ConditionDescriptor(conditionId, condition);
     }
 
+    private CollectionItemDiscriminatorDescriptor createDiscriminatorDescriptor(String discriminatorId, String discriminatorMethod) {
+        CollectionItemDiscriminator discriminator = null;
+
+        if (StringUtils.isNotEmpty(discriminatorMethod)) {
+            String typeName = MappingDefinitionUtils.getTypeName(discriminatorMethod);
+
+            if (typeName != null) {
+                Class<?> discriminatorClass = getType(typeName);
+                discriminator = CollectionItemDiscriminatorFactory.createDiscriminator(MappingDefinitionUtils.getMethodName(discriminatorMethod), discriminatorClass, instance);
+            } else {
+                discriminator = CollectionItemDiscriminatorFactory.createDiscriminator(discriminatorMethod, instanceClass, instance);
+            }
+        }
+
+        return new CollectionItemDiscriminatorDescriptor(discriminatorId, discriminator);
+    }
+
+    private Class<?> getType(String typeName) {
+        Class<?> conditionClass = typeResolver.findClass(typeName);
+        if (conditionClass == null) {
+            throw new RulesMappingException(String.format("Type '%s' not found", typeName));
+        }
+        
+        return conditionClass;
+    }
 
 }

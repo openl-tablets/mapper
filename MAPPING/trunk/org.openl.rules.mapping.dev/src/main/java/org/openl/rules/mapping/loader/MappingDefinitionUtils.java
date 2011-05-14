@@ -115,6 +115,10 @@ public class MappingDefinitionUtils {
         copy.setConditionBA(bean.getConditionBA());
         copy.setConditionABId(bean.getConditionABId());
         copy.setConditionBAId(bean.getConditionBAId());
+        copy.setFieldADiscriminator(bean.getFieldADiscriminator());
+        copy.setFieldBDiscriminator(bean.getFieldBDiscriminator());
+        copy.setFieldADiscriminatorId(bean.getFieldADiscriminatorId());
+        copy.setFieldBDiscriminatorId(bean.getFieldBDiscriminatorId());
 
         return copy;
     }
@@ -213,6 +217,10 @@ public class MappingDefinitionUtils {
         reverseMapping.setConvertMethodBAId(mapping.getConvertMethodABId());
         reverseMapping.setConditionABId(mapping.getConditionBAId());
         reverseMapping.setConditionBAId(mapping.getConditionABId());
+        reverseMapping.setFieldADiscriminator(mapping.getFieldBDiscriminator());
+        reverseMapping.setFieldBDiscriminator(mapping.getFieldADiscriminator());
+        reverseMapping.setFieldADiscriminatorId(mapping.getFieldBDiscriminatorId());
+        reverseMapping.setFieldBDiscriminatorId(mapping.getFieldADiscriminatorId());
 
         if (mapping.getFieldBType() != null) {
             reverseMapping.setFieldAType(new Class<?>[] { mapping.getFieldBType() });

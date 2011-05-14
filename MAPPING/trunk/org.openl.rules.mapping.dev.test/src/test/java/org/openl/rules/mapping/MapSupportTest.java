@@ -1,6 +1,7 @@
 package org.openl.rules.mapping;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class MapSupportTest {
         Map result = mapper.map(a, Map.class);
 
         assertEquals("a-string", result.get("AString"));
-        assertEquals(null, result.get("AStringArray"));
+        assertNotNull(result.get("AStringArray"));
         assertEquals(Integer.valueOf(100), result.get("anInteger"));
         assertEquals("e-string", ((E) result.get("e")).getAString());
         assertEquals(100, ((E) result.get("e")).getD().getAnInt());
@@ -46,7 +47,7 @@ public class MapSupportTest {
 
         assertEquals("a-string", result1.getAString());
         assertEquals(Integer.valueOf(100), result1.getAnInteger());
-        assertEquals(null, result1.getAStringArray());
+        assertNotNull(result1.getAStringArray());
         assertEquals("e-string", result1.getE().getAString());
         assertEquals(100, result1.getE().getD().getAnInt());
 
@@ -96,7 +97,7 @@ public class MapSupportTest {
         MapContainer result = mapper.map(container, MapContainer.class);
 
         assertEquals("a-string", result.getAMap().get("AString"));
-        assertEquals(null, result.getAMap().get("AStringArray"));
+        assertNotNull(result.getAMap().get("AStringArray"));
         assertEquals(Integer.valueOf(100), result.getAMap().get("anInteger"));
         assertEquals("e-string", ((E) result.getAMap().get("e")).getAString());
         assertEquals(100, ((E) result.getAMap().get("e")).getD().getAnInt());
@@ -105,7 +106,7 @@ public class MapSupportTest {
 
         assertEquals("a-string", ((A) result1.getArray()[0]).getAString());
         assertEquals(Integer.valueOf(100), ((A) result1.getArray()[0]).getAnInteger());
-        assertEquals(null, ((A) result1.getArray()[0]).getAStringArray());
+        assertNotNull(((A) result1.getArray()[0]).getAStringArray());
         assertEquals("e-string", ((A) result1.getArray()[0]).getE().getAString());
         assertEquals(100, ((A) result1.getArray()[0]).getE().getD().getAnInt());
     }

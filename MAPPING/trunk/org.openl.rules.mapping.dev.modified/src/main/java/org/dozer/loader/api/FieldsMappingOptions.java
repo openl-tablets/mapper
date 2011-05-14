@@ -80,6 +80,22 @@ public class FieldsMappingOptions extends TypeMappingOptions {
         };
     }
 
+    public static FieldsMappingOption collectionItemDiscriminator(final String type) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.collectionItemDiscriminator(type);
+            }
+        };
+    }
+
+    public static FieldsMappingOption collectionItemDiscriminatorId(final String id) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.collectionItemDiscriminatorId(id);
+            }
+        };
+    }
+
     public static FieldsMappingOption useMapId(final String mapId) {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {

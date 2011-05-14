@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.dozer.cache.Cache;
@@ -97,6 +97,9 @@ public class MappingProcessor implements Mapper {
     private final List<FieldMappingCondition> conditionObjects;
     private final Map<String, FieldMappingCondition> conditionObjectsWithId;
 
+    private final List<CollectionItemDiscriminator> collectionItemDiscriminatorObjects;
+    private final Map<String, CollectionItemDiscriminator> collectionItemDiscriminatorObjectsWithId;
+
     private final MappedFieldsTracker mappedFields = new MappedFieldsTracker();
 
     private final Cache converterByDestTypeCache;
@@ -106,7 +109,9 @@ public class MappingProcessor implements Mapper {
     protected MappingProcessor(ClassMappings classMappings, Configuration globalConfiguration, CacheManager cacheMgr,
         StatisticsManager statsMgr, List<CustomConverter> customConverterObjects, DozerEventManager eventManager,
         CustomFieldMapper customFieldMapper, Map<String, CustomConverter> customConverterObjectsWithId,
-        List<FieldMappingCondition> conditionObjects, Map<String, FieldMappingCondition> conditionObjectsWithId) {
+        List<FieldMappingCondition> conditionObjects, Map<String, FieldMappingCondition> conditionObjectsWithId,
+        List<CollectionItemDiscriminator> collectionItemDiscriminatorObjects, 
+        Map<String, CollectionItemDiscriminator> collectionItemDiscriminatorObjectsWithId) {
 
         this.classMappings = classMappings;
         this.globalConfiguration = globalConfiguration;
@@ -119,6 +124,8 @@ public class MappingProcessor implements Mapper {
         this.customConverterObjectsWithId = customConverterObjectsWithId;
         this.conditionObjects = conditionObjects;
         this.conditionObjectsWithId = conditionObjectsWithId;
+        this.collectionItemDiscriminatorObjects = collectionItemDiscriminatorObjects;
+        this.collectionItemDiscriminatorObjectsWithId = collectionItemDiscriminatorObjectsWithId;
     }
 
     /* Mapper Interface Implementation */
@@ -385,24 +392,21 @@ public class MappingProcessor implements Mapper {
             if (conditionObjectsWithId != null && conditionObjectsWithId.containsKey(fieldMapping
                 .getMappingConditionId()) && conditionObjectsWithId.get(fieldMapping.getMappingConditionId()) != null) {
 
-                Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping
-                    .getSrcFieldType(srcObj.getClass());
-                FieldMappingCondition conditionInstance = conditionObjectsWithId.get(fieldMapping
-                    .getMappingConditionId());
-                Object existingValue = getExistingValue(fieldMapping, destObj, destFieldType);
-                mapField = evaluateConditionInstance(conditionInstance, srcFieldClass, srcFieldValue, destFieldType,
-                    existingValue, params);
+                Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping.getSrcFieldType(srcObj.getClass());
+                FieldMappingCondition conditionInstance = conditionObjectsWithId.get(fieldMapping.getMappingConditionId());
+                
+                Object existingValue = getExistingValue(fieldMapping, srcFieldClass, srcFieldValue, destObj, destFieldType, params);
+                mapField = evaluateConditionInstance(conditionInstance, srcFieldClass, srcFieldValue, destFieldType, existingValue, params);
             } else {
                 throw new MappingException(
                     "Mapping condition instance not found with id:" + fieldMapping.getMappingConditionId());
             }
         } else if (!MappingUtils.isBlankOrNull(fieldMapping.getMappingCondition())) {
-            Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping
-                .getSrcFieldType(srcObj.getClass());
+            Class<?> srcFieldClass = srcFieldValue != null ? srcFieldValue.getClass() : fieldMapping.getSrcFieldType(srcObj.getClass());
             Class<?> conditionClass = MappingUtils.loadClass(fieldMapping.getMappingCondition());
-            Object existingValue = getExistingValue(fieldMapping, destObj, destFieldType);
-            mapField = evaluateCondition(conditionClass, srcFieldClass, srcFieldValue, destFieldType, existingValue,
-                fieldMapping, params);
+
+            Object existingValue = getExistingValue(fieldMapping, srcFieldClass, srcFieldValue, destObj, destFieldType, params);
+            mapField = evaluateCondition(conditionClass, srcFieldClass, srcFieldValue, destFieldType, existingValue, fieldMapping, params);
         }
 
         // If mapping condition have returned false value skip current field
@@ -503,6 +507,53 @@ public class MappingProcessor implements Mapper {
         return evaluateConditionInstance(conditionInstance, srcFieldClass, srcFieldValue, destFieldType,
             destFieldValue, params);
     }
+    
+    private Object evaluateCollectionItemDiscriminator(Class<?> discriminatorClass,
+            Class<?> srcFieldClass,
+            Object srcFieldValue,
+            Class<?> destFieldType,
+            Object destCollection,
+            FieldMap fieldMapping,
+            MappingParameters params) {
+
+        CollectionItemDiscriminator collectionItemDiscriminatorInstance = null;
+
+        if (collectionItemDiscriminatorObjects != null) {
+            for (CollectionItemDiscriminator disciminatorObject : collectionItemDiscriminatorObjects) {
+                if (disciminatorObject.getClass().isAssignableFrom(discriminatorClass)) {
+                    // we have a match
+                    collectionItemDiscriminatorInstance = disciminatorObject;
+                }
+            }
+        }
+        // if discriminator object instances were not injected, then create new
+        // instance of the converter for each conversion
+        // TODO : Should we really create it each time?
+        if (collectionItemDiscriminatorInstance == null) {
+            collectionItemDiscriminatorInstance = (CollectionItemDiscriminator) ReflectionUtils.newInstance(discriminatorClass);
+        }
+
+        return evaluateCollectionItemDiscriminatorInstance(collectionItemDiscriminatorInstance,
+            srcFieldClass,
+            srcFieldValue,
+            destFieldType,
+            destCollection,
+            params);
+    }
+    
+    private Object evaluateCollectionItemDiscriminatorInstance(CollectionItemDiscriminator discriminatorInstance,
+            Class<?> srcFieldClass,
+            Object srcFieldValue,
+            Class<?> destFieldType,
+            Object destCollection,
+            MappingParameters params) {
+
+        if (discriminatorInstance instanceof MappingParamsAwareCollectionItemDiscriminator) {
+            ((MappingParamsAwareCollectionItemDiscriminator) discriminatorInstance).setMappingParams(params);
+        }
+        
+        return discriminatorInstance.discriminate(srcFieldClass, srcFieldValue, destCollection.getClass(), destFieldType, destCollection);
+    }
 
     private Object mapOrRecurseObject(Object srcObj, Object srcFieldValue, Class<?> destFieldType, Object destObj,
         FieldMap fieldMap, MappingParameters params) {
@@ -602,7 +653,7 @@ public class MappingProcessor implements Mapper {
 
         // Default: Map from one custom data object to another custom data
         // object
-        return mapCustomObject(fieldMap, destObj, destFieldType, srcFieldValue, params);
+        return mapCustomObject(fieldMap, destObj, destFieldType, srcFieldClass, srcFieldValue, params);
     }
 
     private <T extends Enum<T>> T mapEnum(Enum<T> srcFieldValue, Class<T> destFieldType) {
@@ -610,7 +661,7 @@ public class MappingProcessor implements Mapper {
         return Enum.valueOf(destFieldType, name);
     }
 
-    private Object mapCustomObject(FieldMap fieldMap, Object destObj, Class<?> destFieldType, Object srcFieldValue,
+    private Object mapCustomObject(FieldMap fieldMap, Object destObj, Class<?> destFieldType, Class<?> srcFieldType, Object srcFieldValue,
         MappingParameters params) {
 
         srcFieldValue = MappingUtils.deProxy(srcFieldValue);
@@ -618,7 +669,7 @@ public class MappingProcessor implements Mapper {
         // Custom java bean. Need to make sure that the destination object is
         // not
         // already instantiated.
-        Object result = getExistingValue(fieldMap, destObj, destFieldType);
+        Object result = getExistingValue(fieldMap, srcFieldType, srcFieldValue, destObj, destFieldType, params);
         ClassMap classMap = null;
 
         // if the field is not null than we don't want a new instance
@@ -684,6 +735,13 @@ public class MappingProcessor implements Mapper {
 
         Class<?> destCollectionType = fieldMap.getDestFieldType(destObj.getClass());
         Class<?> srcFieldType = srcCollectionValue.getClass();
+        
+        if (fieldMap instanceof MapFieldMap && (MappingUtils.isSupportedMap(fieldMap.getDestFieldType(destObj.getClass())) 
+                || (DozerConstants.SELF_KEYWORD.equals(fieldMap.getDestFieldName())) && MappingUtils.isSupportedMap(fieldMap.getClassMap().getDestClassToMap()))) {
+            destCollectionType = srcFieldType;    
+        }
+        
+
         Object result = null;
 
         // if they use a standard Collection we have to assume it is a
@@ -695,7 +753,7 @@ public class MappingProcessor implements Mapper {
 
         // Array to Array
         if (CollectionUtils.isArray(srcFieldType) && (CollectionUtils.isArray(destCollectionType))) {
-            result = mapArrayToArray(srcObj, srcCollectionValue, fieldMap, destObj, params);
+            result = mapArrayToArray(srcObj, srcCollectionValue, fieldMap, destObj, destCollectionType.getComponentType(), params);
             // Array to List
         } else if (CollectionUtils.isArray(srcFieldType) && (CollectionUtils.isList(destCollectionType))) {
             result = mapArrayToList(srcObj, srcCollectionValue, fieldMap, destObj, params);
@@ -763,10 +821,10 @@ public class MappingProcessor implements Mapper {
         return result;
     }
 
-    private Object mapArrayToArray(Object srcObj, Object srcCollectionValue, FieldMap fieldMap, Object destObj,
+    private Object mapArrayToArray(Object srcObj, Object srcCollectionValue, FieldMap fieldMap, Object destObj, Class<?> destEntryType,
         MappingParameters params) {
 
-        Class destEntryType = fieldMap.getDestFieldType(destObj.getClass()).getComponentType();
+//        Class destEntryType = fieldMap.getDestFieldType(destObj.getClass()).getComponentType();
         int size = Array.getLength(srcCollectionValue);
 
         if (CollectionUtils.isPrimitiveArray(srcCollectionValue.getClass())) {
@@ -779,7 +837,7 @@ public class MappingProcessor implements Mapper {
             } else {
                 returnList = addOrUpdateToList(srcObj, fieldMap, list, destObj, null, params);
             }
-            return CollectionUtils.convertListToArray(returnList, destEntryType);
+            return CollectionUtils.convertListToArray(returnList, (Class)destEntryType);
         }
     }
 
@@ -853,6 +911,7 @@ public class MappingProcessor implements Mapper {
                 toValue = mapOrRecurseObject(srcObj, Array.get(srcCollectionValue, i), destEntryType, destObj,
                     fieldMap, params);
             }
+            
             Array.set(result, arraySize, toValue);
             arraySize++;
         }
@@ -909,7 +968,7 @@ public class MappingProcessor implements Mapper {
             }
             prevDestEntryType = destEntryType;
 
-            if (RelationshipType.NON_CUMULATIVE.equals(fieldMap.getRelationshipType()) && result.contains(destValue)) {
+            if ((usesCollectionItemDiscriminator(fieldMap) || RelationshipType.NON_CUMULATIVE.equals(fieldMap.getRelationshipType())) && result.contains(destValue)) {
                 List<Object> resultAsList = new ArrayList<Object>(result);
                 int index = resultAsList.indexOf(destValue);
                 // perform an update if complex type - can't map strings
@@ -978,7 +1037,8 @@ public class MappingProcessor implements Mapper {
             }
             prevDestEntryType = destEntryType;
 
-            if (RelationshipType.NON_CUMULATIVE.equals(fieldMap.getRelationshipType()) && result.contains(destValue)) {
+           if ((usesCollectionItemDiscriminator(fieldMap) || RelationshipType.NON_CUMULATIVE.equals(fieldMap.getRelationshipType())) && result.contains(destValue)) {
+                // for case of using non-cumulative policy we should replace existing item with new one
                 int index = result.indexOf(destValue);
                 // perform an update if complex type - can't map strings
                 Object obj = result.get(index);
@@ -1001,6 +1061,10 @@ public class MappingProcessor implements Mapper {
         }
 
         return result;
+    }
+    
+    private boolean usesCollectionItemDiscriminator(FieldMap fieldMap) {
+        return !MappingUtils.isBlankOrNull(fieldMap.getCollectionItemDiscriminatorId()) || !MappingUtils.isBlankOrNull(fieldMap.getCollectionItemDiscriminator());
     }
 
     static void removeOrphans(Collection<?> mappedElements, List<Object> result) {
@@ -1152,7 +1216,7 @@ public class MappingProcessor implements Mapper {
         if (topLevel) {
             result = converterInstance.convert(existingDestFieldValue, srcFieldValue, destFieldClass, srcFieldClass);
         } else {
-            Object existingValue = getExistingValue(fieldMap, existingDestFieldValue, destFieldClass);
+            Object existingValue = getExistingValue(fieldMap, srcFieldClass, srcFieldValue, existingDestFieldValue, destFieldClass, params);
             result = converterInstance.convert(existingValue, srcFieldValue, destFieldClass, srcFieldClass);
         }
         // }
@@ -1276,7 +1340,7 @@ public class MappingProcessor implements Mapper {
         copy.setFieldMaps(result);
     }
 
-    private static Object getExistingValue(FieldMap fieldMap, Object destObj, Class<?> destFieldType) {
+    private Object getExistingValue(FieldMap fieldMap, Class<?> srcFieldType, Object srcFieldValue, Object destObj, Class<?> destFieldType, MappingParameters params) {
         // verify that the dest obj is not null
         if (destObj == null) {
             return null;
@@ -1289,14 +1353,35 @@ public class MappingProcessor implements Mapper {
         // in the list
         // by checking the destFieldType
         if (result != null) {
-            if (CollectionUtils.isList(result.getClass()) || CollectionUtils.isArray(result.getClass()) || CollectionUtils
-                .isSet(result.getClass()) || MappingUtils.isSupportedMap(result.getClass())) {
-                if (!CollectionUtils.isList(destFieldType) && !CollectionUtils.isArray(destFieldType) && !CollectionUtils
-                    .isSet(destFieldType) && !MappingUtils.isSupportedMap(destFieldType)) {
+            if (CollectionUtils.isList(result.getClass()) 
+                    || CollectionUtils.isArray(result.getClass()) 
+                    || CollectionUtils.isSet(result.getClass()) 
+                    || MappingUtils.isSupportedMap(result.getClass())) {
+                
+                if (!CollectionUtils.isList(destFieldType) 
+                        && !CollectionUtils.isArray(destFieldType) 
+                        && !CollectionUtils.isSet(destFieldType) 
+                        && !MappingUtils.isSupportedMap(destFieldType)) {
                     // this means the getXX field is a List but we are actually
                     // trying to
                     // map one of its elements
-                    result = null;
+                    if (!MappingUtils.isBlankOrNull(fieldMap.getCollectionItemDiscriminatorId())) {
+                        // check condition using condition id
+                        if (collectionItemDiscriminatorObjectsWithId != null && collectionItemDiscriminatorObjectsWithId.containsKey(fieldMap.getCollectionItemDiscriminatorId())
+                                && collectionItemDiscriminatorObjectsWithId.get(fieldMap.getCollectionItemDiscriminatorId()) != null) {
+                            CollectionItemDiscriminator discriminatorInstance = collectionItemDiscriminatorObjectsWithId.get(fieldMap.getCollectionItemDiscriminatorId());
+                            result = evaluateCollectionItemDiscriminatorInstance(discriminatorInstance, srcFieldType, srcFieldValue, destFieldType,
+                                result, params);
+                        } else {
+                            throw new MappingException(
+                                "Cannot find collection item discriminator instance with id:" + fieldMap.getCollectionItemDiscriminatorId());
+                        }
+                    } else if (!MappingUtils.isBlankOrNull(fieldMap.getCollectionItemDiscriminator())) {
+                        Class<?> discriminatorClass = MappingUtils.loadClass(fieldMap.getCollectionItemDiscriminator());
+                        result = evaluateCollectionItemDiscriminator(discriminatorClass, srcFieldType, srcFieldValue, destFieldType, result, fieldMap, params);
+                    } else {
+                        result = null;
+                    }
                 }
             }
         }

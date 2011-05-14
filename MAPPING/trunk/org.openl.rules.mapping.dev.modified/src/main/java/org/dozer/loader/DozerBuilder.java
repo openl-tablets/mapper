@@ -244,10 +244,10 @@ public class DozerBuilder {
         private String customConverterId;
         private String customConverterParam;
         private boolean copyByReferenceSet;
-
         private String mappingCondition;
         private String mappingConditionId;
-        
+        private String collectionItemDiscriminator;
+        private String collectionItemDiscriminatorId;
         private boolean mapNull;
         private boolean mapNullSet;
         private boolean mapEmptyString;
@@ -334,6 +334,16 @@ public class DozerBuilder {
             return this;
         }
 
+        public FieldMappingBuilder collectionItemDiscriminator(String discriminator) {
+            this.collectionItemDiscriminator = discriminator;
+            return this;
+        }
+
+        public FieldMappingBuilder collectionItemDiscriminatorId(String id) {
+            this.collectionItemDiscriminatorId = id;
+            return this;
+        }
+
         public FieldMappingBuilder mapNull(boolean value) {
             this.mapNullSet = true;
             this.mapNull = value;
@@ -391,6 +401,8 @@ public class DozerBuilder {
             result.setCustomConverterParam(customConverterParam);
             result.setMappingCondition(mappingCondition);
             result.setMappingConditionId(mappingConditionId);
+            result.setCollectionItemDiscriminator(collectionItemDiscriminator);
+            result.setCollectionItemDiscriminatorId(collectionItemDiscriminatorId);
 
             if (mapNullSet) {
                 result.setMapNull(mapNull);

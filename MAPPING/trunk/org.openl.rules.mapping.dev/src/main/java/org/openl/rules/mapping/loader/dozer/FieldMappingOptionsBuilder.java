@@ -33,10 +33,16 @@ public class FieldMappingOptionsBuilder {
         return this;
     }
 
+    public FieldMappingOptionsBuilder collectionItemDiscriminatorId(String collectionItemDiscriminatorId) {
+        options.add(MappingOptions.collectionItemDiscriminatorId(collectionItemDiscriminatorId));
+        return this;
+    }
+    
     public FieldMappingOptionsBuilder conditionId(String conditionId) {
         options.add(MappingOptions.conditionId(conditionId));
         return this;
     }
+
 
     public FieldsMappingOption[] build() {
         return options.toArray(new FieldsMappingOption[options.size()]);
