@@ -14,6 +14,7 @@ import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.B;
 import org.openl.rules.mapping.to.C;
 import org.openl.rules.mapping.to.containers.ArrayContainer;
+import org.openl.rules.mapping.to.containers.IntArrayContainer;
 import org.openl.rules.mapping.to.containers.ListOfTypeCContainer;
 import org.openl.rules.mapping.to.containers.SetContainer;
 
@@ -265,6 +266,28 @@ public class CollectionDiscriminatorTest {
         assertEquals("x", result.get(0).getAString());
         assertEquals("y", result.get(1).getAString());
         assertEquals(Integer.valueOf(10), result.get(0).getB().getAnInteger());
+    }
+    
+    @Test
+    public void primArrayToPrimArrayDiscriminatorSupportTest() {
+        File sourceFile = new File("src/test/resources/org/openl/rules/mapping/discriminator/PrimitiveArrayToPrimitiveArrayCollectionDiscriminatorTest.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(sourceFile);
+
+        IntArrayContainer source = new IntArrayContainer(); 
+        source.setArray(new int[] { 1, 2, 15 });
+
+        IntArrayContainer dest = new IntArrayContainer(); 
+        dest.setArray(new int[] { 100, 200, 1500 });
+        
+        mapper.map(source, dest);
+        
+        assertEquals(6, dest.getArray().length);
+        assertEquals(100, dest.getArray()[0]);
+        assertEquals(200, dest.getArray()[1]);
+        assertEquals(1500, dest.getArray()[2]);
+        assertEquals(1, dest.getArray()[3]);
+        assertEquals(2, dest.getArray()[4]);
+        assertEquals(15, dest.getArray()[5]);
     }
     
 }
