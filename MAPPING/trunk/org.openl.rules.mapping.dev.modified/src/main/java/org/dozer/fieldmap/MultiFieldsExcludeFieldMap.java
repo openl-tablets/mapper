@@ -41,6 +41,11 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
     }
 
     @Override
+    public String getSrcFieldName() {
+        return FieldMapUtils.getFieldName(src);
+    }
+
+    @Override
     public String getDateFormat() {
         throw new UnsupportedOperationException();
     }

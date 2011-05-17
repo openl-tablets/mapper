@@ -186,6 +186,7 @@ public class DozerMappingBuilder {
         optionsBuilder.mapNulls(fieldMap.isMapNulls());
         optionsBuilder.mapEmptyStrings(fieldMap.isMapEmptyStrings());
         optionsBuilder.trimStrings(fieldMap.isTrimStrings());
+        optionsBuilder.mapId(fieldMap.getMapId());
 
         if (fieldMap.getConverter() != null) {
             optionsBuilder.customConverterId(fieldMap.getConverter().getConverterId());

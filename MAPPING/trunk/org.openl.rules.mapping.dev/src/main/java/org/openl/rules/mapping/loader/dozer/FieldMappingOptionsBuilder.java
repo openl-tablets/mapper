@@ -42,7 +42,11 @@ public class FieldMappingOptionsBuilder {
         options.add(MappingOptions.conditionId(conditionId));
         return this;
     }
-
+    
+    public FieldMappingOptionsBuilder mapId(String mapId) {
+        options.add(MappingOptions.useMapId(mapId));
+        return this;
+    }
 
     public FieldsMappingOption[] build() {
         return options.toArray(new FieldsMappingOption[options.size()]);

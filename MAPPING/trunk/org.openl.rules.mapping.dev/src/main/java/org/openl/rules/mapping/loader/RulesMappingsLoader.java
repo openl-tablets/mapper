@@ -380,6 +380,7 @@ public class RulesMappingsLoader {
         fieldMapping.setTrimStrings(mapping.getTrimStrings());
         fieldMapping.setSrcDateFormat(mapping.getFieldADateFormat());
         fieldMapping.setDestDateFormat(mapping.getFieldBDateFormat());
+        fieldMapping.setMapId(mapping.getMapId());
 
         // Update type name because if user defined create method with class
         // name without package prefix we should use type resolver to load

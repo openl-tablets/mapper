@@ -81,7 +81,7 @@ public final class MappingUtils {
     public static boolean isSupportedCollection(Class<?> aClass) {
         return CollectionUtils.isCollection(aClass) || CollectionUtils.isArray(aClass);
     }
-    
+
     public static Class<?> getSupportedCollectionEntryType(Class<?> collectionClass) {
         Class<?> entryType = null;
         if (collectionClass.isArray()) {
@@ -90,18 +90,18 @@ public final class MappingUtils {
             Class<?> genericType = ReflectionUtils.determineGenericsType(collectionClass);
             if (genericType != null) {
                 entryType = genericType;
-            } 
+            }
         }
 
         return entryType;
     }
-    
+
     public static Class<?> getSupportedCollectionEntryType(DozerPropertyDescriptor pd) {
         Class<?> entryType = pd.genericType();
         if (entryType == null) {
             entryType = getSupportedCollectionEntryType(pd.getPropertyType());
         }
-        
+
         return entryType;
     }
 
@@ -110,9 +110,7 @@ public final class MappingUtils {
     }
 
     public static boolean isPrimitiveOrWrapper(Class<?> aClass) {
-        return (aClass.isPrimitive() || Number.class.isAssignableFrom(aClass) || aClass.equals(String.class) || aClass
-            .equals(Character.class) || aClass.equals(Boolean.class) || java.util.Date.class.isAssignableFrom(aClass) || java.util.Calendar.class
-            .isAssignableFrom(aClass));
+        return (aClass.isPrimitive() || Number.class.isAssignableFrom(aClass) || aClass.equals(String.class) || aClass.equals(Character.class) || aClass.equals(Boolean.class) || java.util.Date.class.isAssignableFrom(aClass) || java.util.Calendar.class.isAssignableFrom(aClass));
     }
 
     public static void throwMappingException(Throwable e) throws MappingException {
@@ -150,7 +148,7 @@ public final class MappingUtils {
     }
 
     public static String getMappedParentFieldKey(Object destObj, FieldMap destFieldMap) {
-        StringBuilder buf = new StringBuilder(100); 
+        StringBuilder buf = new StringBuilder(100);
         // TODO Use IdentityHashMap
         // instead of String
         // concatenation
@@ -163,7 +161,7 @@ public final class MappingUtils {
     }
 
     public static CustomConverter findCustomConverterByClass(Class<?> customConverterClass,
-        List<CustomConverter> externalConverters) {
+            List<CustomConverter> externalConverters) {
 
         CustomConverter converterInstance = null;
         // search among injected customconverters for a match
@@ -204,8 +202,11 @@ public final class MappingUtils {
      * @param destClass
      * @return
      */
-    public static CustomConverter findCustomConverter(Cache cache, List<CustomConverter> externalConverters,
-        CustomConverterContainer customConverterContainer, Class<?> srcClass, Class<?> destClass) {
+    public static CustomConverter findCustomConverter(Cache cache,
+            List<CustomConverter> externalConverters,
+            CustomConverterContainer customConverterContainer,
+            Class<?> srcClass,
+            Class<?> destClass) {
 
         // check that converters container is defined
         if (customConverterContainer == null) {
@@ -236,9 +237,12 @@ public final class MappingUtils {
         return converterInstance;
     }
 
-    public static CustomConverter determineCustomConverter(FieldMap fieldMap, Cache converterByDestTypeCache,
-        List<CustomConverter> customConverterObjects, CustomConverterContainer customConverterContainer,
-        Class<?> srcClass, Class<?> destClass) {
+    public static CustomConverter determineCustomConverter(FieldMap fieldMap,
+            Cache converterByDestTypeCache,
+            List<CustomConverter> customConverterObjects,
+            CustomConverterContainer customConverterContainer,
+            Class<?> srcClass,
+            Class<?> destClass) {
 
         // check that converters container is defined
         if (customConverterContainer == null) {
@@ -246,7 +250,7 @@ public final class MappingUtils {
         }
 
         Class<?> destType = destClass;
-        
+
         // This method is messy. Just trying to isolate the junk into this one
         // method instead of spread across the mapping
         // processor until a better solution can be put into place
@@ -255,15 +259,18 @@ public final class MappingUtils {
         if (fieldMap != null && fieldMap.isDestFieldIndexed()) {
             if (destClass.isArray()) {
                 destType = destClass.getComponentType();
-            } else if (destClass.isAssignableFrom(Collection.class) && fieldMap.getDestHintContainer() != null && !fieldMap
-                .getDestHintContainer().hasMoreThanOneHint()) {
+            } else if (destClass.isAssignableFrom(Collection.class) && fieldMap.getDestHintContainer() != null && !fieldMap.getDestHintContainer()
+                .hasMoreThanOneHint()) {
                 // use hint when trying to find a custom converter
                 destType = fieldMap.getDestHintContainer().getHint();
             }
         }
 
-        return findCustomConverter(converterByDestTypeCache, customConverterObjects, customConverterContainer,
-            srcClass, destType);
+        return findCustomConverter(converterByDestTypeCache,
+            customConverterObjects,
+            customConverterContainer,
+            srcClass,
+            destType);
     }
 
     public static void reverseFields(FieldMap source, FieldMap reversed) {
@@ -272,8 +279,7 @@ public final class MappingUtils {
         // implementation of exclude field map
         //
         if (source instanceof MultiSourceFieldMap) {
-            ((MultiFieldsExcludeFieldMap) reversed).setDest(FieldMapUtils.getCopy(((MultiSourceFieldMap) source)
-                .getSrc()));
+            ((MultiFieldsExcludeFieldMap) reversed).setDest(FieldMapUtils.getCopy(((MultiSourceFieldMap) source).getSrc()));
             ((MultiFieldsExcludeFieldMap) reversed).setSrc(Arrays.asList(source.getDestFieldCopy()));
         } else {
             DozerField destField = source.getSrcFieldCopy();
@@ -295,12 +301,22 @@ public final class MappingUtils {
 
     public static void reverseFields(ClassMap source, ClassMap destination) {
         // reverse the fields
-        destination.setSrcClass(new DozerClass(source.getDestClassName(), source.getDestClassToMap(), source
-            .getDestClassBeanFactory(), source.getDestClassBeanFactoryId(), source.getDestClassMapGetMethod(), source
-            .getDestClassMapSetMethod(), source.isDestMapNull(), source.isDestMapEmptyString()));
-        destination.setDestClass(new DozerClass(source.getSrcClassName(), source.getSrcClassToMap(), source
-            .getSrcClassBeanFactory(), source.getSrcClassBeanFactoryId(), source.getSrcClassMapGetMethod(), source
-            .getSrcClassMapSetMethod(), source.isSrcMapNull(), source.isSrcMapEmptyString()));
+        destination.setSrcClass(new DozerClass(source.getDestClassName(),
+            source.getDestClassToMap(),
+            source.getDestClassBeanFactory(),
+            source.getDestClassBeanFactoryId(),
+            source.getDestClassMapGetMethod(),
+            source.getDestClassMapSetMethod(),
+            source.isDestMapNull(),
+            source.isDestMapEmptyString()));
+        destination.setDestClass(new DozerClass(source.getSrcClassName(),
+            source.getSrcClassToMap(),
+            source.getSrcClassBeanFactory(),
+            source.getSrcClassBeanFactoryId(),
+            source.getSrcClassMapGetMethod(),
+            source.getSrcClassMapSetMethod(),
+            source.isSrcMapNull(),
+            source.isSrcMapEmptyString()));
         destination.setType(source.getType());
         destination.setWildcard(source.isWildcard());
         destination.setTrimStrings(source.isTrimStrings());
@@ -350,8 +366,7 @@ public final class MappingUtils {
             return false;
         }
         String className = clazz.getName();
-        return className.contains(DozerConstants.CGLIB_ID) || className.startsWith(DozerConstants.JAVASSIST_PACKAGE) || className
-            .contains(DozerConstants.JAVASSIST_NAME);
+        return className.contains(DozerConstants.CGLIB_ID) || className.startsWith(DozerConstants.JAVASSIST_PACKAGE) || className.contains(DozerConstants.JAVASSIST_NAME);
     }
 
     /**
@@ -382,14 +397,14 @@ public final class MappingUtils {
         if (collection == null) {
             return null;
         }
-        
+
         Object result = null;
         int collectionIndex = index;
-        
+
         if (collectionIndex == -1) {
             collectionIndex = CollectionUtils.getLengthOfCollection(collection);
         }
-        
+
         if (collection instanceof Object[]) {
             Object[] x = (Object[]) collection;
             if (collectionIndex < x.length) {
@@ -422,13 +437,14 @@ public final class MappingUtils {
         } catch (NumberFormatException e) {
             // ignore
         }
-        
+
         return false;
     }
-    
+
     /**
-     * Parses index string into integer value. 
-     * @param index index string 
+     * Parses index string into integer value.
+     * 
+     * @param index index string
      * @return integer value
      */
     public static int getCollectionIndex(String index) {
@@ -437,12 +453,14 @@ public final class MappingUtils {
         if (intValue < 1) {
             return -1;
         }
-        
+
         return intValue - 1;
     }
 
-    public static Object prepareIndexedCollection(Class<?> collectionType, Object existingCollection,
-        Object collectionEntry, int index) {
+    public static Object prepareIndexedCollection(Class<?> collectionType,
+            Object existingCollection,
+            Object collectionEntry,
+            int index) {
         Object result = null;
         if (collectionType.isArray()) {
             result = prepareIndexedArray(collectionType, existingCollection, collectionEntry, index);
@@ -460,8 +478,10 @@ public final class MappingUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T[] prepareIndexedArray(Class<T> collectionType, Object existingCollection,
-        Object collectionEntry, int index) {
+    private static <T> T[] prepareIndexedArray(Class<T> collectionType,
+            Object existingCollection,
+            Object collectionEntry,
+            int index) {
         T[] result;
 
         if (existingCollection == null) {
@@ -476,8 +496,10 @@ public final class MappingUtils {
     }
 
     @SuppressWarnings("unchecked")
-    private static Collection<?> prepareIndexedCollectionType(Class<?> collectionType, Object existingCollection,
-        Object collectionEntry, int index) {
+    private static Collection<?> prepareIndexedCollectionType(Class<?> collectionType,
+            Object existingCollection,
+            Object collectionEntry,
+            int index) {
         Collection result = null;
         // Instantiation of the new Collection: can be interface or
         // implementation class
@@ -603,8 +625,33 @@ public final class MappingUtils {
 
     }
 
+    public static String fieldMapKey(FieldMap fieldMap) {
+        StringBuilder builder = new StringBuilder();
+        if (isBlankOrNull(fieldMap.getSrcFieldName())) {
+            builder.append("<noname>");
+        } else {
+            builder.append(fieldMap.getSrcFieldName());
+        }
+        if (!(fieldMap instanceof MultiSourceFieldMap) && !(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(fieldMap.getSrcFieldIndex())) {
+            builder.append("[" + fieldMap.getSrcFieldIndex() + "]");
+        }
+        if (!(fieldMap instanceof MultiSourceFieldMap) && !(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(fieldMap.getSrcFieldKey())) {
+            builder.append("{" + fieldMap.getSrcFieldKey() + "}");
+        }
+        builder.append("-->");
+        builder.append(fieldMap.getDestFieldName());
+        if (!(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(fieldMap.getDestFieldIndex())) {
+            builder.append("[" + fieldMap.getDestFieldIndex() + "]");
+        }
+        if (!(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(fieldMap.getDestFieldKey())) {
+            builder.append("{" + fieldMap.getDestFieldKey() + "}");
+        }
+
+        return builder.toString();
+    }
+
     private static boolean isBaseClass(Class<?> clazz) {
         return clazz == null || BASE_CLASS.equals(clazz.getName());
     }
-    
+
 }

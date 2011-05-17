@@ -43,6 +43,7 @@ public class Mapping {
     private String fieldADiscriminatorId;
     private String fieldBDiscriminator;
     private String fieldBDiscriminatorId;
+    private String mapId;
 
     public Class<?> getClassA() {
         return classA;
@@ -300,6 +301,14 @@ public class Mapping {
         this.fieldBDiscriminatorId = fieldBDiscriminatorId;
     }
 
+    public String getMapId() {
+        return mapId;
+    }
+
+    public void setMapId(String mapId) {
+        this.mapId = mapId;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("classA", classA)
@@ -334,6 +343,7 @@ public class Mapping {
             .append("fieldBDiscriminator", fieldBDiscriminator)
             .append("fieldADiscriminatorId", fieldADiscriminatorId)
             .append("fieldBDiscriminatorId", fieldBDiscriminatorId)
+            .append("mapId", mapId)
 
             .toString();
     }

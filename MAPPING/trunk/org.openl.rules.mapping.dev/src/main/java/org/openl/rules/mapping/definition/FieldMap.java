@@ -27,6 +27,7 @@ public class FieldMap {
     private ConverterDescriptor converter;
     private ConditionDescriptor condition;
     private CollectionItemDiscriminatorDescriptor collectionItemDiscriminator;
+    private String mapId;
 
     public BeanMap getBeanMap() {
         return beanMap;
@@ -189,6 +190,14 @@ public class FieldMap {
         this.collectionItemDiscriminator = collectionItemDiscriminator;
     }
 
+    public String getMapId() {
+        return mapId;
+    }
+
+    public void setMapId(String mapId) {
+        this.mapId = mapId;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("src", src)
@@ -207,6 +216,7 @@ public class FieldMap {
             .append("collectionItemDiscriminator", collectionItemDiscriminator)
             .append("srcDateFormat", srcDateFormat)
             .append("destDateFormat", destDateFormat)
+            .append("mapId", mapId)
             .toString();
     }
 

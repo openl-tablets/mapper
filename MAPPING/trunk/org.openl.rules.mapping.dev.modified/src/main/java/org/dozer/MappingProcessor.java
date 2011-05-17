@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -203,7 +205,7 @@ public class MappingProcessor implements Mapper {
             // mapId parameter is null for this invocation because we already
             // used it to find
             // appropriate mapping description.
-            map(classMap, srcObj, result, false, null, getUserParams(mappingContext));
+            map(classMap, srcObj, result, false, getMapId(mappingContext), getUserParams(mappingContext));
         } catch (Throwable e) {
             MappingUtils.throwMappingException(e);
         }
@@ -261,9 +263,10 @@ public class MappingProcessor implements Mapper {
             mappedParentFields = mapParentFields(classMap, srcObj, destObj, mapId, params);
         }
 
+        Collection<FieldMap> fieldMappings = getFieldMappings(classMap, mapId);
         // Perform mappings for each field. Iterate through Fields Maps for this
         // class mapping
-        for (FieldMap fieldMapping : classMap.getFieldMaps()) {
+        for (FieldMap fieldMapping : fieldMappings) {
             // Bypass field if it has already been mapped as part of super class
             // mappings.
             String key = MappingUtils.getMappedParentFieldKey(destObj, fieldMapping);
@@ -272,6 +275,57 @@ public class MappingProcessor implements Mapper {
             }
             mapField(fieldMapping, srcObj, destObj, params);
         }
+    }
+    
+    private Collection<FieldMap> getFieldMappings(ClassMap classMap, String mapId) {
+        if (MappingUtils.isBlankOrNull(mapId)) {
+            return getGeneralFieldMaps(classMap);
+        } else {
+            return getMapIdSpecificFieldMaps(classMap, mapId);
+        }
+    }
+
+    private Collection<FieldMap> getMapIdSpecificFieldMaps(ClassMap classMap, String mapId) {
+        Map<String, FieldMap> mappings = new LinkedHashMap<String, FieldMap>();
+        // In case when map id is provided by user we should get field
+        // mappings which are defined with same mapId value and
+        // field mappings which are defined without mapId value as default
+        // mappings if appropriate mappings are not found. 
+        for (FieldMap fieldMapping : classMap.getFieldMaps()) {
+            // If field mapping has different mapId value we just ignore it.
+            if (!MappingUtils.isBlankOrNull(fieldMapping.getMapId()) && !mapId.equals(fieldMapping.getMapId())) {
+                continue;
+            }
+            
+            String key = MappingUtils.fieldMapKey(fieldMapping);
+            // Check that field mapping with same key is already contained
+            // in map. If it's true we should check that a field mapping
+            // which represented by fieldMapping parameter is more
+            // applicable than existing one. If it's true we remove existing
+            // field mapping from map; otherwise - skip the rest of method.
+            if (mappings.containsKey(key) && !MappingUtils.isBlankOrNull(mappings.get(key).getMapId()) && MappingUtils.isBlankOrNull(fieldMapping.getMapId())) {
+                continue;
+            }
+            
+            mappings.put(key, fieldMapping);
+        }
+        
+        return mappings.values();
+    }
+
+    private Collection<FieldMap> getGeneralFieldMaps(ClassMap classMap) {
+        // If map id is not specified get field mapping which are defined without
+        // mapId value.
+        Map<String, FieldMap> mappings = new LinkedHashMap<String, FieldMap>();
+
+        for (FieldMap fieldMapping : classMap.getFieldMaps()) {
+            String key = MappingUtils.fieldMapKey(fieldMapping);
+            if (MappingUtils.isBlankOrNull(fieldMapping.getMapId())) {
+                mappings.put(key, fieldMapping);
+            }
+        }
+        
+        return mappings.values();
     }
 
     private List<String> mapParentFields(ClassMap classMap, Object srcObj, Object destObj, String mapId,
@@ -282,7 +336,7 @@ public class MappingProcessor implements Mapper {
         Collection<ClassMap> superClasses = checkForSuperTypeMapping(srcObj.getClass(), destObj.getClass());
         superMappings.addAll(superClasses);
 
-        List<String> overridedFieldMappings = getFieldMapKeys(destObj, classMap.getFieldMaps());
+        List<String> overridedFieldMappings = getFieldMapKeys(destObj, classMap.getFieldMaps(), mapId);
 
         if (!superMappings.isEmpty()) {
             mappedParentFields = processSuperTypeMapping(superMappings, srcObj, destObj, mapId, params,
@@ -292,13 +346,18 @@ public class MappingProcessor implements Mapper {
         return mappedParentFields;
     }
 
-    private List<String> getFieldMapKeys(Object destObj, List<FieldMap> fieldMaps) {
+    private List<String> getFieldMapKeys(Object destObj, List<FieldMap> fieldMaps, String mapId) {
         List<String> keys = new ArrayList<String>();
 
         for (FieldMap fieldMap : fieldMaps) {
-            String key = MappingUtils.getMappedParentFieldKey(destObj, fieldMap);
-            if (!keys.contains(key)) {
-                keys.add(key);
+            // Check that field map is applicable for current mapping using
+            // mapId value. If mapId parameter is provided by user and field map
+            // has different mapId value we should skip this field map. 
+            if (MappingUtils.isBlankOrNull(fieldMap.getMapId()) || fieldMap.getMapId().equals(mapId)) {
+                String key = MappingUtils.getMappedParentFieldKey(destObj, fieldMap);
+                if (!keys.contains(key)) {
+                    keys.add(key);
+                }
             }
         }
 
@@ -1389,17 +1448,40 @@ public class MappingProcessor implements Mapper {
     }
 
     private ClassMap getClassMap(Class<?> srcClass, Class<?> destClass, String mapId) {
-        ClassMap mapping = classMappings.find(srcClass, destClass, mapId);
+        ClassMap mapping = null;
 
+        try {
+            // Try to find class map using mapId parameter value.
+            mapping = classMappings.find(srcClass, destClass, mapId);
+        } catch (Exception e) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Class map is not found: SRC_CLASS=%s -> DEST_CLASS=%s MapId=%s",
+                    srcClass.getName(),
+                    destClass.getName(),
+                    mapId));
+            }
+        }
+
+        if (mapping == null && !MappingUtils.isBlankOrNull(mapId)) {
+            // If class map is not found and mapId value is not blank try to
+            // find general class map.
+            mapping = classMappings.find(srcClass, destClass);
+        }
+        
         if (mapping == null) {
             // If mapping not found in existing custom mapping collection,
-            // create
-            // default as an explicit mapping must not
+            // create default as an explicit mapping must not
             // exist. The create default class map method will also add all
-            // default
-            // mappings that it can determine.
+            // default mappings that it can determine.
             mapping = ClassMapBuilder.createDefaultClassMap(globalConfiguration, srcClass, destClass);
             classMappings.addDefault(srcClass, destClass, mapping);
+            
+            if (log.isDebugEnabled()) {
+                log.warn(String.format("Class map is not found: SRC_CLASS=%s -> DEST_CLASS=%s",
+                    srcClass.getName(),
+                    destClass.getName(),
+                    mapId));
+            }
         }
 
         return mapping;
@@ -1420,4 +1502,5 @@ public class MappingProcessor implements Mapper {
 
         return null;
     }
+
 }

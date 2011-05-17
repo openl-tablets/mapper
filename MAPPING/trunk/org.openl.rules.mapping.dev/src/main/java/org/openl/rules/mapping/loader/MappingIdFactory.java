@@ -42,6 +42,10 @@ public final class MappingIdFactory {
         } else {
             result.append(mapping.getFieldB());
         }
+        
+        if (StringUtils.isNotBlank(mapping.getMapId())) {
+            result.append(" (map id: " + mapping.getMapId() + ")");
+        }
 
         return result.toString();
     }

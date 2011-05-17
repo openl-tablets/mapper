@@ -380,7 +380,8 @@ public class DozerApiTest {
             protected void configure() {
                 mapping(
                     Source.class, 
-                    Dest.class 
+                    Dest.class,
+                    wildcard(false)
                 )
                 .fields(
                     multi("intField", "stringField"),
@@ -419,12 +420,10 @@ public class DozerApiTest {
         Dest dest = mapper.map(source, Dest.class);
 
         assertEquals("10;some string", dest.getStringField());
-        assertEquals(10, dest.getIntField());
         
         Source source1 = mapper.map(dest, Source.class);
         
         assertEquals(null, source1.getStringField());
-        assertEquals(10, source1.getIntField());
     }
     
     @Test

@@ -119,6 +119,7 @@ public class MappingDefinitionUtils {
         copy.setFieldBDiscriminator(bean.getFieldBDiscriminator());
         copy.setFieldADiscriminatorId(bean.getFieldADiscriminatorId());
         copy.setFieldBDiscriminatorId(bean.getFieldBDiscriminatorId());
+        copy.setMapId(bean.getMapId());
 
         return copy;
     }
@@ -221,6 +222,7 @@ public class MappingDefinitionUtils {
         reverseMapping.setFieldBDiscriminator(mapping.getFieldADiscriminator());
         reverseMapping.setFieldADiscriminatorId(mapping.getFieldBDiscriminatorId());
         reverseMapping.setFieldBDiscriminatorId(mapping.getFieldADiscriminatorId());
+        reverseMapping.setMapId(mapping.getMapId());
 
         if (mapping.getFieldBType() != null) {
             reverseMapping.setFieldAType(new Class<?>[] { mapping.getFieldBType() });
