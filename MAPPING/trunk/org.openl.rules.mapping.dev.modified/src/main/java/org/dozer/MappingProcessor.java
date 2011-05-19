@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -246,7 +245,15 @@ public class MappingProcessor implements Mapper {
 
         Class<?> srcClass = srcObj.getClass();
         Class<?> destClass = destObj.getClass();
-
+        
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Mapping %s->%s using %s->%s class map",
+                srcObj,
+                destObj,
+                classMap.getSrcClassToMap(),
+                classMap.getDestClassToMap()));
+        }
+        
         // Check to see if custom converter has been specified for this mapping
         // combination. If so, just use it.
         CustomConverter converter = MappingUtils.findCustomConverter(converterByDestTypeCache, customConverterObjects,

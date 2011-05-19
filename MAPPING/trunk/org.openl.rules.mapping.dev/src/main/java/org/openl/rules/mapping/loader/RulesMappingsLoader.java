@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
 import org.dozer.CollectionItemDiscriminator;
 import org.dozer.CustomConverter;
@@ -21,16 +22,18 @@ import org.openl.rules.mapping.Mapping;
 import org.openl.rules.mapping.TypeResolver;
 import org.openl.rules.mapping.definition.BeanMap;
 import org.openl.rules.mapping.definition.BeanMapConfiguration;
+import org.openl.rules.mapping.definition.CollectionItemDiscriminatorDescriptor;
 import org.openl.rules.mapping.definition.ConditionDescriptor;
 import org.openl.rules.mapping.definition.Configuration;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
-import org.openl.rules.mapping.definition.CollectionItemDiscriminatorDescriptor;
 import org.openl.rules.mapping.definition.FieldMap;
 import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.loader.condition.ConditionFactory;
 import org.openl.rules.mapping.loader.converter.ConverterFactory;
 import org.openl.rules.mapping.loader.converter.ConverterIdFactory;
 import org.openl.rules.mapping.loader.discriminator.CollectionItemDiscriminatorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Intended for internal use only.
@@ -39,7 +42,9 @@ import org.openl.rules.mapping.loader.discriminator.CollectionItemDiscriminatorF
  * by mapper.
  */
 public class RulesMappingsLoader {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(RulesMappingsLoader.class);
+    
     private Class<?> instanceClass;
     private Object instance;
     private TypeResolver typeResolver;
@@ -63,6 +68,19 @@ public class RulesMappingsLoader {
     public Collection<BeanMap> loadMappings(Map<String, BeanMapConfiguration> mappingConfigurations,
         Configuration globalConfiguration) {
         List<Mapping> mappings = findDeclarations(instanceClass, instance, Mapping.class);
+        
+        if (LOG.isDebugEnabled()) {
+            Collection<String> mappingNames = (Collection<String>) CollectionUtils.collect(mappings, new Transformer() {
+                
+                @Override
+                public String transform(Object arg) {
+                    Mapping mapping = (Mapping)arg;
+                    return MappingIdFactory.createMappingId(mapping);
+                }
+            }); 
+            
+            LOG.debug("Found mapping declarations:\n" + StringUtils.join(mappingNames, ",\n"));
+        }
 
         return processMappings(mappings, mappingConfigurations, globalConfiguration);
     }
