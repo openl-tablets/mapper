@@ -5,9 +5,13 @@ import java.lang.reflect.Method;
 
 import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.loader.ProxyMethodHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CollectionItemDiscriminatorInvocationHander implements InvocationHandler {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CollectionItemDiscriminatorInvocationHander.class);
+    
     private static final ProxyMethodHandler[] handlers = new ProxyMethodHandler[] { new MappingParamsAwareCollectionItemDiscriminatorHandler(),
             new SimpleCollectionItemDiscriminatorHandler(),
             new DefaultCollectionItemDiscriminatorHandler() };
@@ -44,6 +48,10 @@ public class CollectionItemDiscriminatorInvocationHander implements InvocationHa
         if (discriminatorMethod == null) {
             throw new RulesMappingException(String.format("Cannot find discriminator method with name '%s'",
                 discriminator));
+        }
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(String.format("Getting ready to invoke discriminator method: %s", discriminatorMethod));
         }
 
         return discriminatorHandler.invoke(instance, discriminatorMethod, args);

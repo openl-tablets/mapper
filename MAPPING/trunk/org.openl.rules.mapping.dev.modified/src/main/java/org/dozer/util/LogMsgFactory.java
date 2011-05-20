@@ -95,7 +95,7 @@ public final class LogMsgFactory {
                                                                                                                                                                                                                                          : "");
     }
 
-    private static String getLogOutput(Object object) {
+    public static String getLogOutput(Object object) {
         String output = "NULL";
         if (object == null) {
             return output;

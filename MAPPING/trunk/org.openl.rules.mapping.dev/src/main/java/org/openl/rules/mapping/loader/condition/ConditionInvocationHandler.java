@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 
 import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.loader.ProxyMethodHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Intended to internal use only. The invocation handler implementation which
@@ -12,6 +14,8 @@ import org.openl.rules.mapping.loader.ProxyMethodHandler;
  */
 final class ConditionInvocationHander implements InvocationHandler {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ConditionInvocationHander.class);
+    
     private static final ProxyMethodHandler[] handlers = new ProxyMethodHandler[] {
             new MappingParamsAwareConditionHandler(), new SimpleConditionHandler(), new DefaultConditionHandler() };
 
@@ -46,6 +50,10 @@ final class ConditionInvocationHander implements InvocationHandler {
 
         if (conditionMethod == null) {
             throw new RulesMappingException(String.format("Cannot find condition method with name '%s'", condition));
+        }
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(String.format("Getting ready to invoke condition method: %s", conditionMethod));
         }
 
         return conditionHandler.invoke(instance, conditionMethod, args);

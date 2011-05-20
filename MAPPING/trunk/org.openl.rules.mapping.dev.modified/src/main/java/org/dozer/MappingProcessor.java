@@ -247,9 +247,9 @@ public class MappingProcessor implements Mapper {
         Class<?> destClass = destObj.getClass();
         
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Mapping %s->%s using %s->%s class map",
-                srcObj,
-                destObj,
+            log.debug(String.format("VALUES TO MAP: %s->%s\nCLASS MAP: %s->%s",
+                LogMsgFactory.getLogOutput(srcObj),
+                LogMsgFactory.getLogOutput(destObj),
                 classMap.getSrcClassToMap(),
                 classMap.getDestClassToMap()));
         }
