@@ -235,7 +235,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                     int collectionIndex = MappingUtils.getCollectionIndex(index);
 
                     if (clazz.isArray()) {
-                        o = MappingUtils.prepareIndexedCollection(clazz, null, DestBeanCreator.create(clazz
+                        o = MappingUtils.prepareIndexedCollection(clazz, null, DestBeanCreator.create(null, clazz
                             .getComponentType()), collectionIndex);
                     }
 
@@ -249,7 +249,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                         Class<?> collectionEntryType = ReflectionUtils.getComponentType(clazz, pd, hintType);
 
                         o = MappingUtils.prepareIndexedCollection(clazz, null, DestBeanCreator
-                            .create(collectionEntryType), collectionIndex);
+                            .create(null, collectionEntryType), collectionIndex);
                     }
                 } else {
                     // if user defined another type of property we should use it 
@@ -258,12 +258,12 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                     }
                     
                     try {
-                        o = DestBeanCreator.create(clazz);
+                        o = DestBeanCreator.create(null, clazz);
                     } catch (Exception e) {
                         // lets see if they have a factory we can try as a last
                         // ditch. If not...throw the exception:
                         if (fieldMap.getClassMap().getDestClassBeanFactory() != null) {
-                            o = DestBeanCreator.create(new BeanCreationDirective(null, fieldMap.getClassMap()
+                            o = DestBeanCreator.create(null, new BeanCreationDirective(null, fieldMap.getClassMap()
                                 .getSrcClassToMap(), clazz, clazz, fieldMap.getClassMap().getDestClassBeanFactory(),
                                 fieldMap.getClassMap().getDestClassBeanFactoryId(), null));
                         } else {
@@ -303,7 +303,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
 
                     Class<?> componentType = ReflectionUtils.getComponentType(pd.getPropertyType(), pd, hintType);
                     // Update collection with new one element.
-                    value = MappingUtils.prepareIndexedCollection(pd.getPropertyType(), value, DestBeanCreator.create(componentType), collectionIndex);
+                    value = MappingUtils.prepareIndexedCollection(pd.getPropertyType(), value, DestBeanCreator.create(null, componentType), collectionIndex);
                     // At previous step collection instance was changed so we
                     // have to update appropriate property of parent object.  
                     ReflectionUtils.invoke(pd.getWriteMethod(), parentObj, new Object[] { value });

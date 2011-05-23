@@ -82,7 +82,7 @@ public class FieldPropertyDescriptor extends AbstractPropertyDescriptor {
             if (i != descriptorChain.length - 1) {
                 Object currentValue = descriptor.getPropertyValue(intermediateResult);
                 if (currentValue == null) {
-                    currentValue = DestBeanCreator.create(descriptor.getPropertyType());
+                    currentValue = DestBeanCreator.create(null, descriptor.getPropertyType());
                     descriptor.setPropertyValue(intermediateResult, currentValue, fieldMap);
                 }
                 intermediateResult = currentValue;

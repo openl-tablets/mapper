@@ -1,7 +1,8 @@
 package org.openl.rules.mapping.loader.converter;
 
+import org.dozer.CustomConverter;
 import org.dozer.MappingParameters;
-import org.dozer.MappingParamsAwareCustomConverter;
+import org.dozer.MappingParamsAware;
 
 /**
  * Links Dozer's custom converter abstraction with implementations what are
@@ -11,7 +12,7 @@ import org.dozer.MappingParamsAwareCustomConverter;
  * inheritance mechanism and defines which method of
  * {@link RulesCustomConverter} instance will be invoked.
  */
-class CustomConverterWrapper implements MappingParamsAwareCustomConverter {
+class CustomConverterWrapper implements MappingParamsAware, CustomConverter {
 
     private RulesCustomConverter customConverterProxy;
     private MappingParameters params;

@@ -195,7 +195,7 @@ public class MappingProcessor implements Mapper {
             }
 
             if (result == null) {
-                result = (T) DestBeanCreator.create(new BeanCreationDirective(srcObj, classMap.getSrcClassToMap(),
+                result = (T) DestBeanCreator.create(getUserParams(mappingContext), new BeanCreationDirective(srcObj, classMap.getSrcClassToMap(),
                     classMap.getDestClassToMap(), destType, classMap.getDestClassBeanFactory(), classMap
                         .getDestClassBeanFactoryId(), classMap.getDestClassCreateMethod()));
             }
@@ -519,7 +519,7 @@ public class MappingProcessor implements Mapper {
                 // and use as a default value object.
                 //
                 Class<?> srcFieldClass = fieldMapping.getSrcFieldType(srcObj.getClass());
-                destDefaultValue = DestBeanCreator.create(new BeanCreationDirective(srcFieldValue, srcFieldClass,
+                destDefaultValue = DestBeanCreator.create(params, new BeanCreationDirective(srcFieldValue, srcFieldClass,
                     destFieldType, destFieldType, null, null,
                     fieldMapping.getDestFieldCreateMethod() != null ? fieldMapping.getDestFieldCreateMethod() : null));
             } else {
@@ -543,8 +543,8 @@ public class MappingProcessor implements Mapper {
     private boolean evaluateConditionInstance(FieldMappingCondition conditionInstance, Class<?> srcFieldClass,
         Object srcFieldValue, Class<?> destFieldType, Object destFieldValue, MappingParameters params) {
         
-        if (conditionInstance instanceof MappingParamsAwareFieldMappingCondition) {
-            ((MappingParamsAwareFieldMappingCondition) conditionInstance).setMappingParams(params);
+        if (conditionInstance instanceof MappingParamsAware) {
+            ((MappingParamsAware) conditionInstance).setMappingParams(params);
         }
         
         return conditionInstance.mapField(srcFieldValue, destFieldValue, srcFieldClass, destFieldType);
@@ -614,8 +614,8 @@ public class MappingProcessor implements Mapper {
             Object destCollection,
             MappingParameters params) {
 
-        if (discriminatorInstance instanceof MappingParamsAwareCollectionItemDiscriminator) {
-            ((MappingParamsAwareCollectionItemDiscriminator) discriminatorInstance).setMappingParams(params);
+        if (discriminatorInstance instanceof MappingParamsAware) {
+            ((MappingParamsAware) discriminatorInstance).setMappingParams(params);
         }
         
         return discriminatorInstance.discriminate(srcFieldClass, srcFieldValue, destCollection.getClass(), destFieldType, destCollection);
@@ -764,7 +764,7 @@ public class MappingProcessor implements Mapper {
 
             classMap = getClassMap(srcFieldValue.getClass(), targetClass, mapId);
 
-            result = DestBeanCreator.create(new BeanCreationDirective(srcFieldValue, classMap.getSrcClassToMap(),
+            result = DestBeanCreator.create(params, new BeanCreationDirective(srcFieldValue, classMap.getSrcClassToMap(),
                 classMap.getDestClassToMap(), destFieldType, classMap.getDestClassBeanFactory(), classMap
                     .getDestClassBeanFactoryId(), fieldMap.getDestFieldCreateMethod() != null ? fieldMap
                     .getDestFieldCreateMethod() : classMap.getDestClassCreateMethod()));
@@ -859,7 +859,7 @@ public class MappingProcessor implements Mapper {
         Map destinationMap = (Map) fieldMap.getDestValue(destObj);
 
         if (destinationMap == null) {
-            result = DestBeanCreator.create(srcMapValue.getClass());
+            result = DestBeanCreator.create(params, srcMapValue.getClass());
         } else {
             result = destinationMap;
             if (fieldMap.isRemoveOrphans()) {
@@ -1264,8 +1264,8 @@ public class MappingProcessor implements Mapper {
             }
         }
 
-        if (converterInstance instanceof MappingParamsAwareCustomConverter) {
-            MappingParamsAwareCustomConverter theConverter = (MappingParamsAwareCustomConverter) converterInstance;
+        if (converterInstance instanceof MappingParamsAware) {
+            MappingParamsAware theConverter = (MappingParamsAware) converterInstance;
             theConverter.setMappingParams(params);
         }
         /*

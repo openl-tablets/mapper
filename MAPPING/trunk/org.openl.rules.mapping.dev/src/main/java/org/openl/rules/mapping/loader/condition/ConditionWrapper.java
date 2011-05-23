@@ -1,7 +1,8 @@
 package org.openl.rules.mapping.loader.condition;
 
+import org.dozer.FieldMappingCondition;
 import org.dozer.MappingParameters;
-import org.dozer.MappingParamsAwareFieldMappingCondition;
+import org.dozer.MappingParamsAware;
 
 /**
  * Links Dozer's field mapping condition abstraction with implementations what are
@@ -11,7 +12,7 @@ import org.dozer.MappingParamsAwareFieldMappingCondition;
  * inheritance mechanism and defines which method of
  * {@link RulesFieldMappingCondition} instance will be invoked.
  */
-class ConditionWrapper implements MappingParamsAwareFieldMappingCondition {
+class ConditionWrapper implements MappingParamsAware, FieldMappingCondition {
 
     private RulesFieldMappingCondition conditionProxy;
     private MappingParameters params;

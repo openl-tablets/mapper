@@ -65,6 +65,7 @@ public class RulesMappingsLoader {
      * 
      * @return collection of loaded {@link BeanMap} objects
      */
+    @SuppressWarnings("unchecked")
     public Collection<BeanMap> loadMappings(Map<String, BeanMapConfiguration> mappingConfigurations,
         Configuration globalConfiguration) {
         List<Mapping> mappings = findDeclarations(instanceClass, instance, Mapping.class);
@@ -127,22 +128,20 @@ public class RulesMappingsLoader {
 
             // If user defined class mapping configuration earlier we override
             // that configuration with new one.
-            //
             String key = BeanMapKeyFactory.createKey(srcClass, destClass);
             beanMapConfigs.put(key, beanMapConfiguration);
+            
+            String reverseKey = BeanMapKeyFactory.createKey(destClass, srcClass);
+            
+            // If class level configurations map doesn't have configuration for
+            // reverse-way mapping we should create a new one else we consider
+            // that user defines his own configuration.
+            if (beanMapConfigs.get(reverseKey) == null) {
+                beanMapConfigs.put(reverseKey, reverseBeanMapConfiguration(beanMapConfiguration));
+            }
         }
 
         return beanMapConfigs;
-    }
-
-    private BeanMapConfiguration createBeanMapConfiguration(Class<?> srcClass, Class<?> destClass,
-        Configuration globalConfiguration) {
-        BeanMapConfiguration beanMapConfiguration = new BeanMapConfiguration();
-        beanMapConfiguration.setGlobalConfiguration(globalConfiguration);
-        beanMapConfiguration.setClassA(srcClass);
-        beanMapConfiguration.setClassB(destClass);
-
-        return beanMapConfiguration;
     }
 
     /**
@@ -259,19 +258,17 @@ public class RulesMappingsLoader {
             if (!beanMapping.hasFieldMap(mappingId)) {
                 beanMapping.addFieldMap(mappingId, createFieldMap(mapping, beanMapping));
             }
-            // TODO: review existing code. Can we use Dozer's mapping processor
-            // instead of using this code?
+
+            // If field mapping is bi-directional create reverse bean map
             //
             if (!(mapping.getOneWay() != null && mapping.getOneWay())) {
-                // If field mapping is bi-directional find reverse bean map
-                //
                 String reverseMappingKey = BeanMapKeyFactory.createKey(classB, classA);
                 BeanMap reverseBeanMapping = beanMappings.get(reverseMappingKey);
                 // If bean map is not exists create new one
                 //
                 if (reverseBeanMapping == null) {
                     reverseBeanMapping = createBeanMap(classB, classA);
-                    reverseBeanMapping.setConfiguration(beanMapping.getConfiguration());
+                    reverseBeanMapping.setConfiguration(reverseBeanMapConfiguration(beanMapping.getConfiguration()));
 
                     beanMappings.put(reverseMappingKey, reverseBeanMapping);
                 }
@@ -287,6 +284,35 @@ public class RulesMappingsLoader {
         }
 
         return beanMappings.values();
+    }
+
+    private BeanMapConfiguration createBeanMapConfiguration(Class<?> classA,
+            Class<?> classB,
+            Configuration globalConfiguration) {
+
+        BeanMapConfiguration config = new BeanMapConfiguration();
+        config.setClassA(classA);
+        config.setClassB(classB);
+        config.setGlobalConfiguration(globalConfiguration);
+        
+        return config;
+    }
+    
+    private BeanMapConfiguration reverseBeanMapConfiguration(BeanMapConfiguration beanMapConfiguration) {
+        BeanMapConfiguration reverseConfig = createBeanMapConfiguration(beanMapConfiguration.getClassB(),
+            beanMapConfiguration.getClassA(),
+            beanMapConfiguration.getGlobalConfiguration());
+        
+        reverseConfig.setClassABeanFactory(beanMapConfiguration.getClassBBeanFactory());
+        reverseConfig.setClassBBeanFactory(beanMapConfiguration.getClassABeanFactory());
+        reverseConfig.setDateFormat(beanMapConfiguration.getDateFormat());
+        reverseConfig.setMapEmptyStrings(beanMapConfiguration.isMapEmptyStrings());
+        reverseConfig.setMapNulls(beanMapConfiguration.isMapNulls());
+        reverseConfig.setRequiredFields(beanMapConfiguration.isRequiredFields());
+        reverseConfig.setTrimStrings(beanMapConfiguration.isTrimStrings());
+        reverseConfig.setWildcard(beanMapConfiguration.isWildcard());
+        
+        return reverseConfig;
     }
 
     private Map<String, BeanMap> getPreDefinedBeanMappingsByConfiguration(
@@ -446,6 +472,10 @@ public class RulesMappingsLoader {
 
         return fieldMapping;
     }
+    
+    
+    
+    
 
     private ConverterDescriptor createConverterDescriptor(String converterId, String convertMethod, Class<?> srcType,
         Class<?> destType) {

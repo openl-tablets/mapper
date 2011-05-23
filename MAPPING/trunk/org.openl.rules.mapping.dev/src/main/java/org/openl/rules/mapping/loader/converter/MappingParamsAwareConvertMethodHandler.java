@@ -3,7 +3,6 @@ package org.openl.rules.mapping.loader.converter;
 import java.lang.reflect.Method;
 
 import org.dozer.MappingParameters;
-import org.dozer.MappingParamsAwareCustomConverter;
 import org.openl.rules.mapping.loader.ProxyMethodHandler;
 
 /**

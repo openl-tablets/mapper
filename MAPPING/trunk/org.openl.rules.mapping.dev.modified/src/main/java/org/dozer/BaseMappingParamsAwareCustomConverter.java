@@ -6,7 +6,7 @@ package org.dozer;
  * provide a new one method which should be implemented by user to get
  * implementation of {@link MappingParamsAwareCustomConverter} abstraction.
  */
-public abstract class BaseMappingParamsAwareCustomConverter implements MappingParamsAwareCustomConverter {
+public abstract class BaseMappingParamsAwareCustomConverter implements MappingParamsAware, CustomConverter {
 
     /**
      * Thread local variable which holds user defined mapping parameters.

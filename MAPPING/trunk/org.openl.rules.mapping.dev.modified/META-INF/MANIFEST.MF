@@ -7,6 +7,7 @@ Bundle-ClassPath: bin/
 Require-Bundle: org.openl.rules.mapping.lib;visibility:=reexport
 Export-Package: org.dozer,
  org.dozer.converters,
+ org.dozer.factory,
  org.dozer.fieldmap,
  org.dozer.loader,
  org.dozer.loader.api,

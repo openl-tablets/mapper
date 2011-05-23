@@ -19,6 +19,8 @@ import org.dozer.MappingParameters;
 import org.junit.Test;
 import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.B;
+import org.openl.rules.mapping.to.C;
+import org.openl.rules.mapping.to.E;
 
 public class ThreadSafetyTest {
 
@@ -219,6 +221,60 @@ public class ThreadSafetyTest {
         assertTrue(status.getExceptions().isEmpty());
     }
     
+    @Test
+    public void beanFactoryTest() {
+
+        File source = new File(
+            "src/test/resources/org/openl/rules/mapping/thread/MappingParamsAwareBeanFactoryThreadSafetyTest.xlsx");
+        final Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        final ExecutionStatus status = new ExecutionStatus();
+        
+        Thread thread1 = new Thread(new Runnable() {
+            public void run() {
+                MappingContext context1 = new MappingContext();
+                MappingParameters params1 = new MappingParameters();
+                params1.put("key", "value1");
+                context1.setParams(params1);
+                
+                try {
+                    E e1 = mapper.map(new C(), E.class, context1);
+                    assertEquals("value1", e1.getAString());
+                } catch (Exception e) {
+                    status.appendException(e);
+                } finally {
+                    status.increaseCounter();
+                }
+            }
+        });
+        
+        Thread thread2 = new Thread(new Runnable() {
+            public void run() {
+                MappingContext context2 = new MappingContext();
+                MappingParameters params2 = new MappingParameters();
+                params2.put("key", "value2");
+                context2.setParams(params2);
+                
+                try {
+                    E e2 = mapper.map(new C(), E.class, context2);
+                    assertEquals("value2", e2.getAString());
+                } catch (Exception e) {
+                    status.appendException(e);
+                } finally {
+                    status.increaseCounter();
+                }
+            }
+        });
+
+        thread1.start();
+        thread2.start();
+        
+        while (status.getCounter() < 2) {
+            // wait until all threads are terminated
+        }
+        
+        assertTrue(status.getExceptions().isEmpty());
+    }
     
     private static class ExecutionStatus {
         private int counter;

@@ -245,7 +245,7 @@ public class MappingDefinitionUtils {
 
         return reverseMapping;
     }
-    
+
     public static String getMethodName(String methodName) {
         if (!methodName.contains(".")) {
             return methodName;
@@ -261,6 +261,5 @@ public class MappingDefinitionUtils {
 
         return methodName.substring(0, methodName.lastIndexOf('.'));
     }
-
 
 }

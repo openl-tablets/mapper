@@ -152,7 +152,7 @@ public class MapFieldMap extends FieldMap {
 
             // TODO: add support for custom factory/create method in conjunction
             // with Map backed properties
-            targetObject = DestBeanCreator.create(c, destObj.getClass());
+            targetObject = DestBeanCreator.create(null, c, destObj.getClass());
             pd.setPropertyValue(destObj, targetObject, this);
         }
 

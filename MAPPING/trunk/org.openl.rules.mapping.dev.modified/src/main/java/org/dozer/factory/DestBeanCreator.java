@@ -16,6 +16,7 @@
 package org.dozer.factory;
 
 import org.dozer.BeanFactory;
+import org.dozer.MappingParameters;
 import org.dozer.util.MappingUtils;
 
 import java.util.Map;
@@ -41,19 +42,19 @@ public final class DestBeanCreator {
     private DestBeanCreator() {
     }
 
-    public static <T> T create(Class<T> targetClass) {
-        return (T) create(targetClass, null);
+    public static <T> T create(MappingParameters params, Class<T> targetClass) {
+        return (T) create(params, targetClass, null);
     }
 
-    public static Object create(Class<?> targetClass, Class<?> alternateClass) {
+    public static Object create(MappingParameters params, Class<?> targetClass, Class<?> alternateClass) {
         if (targetClass == null) {
             MappingUtils.throwMappingException("Destination bean class is not defined");
         }
         
-        return create(new BeanCreationDirective(null, null, targetClass, alternateClass, null, null, null));
+        return create(params, new BeanCreationDirective(null, null, targetClass, alternateClass, null, null, null));
     }
 
-    public static Object create(BeanCreationDirective directive) {
+    public static Object create(MappingParameters params, BeanCreationDirective directive) {
 
         // TODO create method lookup by annotation/convention
         // TODO Cache ConstructionStrategy (reuse caching infrastructure)
@@ -64,7 +65,7 @@ public final class DestBeanCreator {
 
         for (BeanCreationStrategy strategy : availableStrategies) {
             if (strategy.isApplicable(directive)) {
-                return strategy.create(directive);
+                return strategy.create(params, directive);
             }
         }
 

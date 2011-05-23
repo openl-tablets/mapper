@@ -7,7 +7,7 @@ package org.dozer;
  * implementation of {@link MappingParamsAwareFieldMappingCondition}
  * abstraction.
  */
-public abstract class BaseMappingParamsAwareFieldMappingCondition implements MappingParamsAwareFieldMappingCondition {
+public abstract class BaseMappingParamsAwareFieldMappingCondition implements MappingParamsAware, FieldMappingCondition {
 
     /**
      * Thread local variable which holds user defined mapping parameters.

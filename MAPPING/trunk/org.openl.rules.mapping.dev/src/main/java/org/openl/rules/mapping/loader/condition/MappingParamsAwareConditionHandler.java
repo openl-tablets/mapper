@@ -3,7 +3,6 @@ package org.openl.rules.mapping.loader.condition;
 import java.lang.reflect.Method;
 
 import org.dozer.MappingParameters;
-import org.dozer.MappingParamsAwareFieldMappingCondition;
 import org.openl.rules.mapping.loader.ProxyMethodHandler;
 
 /**
