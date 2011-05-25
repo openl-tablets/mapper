@@ -709,8 +709,17 @@ public class MappingProcessor implements Mapper {
                 return primitiveOrWrapperConverter.convert(convertSrcFieldValue, destFieldType, dfContainer);
             }
         }
+        
+        // try to map collection into collection element by element
         if (MappingUtils.isSupportedCollection(srcFieldClass) && (MappingUtils.isSupportedCollection(destFieldType))) {
             return mapCollection(srcObj, srcFieldValue, fieldMap, destObj, params);
+        }
+        
+        // try to map object into collection if we have collection item
+        // discriminator for target collection
+        if (MappingUtils.isSupportedCollection(destFieldType) && (!MappingUtils.isBlankOrNull(fieldMap.getCollectionItemDiscriminator()) || !MappingUtils.isBlankOrNull(fieldMap.getCollectionItemDiscriminatorId()))) {
+            Object arrayValue = new Object[] { srcFieldValue };
+            return mapCollection(srcObj, arrayValue, fieldMap, destObj, params);
         }
 
         if (MappingUtils.isEnumType(srcFieldClass, destFieldType)) {

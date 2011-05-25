@@ -13,8 +13,11 @@ import org.junit.Test;
 import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.B;
 import org.openl.rules.mapping.to.C;
+import org.openl.rules.mapping.to.D;
+import org.openl.rules.mapping.to.E;
 import org.openl.rules.mapping.to.containers.ArrayContainer;
 import org.openl.rules.mapping.to.containers.IntArrayContainer;
+import org.openl.rules.mapping.to.containers.ListContainer;
 import org.openl.rules.mapping.to.containers.ListOfTypeCContainer;
 import org.openl.rules.mapping.to.containers.SetContainer;
 
@@ -289,6 +292,68 @@ public class CollectionDiscriminatorTest {
         assertEquals(2, dest.getArray()[4]);
         assertEquals(15, dest.getArray()[5]);
     }
-    
+
+    @Test
+    public void discriminatorSupportTest() {
+        File source = new File("src/test/resources/org/openl/rules/mapping/discriminator/CollectionDiscriminatorSupportTest.xlsx");
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+
+        A a1 = new A();
+        E e1 = new E();
+        e1.setAString("x");
+        D d1 = new D();
+        d1.setAnInt(1000);
+        e1.setD(d1);
+        a1.setE(e1);
+
+        C c1 = new C();
+        c1.setAString("c1");
+        B b1 = new B();
+        b1.setAnInteger(10);
+        b1.setAString("b1");
+        c1.setB(b1);
+
+        C c2 = new C();
+        c2.setAString("c2");
+        B b2 = new B();
+        b2.setAnInteger(10);
+        b2.setAString("b2");
+        c2.setB(b2);
+
+        List<C> list1 = new ArrayList<C>();
+        list1.add(c1);
+        list1.add(c2);
+        ListContainer container1 = new ListContainer();
+        container1.setList(list1);
+        
+        mapper.map(a1, container1);
+        List<C> result = (List<C>)container1.getList(); 
+        assertEquals(3, result.size());
+        assertEquals("c1", result.get(0).getAString());
+        assertEquals("c2", result.get(1).getAString());
+        assertEquals("x", result.get(2).getAString());
+        
+        List<C> list2 = new ArrayList<C>();
+        list2.add(c1);
+        list2.add(c2);
+        ListContainer container2 = new ListContainer();
+        container2.setList(list2);
+        
+        e1.setAString("c1");
+
+        mapper.map(a1, container2);
+        result = (List<C>)container2.getList(); 
+        assertEquals(2, result.size());
+        assertEquals("c1", result.get(0).getAString());
+        assertEquals("c2", result.get(1).getAString());
+        assertEquals(Integer.valueOf(1000), result.get(0).getB().getAnInteger());
+        assertEquals(Integer.valueOf(10), result.get(1).getB().getAnInteger());
+        
+        ListContainer container3 = mapper.map(a1, ListContainer.class);
+        result = (List<C>)container3.getList(); 
+        assertEquals(1, result.size());
+        assertEquals("c1", result.get(0).getAString());
+    }
+
 }
 
