@@ -1,6 +1,5 @@
 package org.openl.rules.mapping.validation;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,44 +15,77 @@ import org.openl.rules.mapping.Mapping;
 import org.openl.rules.mapping.OpenLReflectionUtils;
 import org.openl.rules.mapping.TypeResolver;
 import org.openl.rules.mapping.loader.MappingDefinitionUtils;
+import org.openl.rules.mapping.validation.utils.ClassMetaInfo;
+import org.openl.rules.mapping.validation.utils.MethodMetaInfo;
+import org.openl.rules.mapping.validation.utils.ValidationUtils;
 import org.openl.types.IOpenClass;
-import org.openl.types.IOpenMethod;
 import org.openl.validation.ValidationStatus;
 
+/**
+ * Validates {@link Mapping} bean.
+ * 
+ * Current validator starts his work after OpenL project is compiled without
+ * errors and data tables are already loaded but not processed by mapping
+ * processor. It's means that we should make several operations to get required
+ * data for validation process manually, for example, get field types.
+ */
 public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
 
     @Override
     public BeanValidationResult validateBean(Mapping beanToValidate, IOpenClass openClass) {
         Set<ConstraintViolation> violations = new HashSet<ConstraintViolation>();
+
+        // Normalize data to validate. It's required step because OpenL engine
+        // loads data with some specific.
         Mapping bean = MappingDefinitionUtils.normalizeMapping(beanToValidate);
 
+        // Validate field paths.
         Set<ConstraintViolation> fieldPathViolations = validateFieldPaths(bean);
         violations.addAll(fieldPathViolations);
-        
+
+        // Check that we doesn't have invalid field paths. If we have invalid
+        // field path we can't to get field type consequently we should skip
+        // convert, condition methods validation step.
         if (fieldPathViolations.isEmpty()) {
-            violations.addAll(validateConverterMethods(bean, openClass));
+            violations.addAll(validateConvertMethods(bean, openClass));
             violations.addAll(validateConditionMethods(bean, openClass));
         }
 
+        // If we doesn't have violations we can make a decision that validation
+        // is passed successfully.
         if (violations.isEmpty()) {
             return new BeanValidationResult(ValidationStatus.SUCCESS, bean.getClass());
         }
 
+        // Create a validation fail result.
         BeanValidationResult result = new BeanValidationResult(ValidationStatus.FAIL, bean.getClass());
         result.addAllConstraintViolation(violations);
 
         return result;
     }
 
-    private Set<ConstraintViolation> validateConverterMethods(Mapping bean, IOpenClass openClass) {
+    /**
+     * Validates convert methods if they are defined.
+     * 
+     * @param bean field mapping definition
+     * @param openClass openl class
+     * @return set of validation constraints
+     */
+    private Set<ConstraintViolation> validateConvertMethods(Mapping bean, IOpenClass openClass) {
         Set<ConstraintViolation> violations = new HashSet<ConstraintViolation>();
 
         Class<?> fieldAType = getFieldAType(bean);
         Class<?> fieldBType = getFieldBType(bean);
 
-        violations.addAll(validateConvertMethod("convertMethodAB", bean.getConvertMethodAB(), openClass, fieldAType,
+        violations.addAll(validateConvertMethod("convertMethodAB",
+            bean.getConvertMethodAB(),
+            openClass,
+            fieldAType,
             fieldBType));
-        violations.addAll(validateConvertMethod("convertMethodBA", bean.getConvertMethodBA(), openClass, fieldBType,
+        violations.addAll(validateConvertMethod("convertMethodBA",
+            bean.getConvertMethodBA(),
+            openClass,
+            fieldBType,
             fieldAType));
 
         return violations;
@@ -65,14 +97,26 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         Class<?> fieldAType = getFieldAType(bean);
         Class<?> fieldBType = getFieldBType(bean);
 
-        violations.addAll(validateConditionMethod("conditionAB", bean.getConditionAB(), openClass, fieldAType,
+        violations.addAll(validateConditionMethod("conditionAB",
+            bean.getConditionAB(),
+            openClass,
+            fieldAType,
             fieldBType));
-        violations.addAll(validateConditionMethod("conditionBA", bean.getConditionBA(), openClass, fieldBType,
+        violations.addAll(validateConditionMethod("conditionBA",
+            bean.getConditionBA(),
+            openClass,
+            fieldBType,
             fieldAType));
 
         return violations;
     }
 
+    /**
+     * Gets field A type.
+     * 
+     * @param bean field mapping definition
+     * @return field type
+     */
     private Class<?> getFieldAType(Mapping bean) {
         String[] fieldA = bean.getFieldA();
         Class<?> fieldAType = null;
@@ -87,11 +131,12 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
                 fieldTypeHint = bean.getFieldAHint()[0];
             }
 
-            FieldPathHierarchyElement[] hierarchy = ValidationUtils.getFieldHierarchy(bean.getClassA(), fieldA[0],
+            FieldPathHierarchyElement[] hierarchy = ValidationUtils.getFieldHierarchy(bean.getClassA(),
+                fieldA[0],
                 fieldTypeHint);
             FieldPathHierarchyElement lastElement = hierarchy[hierarchy.length - 1];
             fieldAType = lastElement.getType();
-            
+
             if (StringUtils.isNotBlank(lastElement.getIndex()) && MappingUtils.isSupportedCollection(lastElement.getType())) {
                 fieldAType = MappingUtils.getSupportedCollectionEntryType(lastElement.getType());
             }
@@ -100,15 +145,23 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         return fieldAType;
     }
 
+    /**
+     * Gets field B type.
+     * 
+     * @param bean field mapping definition
+     * @return field type
+     */
     private Class<?> getFieldBType(Mapping bean) {
         String fieldB = bean.getFieldB();
         Class<?> fieldBType = null;
         Class<?>[] fieldBTypeHint = bean.getFieldBHint();
 
-        FieldPathHierarchyElement[] hierarchy = ValidationUtils.getFieldHierarchy(bean.getClassB(), fieldB, fieldBTypeHint);
+        FieldPathHierarchyElement[] hierarchy = ValidationUtils.getFieldHierarchy(bean.getClassB(),
+            fieldB,
+            fieldBTypeHint);
         FieldPathHierarchyElement lastElement = hierarchy[hierarchy.length - 1];
         fieldBType = lastElement.getType();
-        
+
         if (StringUtils.isNotBlank(lastElement.getIndex()) && MappingUtils.isSupportedCollection(lastElement.getType())) {
             fieldBType = MappingUtils.getSupportedCollectionEntryType(lastElement.getType());
         }
@@ -116,9 +169,11 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         return fieldBType;
     }
 
-    // TODO: remove code duplication
-    private Set<ConstraintViolation> validateConvertMethod(String propertyName, String convertMethod,
-        IOpenClass openClass, Class<?> fieldA, Class<?> fieldB) {
+    private Set<ConstraintViolation> validateConvertMethod(String propertyName,
+            String convertMethod,
+            IOpenClass openClass,
+            Class<?> fieldA,
+            Class<?> fieldB) {
 
         Set<ConstraintViolation> violations = new HashSet<ConstraintViolation>();
 
@@ -136,71 +191,55 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
             convertMethodClass = typeResolver.findClass(convertMethodClassName);
         }
 
+        String className = null;
+        MethodMetaInfo simpleMethod = null;
+        MethodMetaInfo extendedMethod = null;
+
         if (convertMethodClass != null) {
-            Method simpleMethod = findMethod(convertMethodClass, convertMethodName, new Class<?>[] { fieldA, fieldB });
-            Method extendedMethod = findMethod(convertMethodClass, convertMethodName, new Class<?>[] {
-                    MappingParameters.class, fieldA, fieldB });
-
-            if (simpleMethod == null && extendedMethod == null) {
-                violations.add(createPropertyViolation(propertyName, convertMethod, String.format(
-                    "Convert method '%1$s(%2$s, %3$s)' or '%1$s(%4$s, %2$s, %3$s)' cannot be found in class '%5$s'",
-                    convertMethod, fieldA.getName(), fieldB.getName(), MappingParameters.class.getName(),
-                    convertMethodClass.getName())));
-            }
-
-            if (simpleMethod != null) {
-                Class<?> returnType = simpleMethod.getReturnType();
-                if (!OpenLReflectionUtils.isAssignableFrom(fieldB, returnType)) {
-                    violations.add(createPropertyViolation(propertyName, convertMethod, String.format(
-                        "Destination field of type '%s' cannot be assigned from value of '%s' type", fieldB.getName(),
-                        returnType)));
-                }
-            }
-
-            if (extendedMethod != null) {
-                Class<?> returnType = extendedMethod.getReturnType();
-                if (!OpenLReflectionUtils.isAssignableFrom(fieldB, returnType)) {
-                    violations.add(createPropertyViolation(propertyName, convertMethod, String.format(
-                        "Destination field of type '%s' cannot be assigned from value of '%s' type", fieldB.getName(),
-                        returnType)));
-                }
-            }
+            simpleMethod = ValidationUtils.findMethod(convertMethodClass, convertMethodName, new Class<?>[] { fieldA, fieldB });
+            extendedMethod = ValidationUtils.findMethod(convertMethodClass, convertMethodName, new Class<?>[] { MappingParameters.class, fieldA, fieldB });
+            className = convertMethodClass.getName();
         } else {
-            IOpenMethod simpleMethod = findMethod(openClass, convertMethodName, new Class<?>[] { fieldA, fieldB });
-            IOpenMethod extendedMethod = findMethod(openClass, convertMethodName, new Class<?>[] {
-                    MappingParameters.class, fieldA, fieldB });
+            simpleMethod = ValidationUtils.findMethod(openClass, convertMethodName, new Class<?>[] { fieldA, fieldB });
+            extendedMethod = ValidationUtils.findMethod(openClass, convertMethodName, new Class<?>[] { MappingParameters.class, fieldA, fieldB });
+            className = openClass.getName();
+        }
 
-            if (simpleMethod == null && extendedMethod == null) {
-                violations.add(createPropertyViolation(propertyName, convertMethod, String.format(
-                    "Convert method '%1$s(%2$s, %3$s)' or '%1$s(%4$s, %2$s, %3$s)' cannot be found in class '%5$s'",
-                    convertMethod, fieldA.getName(), fieldB.getName(), MappingParameters.class.getName(),
-                    openClass.getName())));
+        if (simpleMethod == null && extendedMethod == null) {
+            violations.add(createPropertyViolation(propertyName,
+                convertMethod,
+                String.format("Convert method '%1$s(%2$s, %3$s)' or '%1$s(%4$s, %2$s, %3$s)' cannot be found in class '%5$s'",
+                    convertMethod, fieldA.getName(), fieldB.getName(), MappingParameters.class.getName(), className)));
+        }
+
+        if (simpleMethod != null) {
+            ClassMetaInfo returnType = simpleMethod.getReturnType();
+            if (returnType == null || !OpenLReflectionUtils.isAssignableFrom(fieldB, returnType.getInstanceClass())) {
+                violations.add(createPropertyViolation(propertyName,
+                    convertMethod,
+                    String.format("Destination field of type '%s' cannot be assigned from value of '%s' type",
+                        fieldB.getName(), returnType.getName())));
             }
+        }
 
-            if (simpleMethod != null) {
-                IOpenClass returnType = simpleMethod.getType();
-                if (returnType == null || !OpenLReflectionUtils.isAssignableFrom(fieldB, returnType.getInstanceClass())) {
-                    violations.add(createPropertyViolation(propertyName, convertMethod, String.format(
-                        "Destination field of type '%s' cannot be assigned from value of '%s' type", fieldB.getName(),
-                        returnType.getInstanceClass().getName())));
-                }
-            }
-
-            if (extendedMethod != null) {
-                IOpenClass returnType = simpleMethod.getType();
-                if (returnType == null || !OpenLReflectionUtils.isAssignableFrom(fieldB, returnType.getInstanceClass())) {
-                    violations.add(createPropertyViolation(propertyName, convertMethod, String.format(
-                        "Destination field of type '%s' cannot be assigned from value of '%s' type", fieldB.getName(),
-                        returnType.getInstanceClass().getName())));
-                }
+        if (extendedMethod != null) {
+            ClassMetaInfo returnType = extendedMethod.getReturnType();
+            if (returnType == null || !OpenLReflectionUtils.isAssignableFrom(fieldB, returnType.getInstanceClass())) {
+                violations.add(createPropertyViolation(propertyName,
+                    convertMethod,
+                    String.format("Destination field of type '%s' cannot be assigned from value of '%s' type",
+                        fieldB.getName(), returnType.getName())));
             }
         }
 
         return violations;
     }
 
-    private Set<ConstraintViolation> validateConditionMethod(String propertyName, String conditionMethod,
-        IOpenClass openClass, Class<?> fieldA, Class<?> fieldB) {
+    private Set<ConstraintViolation> validateConditionMethod(String propertyName,
+            String conditionMethod,
+            IOpenClass openClass,
+            Class<?> fieldA,
+            Class<?> fieldB) {
 
         Set<ConstraintViolation> violations = new HashSet<ConstraintViolation>();
 
@@ -218,80 +257,47 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
             conditionMethodClass = typeResolver.findClass(conditionMethodClassName);
         }
 
+        String className = null;
+        MethodMetaInfo simpleMethod = null;
+        MethodMetaInfo extendedMethod = null;
+
         if (conditionMethodClass != null) {
-            Method simpleMethod = findMethod(conditionMethodClass, conditionMethodName,
-                new Class<?>[] { fieldA, fieldB });
-            Method extendedMethod = findMethod(conditionMethodClass, conditionMethodName, new Class<?>[] {
-                    MappingParameters.class, fieldA, fieldB });
-
-            if (simpleMethod == null && extendedMethod == null) {
-                violations.add(createPropertyViolation(propertyName, conditionMethod, String.format(
-                    "Convert method '%1$s(%2$s, %3$s)' or '%1$s(%4$s, %2$s, %3$s)' cannot be found in class '%5$s'",
-                    conditionMethod, fieldA.getName(), fieldB.getName(), MappingParameters.class.getName(),
-                    conditionMethodClass.getName())));
-            }
-
-            if (simpleMethod != null) {
-                Class<?> returnType = simpleMethod.getReturnType();
-                if (boolean.class != returnType && !Boolean.class.equals(returnType)) {
-                    violations.add(createPropertyViolation(propertyName, conditionMethod,
-                        "Condition method have to return value of boolean type"));
-                }
-            }
-
-            if (extendedMethod != null) {
-                Class<?> returnType = extendedMethod.getReturnType();
-                if (boolean.class != returnType && !Boolean.class.equals(returnType)) {
-                    violations.add(createPropertyViolation(propertyName, conditionMethod,
-                        "Condition method have to return value of boolean type"));
-                }
-            }
+            simpleMethod = ValidationUtils.findMethod(conditionMethodClass, conditionMethodName, new Class<?>[] { fieldA, fieldB });
+            extendedMethod = ValidationUtils.findMethod(conditionMethodClass, conditionMethodName, new Class<?>[] { MappingParameters.class, fieldA, fieldB });
+            className = conditionMethodClass.getName();
         } else {
-            IOpenMethod simpleMethod = findMethod(openClass, conditionMethodName, new Class<?>[] { fieldA, fieldB });
-            IOpenMethod extendedMethod = findMethod(openClass, conditionMethodName, new Class<?>[] {
-                    MappingParameters.class, fieldA, fieldB });
+            simpleMethod = ValidationUtils.findMethod(openClass, conditionMethodName, new Class<?>[] { fieldA, fieldB });
+            extendedMethod = ValidationUtils.findMethod(openClass, conditionMethodName, new Class<?>[] { MappingParameters.class, fieldA, fieldB });
+            className = openClass.getName();
+        }
 
-            if (simpleMethod == null && extendedMethod == null) {
-                violations.add(createPropertyViolation(propertyName, conditionMethod, String.format(
-                    "Convert method '%1$s(%2$s, %3$s)' or '%1$s(%4$s, %2$s, %3$s)' cannot be found in class '%5$s'",
-                    conditionMethod, fieldA.getName(), fieldB.getName(), MappingParameters.class.getName(),
-                    openClass.getName())));
-            }
+        if (simpleMethod == null && extendedMethod == null) {
+            violations.add(createPropertyViolation(propertyName,
+                conditionMethod,
+                String.format("Convert method '%1$s(%2$s, %3$s)' or '%1$s(%4$s, %2$s, %3$s)' cannot be found in class '%5$s'",
+                    conditionMethod, fieldA.getName(), fieldB.getName(), MappingParameters.class.getName(), className)));
+        }
 
-            if (simpleMethod != null) {
-                IOpenClass returnType = simpleMethod.getType();
-                if (boolean.class != returnType.getInstanceClass() && !Boolean.class.equals(returnType
-                    .getInstanceClass())) {
-                    violations.add(createPropertyViolation(propertyName, conditionMethod,
-                        "Condition method have to return value of boolean type"));
+        if (simpleMethod != null) {
+            ClassMetaInfo returnType = simpleMethod.getReturnType();
+            if (boolean.class != returnType.getInstanceClass() && !Boolean.class.equals(returnType.getInstanceClass())) {
+                violations.add(createPropertyViolation(propertyName, conditionMethod, "Condition method have to return value of boolean type"));
 
-                }
-            }
-
-            if (extendedMethod != null) {
-                IOpenClass returnType = simpleMethod.getType();
-                if (boolean.class != returnType.getInstanceClass() && !Boolean.class.equals(returnType
-                    .getInstanceClass())) {
-                    violations.add(createPropertyViolation(propertyName, conditionMethod,
-                        "Condition method have to return value of boolean type"));
-
-                }
             }
         }
 
+        if (extendedMethod != null) {
+            ClassMetaInfo returnType = extendedMethod.getReturnType();
+            if (boolean.class != returnType.getInstanceClass() && !Boolean.class.equals(returnType.getInstanceClass())) {
+                violations.add(createPropertyViolation(propertyName, conditionMethod, "Condition method have to return value of boolean type"));
+
+            }
+        }
+        
         return violations;
-
     }
 
-    private Method findMethod(Class<?> clazz, String methodName, Class<?>[] paramTypes) {
-        return ValidationUtils.findMatchingAccessibleMethod(clazz, methodName, paramTypes);
-    }
-
-    private IOpenMethod findMethod(IOpenClass clazz, String methodName, Class<?>[] paramTypes) {
-        return ValidationUtils.findMatchingAccessibleMethod(clazz, methodName, paramTypes);
-    }
-
-    // TODO: remove code duplication
+ 
     private Set<ConstraintViolation> validateFieldPaths(Mapping bean) {
         Set<ConstraintViolation> violations = new HashSet<ConstraintViolation>();
 
@@ -313,9 +319,11 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
                 } catch (Exception ex) {
                     String message = ex.getMessage();
                     if (StringUtils.isBlank(message)) {
-                        message = String.format("Exception occurred determining field hierarchy for Class --> %s, Field --> %s", classAType == null ? null : classAType.getName() , field);
+                        message = String.format("Exception occurred determining field hierarchy for Class --> %s, Field --> %s",
+                            classAType == null ? null : classAType.getName(),
+                            field);
                     }
-                    
+
                     violations.add(createPropertyViolation("fieldA", field, message));
                 }
 
@@ -323,20 +331,20 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
                     List<FieldPathHierarchyElement> hierarchyElementList = Arrays.asList(hierarchy);
 
                     @SuppressWarnings("unchecked")
-                    Collection<FieldPathHierarchyElement> invalidElements = CollectionUtils.select(
-                        hierarchyElementList, new Predicate() {
+                    Collection<FieldPathHierarchyElement> invalidElements = CollectionUtils.select(hierarchyElementList,
+                        new Predicate() {
                             public boolean evaluate(Object arg) {
                                 FieldPathHierarchyElement e = (FieldPathHierarchyElement) arg;
                                 String index = e.getIndex();
 
-                                return StringUtils.isNotBlank(index) && ValidationUtils.isSimpleCollectionIndex(index) && ValidationUtils
-                                    .getCollectionIndex(index) == -1;
+                                return StringUtils.isNotBlank(index) && ValidationUtils.isSimpleCollectionIndex(index) && ValidationUtils.getCollectionIndex(index) == -1;
                             }
                         });
 
                     if (!invalidElements.isEmpty()) {
                         for (FieldPathHierarchyElement e : invalidElements) {
-                            violations.add(createPropertyViolation("fieldA", field,
+                            violations.add(createPropertyViolation("fieldA",
+                                field,
                                 String.format("Index value '%s' cannot be used for source field", e.getIndex())));
                         }
                     }
@@ -354,7 +362,9 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         } catch (Exception ex) {
             String message = ex.getMessage();
             if (StringUtils.isBlank(message)) {
-                message = String.format("Exception occurred determining field hierarchy for Class --> %s, Field --> %s", classBType == null ? null : classBType.getName() , fieldB);
+                message = String.format("Exception occurred determining field hierarchy for Class --> %s, Field --> %s",
+                    classBType == null ? null : classBType.getName(),
+                    fieldB);
             }
 
             violations.add(createPropertyViolation("fieldB", fieldB, message));
@@ -376,7 +386,8 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
 
             if (!invalidElements.isEmpty()) {
                 for (FieldPathHierarchyElement e : invalidElements) {
-                    violations.add(createPropertyViolation("fieldB", fieldB,
+                    violations.add(createPropertyViolation("fieldB",
+                        fieldB,
                         String.format("Index value '%s' cannot be used for destination field", e.getIndex())));
                 }
             }
@@ -385,8 +396,9 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         return violations;
     }
 
-    private PropertyConstraintViolation createPropertyViolation(String propertyName, Object invalidValue,
-        String violationMessage) {
+    private PropertyConstraintViolation createPropertyViolation(String propertyName,
+            Object invalidValue,
+            String violationMessage) {
         PropertyConstraintViolation violation = new PropertyConstraintViolation();
         violation.setInvalidValue(invalidValue);
         violation.setMessage(violationMessage);
