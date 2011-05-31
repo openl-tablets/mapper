@@ -127,7 +127,7 @@
 			<dependency>
 				<groupId>org.openl.rules</groupId>
 				<artifactId>org.openl.rules</artifactId>
-				<version>${openl.version.maven}</version>
+				<version>5.7.5</version>
 			</dependency>
 
 			<dependency>

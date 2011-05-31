@@ -1,6 +1,7 @@
 package org.openl.rules.mapping.validation.utils;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +33,25 @@ public class ValidationUtils {
 
     public static int getCollectionIndex(String index) {
         return MappingUtils.getCollectionIndex(index);
+    }
+    
+    public static boolean isSupportedCollection(Class<?> type) {
+        return MappingUtils.isSupportedCollection(type);
+    }
+    
+    public static Class<?> getCollectionFieldType(Class<?> collectionClass, Class<?> entryTypeHint) {
+        if (entryTypeHint != null && collectionClass.isArray() && collectionClass.getComponentType() != entryTypeHint) {
+            return Array.newInstance(entryTypeHint, 0).getClass();
+        }
+        
+        return collectionClass;
+    }
+    
+    public static Class<?> getSupportedCollectionEntryType(Class<?> collectionClass, Class<?> entryTypeHint) {
+        if (entryTypeHint != null) {
+            return entryTypeHint;
+        }
+        return MappingUtils.getSupportedCollectionEntryType(collectionClass);
     }
 
     public static FieldPathHierarchyElement[] getFieldHierarchy(Class<?> parentClass, String field, Class<?>[] hint) {

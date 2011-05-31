@@ -49,6 +49,7 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         if (fieldPathViolations.isEmpty()) {
             violations.addAll(validateConvertMethods(bean, openClass));
             violations.addAll(validateConditionMethods(bean, openClass));
+            violations.addAll(validateDiscriminatorMethods(bean, openClass));
         }
 
         // If we doesn't have violations we can make a decision that validation
@@ -77,16 +78,8 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         Class<?> fieldAType = getFieldAType(bean);
         Class<?> fieldBType = getFieldBType(bean);
 
-        violations.addAll(validateConvertMethod("convertMethodAB",
-            bean.getConvertMethodAB(),
-            openClass,
-            fieldAType,
-            fieldBType));
-        violations.addAll(validateConvertMethod("convertMethodBA",
-            bean.getConvertMethodBA(),
-            openClass,
-            fieldBType,
-            fieldAType));
+        violations.addAll(validateConvertMethod("convertMethodAB", bean.getConvertMethodAB(), openClass, fieldAType, fieldBType));
+        violations.addAll(validateConvertMethod("convertMethodBA", bean.getConvertMethodBA(), openClass, fieldBType, fieldAType));
 
         return violations;
     }
@@ -97,16 +90,27 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         Class<?> fieldAType = getFieldAType(bean);
         Class<?> fieldBType = getFieldBType(bean);
 
-        violations.addAll(validateConditionMethod("conditionAB",
-            bean.getConditionAB(),
-            openClass,
-            fieldAType,
-            fieldBType));
-        violations.addAll(validateConditionMethod("conditionBA",
-            bean.getConditionBA(),
-            openClass,
-            fieldBType,
-            fieldAType));
+        violations.addAll(validateConditionMethod("conditionAB", bean.getConditionAB(), openClass, fieldAType, fieldBType));
+        violations.addAll(validateConditionMethod("conditionBA", bean.getConditionBA(), openClass, fieldBType, fieldAType));
+
+        return violations;
+    }
+    
+    private Set<ConstraintViolation> validateDiscriminatorMethods(Mapping bean, IOpenClass openClass) {
+        Set<ConstraintViolation> violations = new HashSet<ConstraintViolation>();
+
+        Class<?> fieldAType = getFieldAType(bean);
+        Class<?> fieldBType = getFieldBType(bean);
+
+        Class<?> fieldAEntryTypeHint = null;
+        if (bean.getFieldAType() != null && bean.getFieldAType().length == 1) {
+            fieldAEntryTypeHint = bean.getFieldAType()[0];
+        }
+
+        Class<?> fieldBEntryTypeHint = bean.getFieldBType();
+        
+        violations.addAll(validateDiscriminatorMethod("fieldBDiscriminator", bean.getFieldBDiscriminator(), openClass, fieldAType, fieldBType, fieldAEntryTypeHint, fieldBEntryTypeHint));
+        violations.addAll(validateDiscriminatorMethod("fieldADiscriminator", bean.getFieldADiscriminator(), openClass, fieldBType, fieldAType, fieldBEntryTypeHint, fieldAEntryTypeHint));
 
         return violations;
     }
@@ -138,7 +142,8 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
             fieldAType = lastElement.getType();
 
             if (StringUtils.isNotBlank(lastElement.getIndex()) && MappingUtils.isSupportedCollection(lastElement.getType())) {
-                fieldAType = MappingUtils.getSupportedCollectionEntryType(lastElement.getType());
+                Class<?> entryTypeHint = bean.getFieldAType() != null ? bean.getFieldAType()[0] : null;
+                fieldAType = ValidationUtils.getSupportedCollectionEntryType(lastElement.getType(), entryTypeHint);
             }
         }
 
@@ -163,7 +168,8 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         fieldBType = lastElement.getType();
 
         if (StringUtils.isNotBlank(lastElement.getIndex()) && MappingUtils.isSupportedCollection(lastElement.getType())) {
-            fieldBType = MappingUtils.getSupportedCollectionEntryType(lastElement.getType());
+            Class<?> entryTypeHint = bean.getFieldBType();
+            fieldBType = ValidationUtils.getSupportedCollectionEntryType(lastElement.getType(), entryTypeHint);
         }
 
         return fieldBType;
@@ -297,6 +303,90 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         return violations;
     }
 
+    private Set<ConstraintViolation> validateDiscriminatorMethod(String propertyName,
+            String methodName,
+            IOpenClass openClass,
+            Class<?> fieldA,
+            Class<?> fieldB,
+            Class<?> fieldAEntryTypeHint,
+            Class<?> fieldBEntryTypeHint) {
+
+        Set<ConstraintViolation> violations = new HashSet<ConstraintViolation>();
+
+        if (StringUtils.isBlank(methodName)) {
+            return violations;
+        }
+
+        String discriminatorMethodClassName = MappingDefinitionUtils.getTypeName(methodName);
+        String discriminatorMethodName = MappingDefinitionUtils.getMethodName(methodName);
+        Class<?> discriminatorMethodClass = null;
+
+        TypeResolver typeResolver = OpenLReflectionUtils.getTypeResolver(openClass);
+
+        if (StringUtils.isNotBlank(discriminatorMethodClassName)) {
+            discriminatorMethodClass = typeResolver.findClass(discriminatorMethodClassName);
+        }
+
+        Class<?> fieldAType = ValidationUtils.getCollectionFieldType(fieldA, fieldAEntryTypeHint);
+        Class<?> fieldBType = ValidationUtils.getCollectionFieldType(fieldB, fieldBEntryTypeHint);
+        Class<?> fieldAEntryType = ValidationUtils.getSupportedCollectionEntryType(fieldAType, fieldAEntryTypeHint);
+
+        String className = null;
+        MethodMetaInfo simpleMethod = null;
+        MethodMetaInfo extendedMethod = null;
+
+        if (discriminatorMethodClass != null) {
+            simpleMethod = ValidationUtils.findMethod(discriminatorMethodClass, discriminatorMethodName, new Class<?>[] { fieldAEntryType, fieldBType });
+            extendedMethod = ValidationUtils.findMethod(discriminatorMethodClass, discriminatorMethodName, new Class<?>[] { MappingParameters.class, fieldAType, fieldBType });
+            className = discriminatorMethodClass.getName();
+        } else {
+            simpleMethod = ValidationUtils.findMethod(openClass, discriminatorMethodName, new Class<?>[] { fieldAType, fieldBType });
+            extendedMethod = ValidationUtils.findMethod(openClass, discriminatorMethodName, new Class<?>[] { MappingParameters.class, fieldAEntryType, fieldBType });
+            className = openClass.getName();
+        }
+
+
+        // Check field types
+        if (!ValidationUtils.isSupportedCollection(fieldB)) {
+            violations.add(createPropertyViolation(propertyName,
+                fieldB.getName(),
+                String.format("Target field '%s' should be an array or a collection", fieldB.getName())));
+        } else {
+            
+            if (simpleMethod == null && extendedMethod == null) {
+                violations.add(createPropertyViolation(propertyName,
+                    methodName,
+                    String.format("Discriminator method '%1$s(%2$s, %3$s)' or '%1$s(%4$s, %2$s, %3$s)' cannot be found in class '%5$s'",
+                        methodName,
+                        fieldAEntryType.getName(),
+                        fieldBType.getName(),
+                        MappingParameters.class.getName(),
+                        className)));
+            } else {
+                Class<?> entryType = ValidationUtils.getSupportedCollectionEntryType(fieldB, fieldBEntryTypeHint);
+                ClassMetaInfo returnType = null;
+
+                // Check return type
+                if (simpleMethod != null) {
+                    returnType = simpleMethod.getReturnType();
+                }
+                if (extendedMethod != null) {
+                    returnType = extendedMethod.getReturnType();
+                }
+                if (returnType == null || !OpenLReflectionUtils.isAssignableFrom(entryType,
+                    returnType.getInstanceClass())) {
+                    String returnTypeName = returnType == null ? null : returnType.getName();
+                    violations.add(createPropertyViolation(propertyName,
+                        methodName,
+                        String.format("Destination collection item of type '%s' cannot be assigned from value of '%s' type",
+                            entryType.getName(),
+                            returnTypeName)));
+                }
+            }
+        }
+
+        return violations;
+    }
  
     private Set<ConstraintViolation> validateFieldPaths(Mapping bean) {
         Set<ConstraintViolation> violations = new HashSet<ConstraintViolation>();

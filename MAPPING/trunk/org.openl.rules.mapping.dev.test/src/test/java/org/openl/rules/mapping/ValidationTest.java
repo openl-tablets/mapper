@@ -46,4 +46,40 @@ public class ValidationTest {
         }
     }
 
+    @Test
+    public void discriminatorMethodValidationTest() {
+
+        File source = new File(
+            "src/test/resources/org/openl/rules/mapping/validation/discriminator/DiscriminatorMethodValidationTest.xlsx");
+        try {
+            RulesBeanMapperFactory.createMapperInstance(source, null, null, false);
+        } catch (RulesMappingException ex) {
+            assertEquals(0, ((CompositeOpenlException) ex.getCause()).getErrorMessages().length);
+        }
+    }
+
+    @Test
+    public void discriminatorMethodNotFoundValidationTest() {
+
+        File source = new File(
+            "src/test/resources/org/openl/rules/mapping/validation/discriminator/DiscriminatorMethodNotFoundValidationTest.xlsx");
+        try {
+            RulesBeanMapperFactory.createMapperInstance(source, null, null, false);
+        } catch (RulesMappingException ex) {
+            assertEquals(1, ((CompositeOpenlException) ex.getCause()).getErrorMessages().length);
+        }
+    }
+
+    @Test
+    public void discriminatorMethodTargetFieldValidationTest() {
+
+        File source = new File(
+            "src/test/resources/org/openl/rules/mapping/validation/discriminator/DiscriminatorMethodTargetFieldValidationTest.xlsx");
+        try {
+            RulesBeanMapperFactory.createMapperInstance(source, null, null, false);
+        } catch (RulesMappingException ex) {
+            assertEquals(1, ((CompositeOpenlException) ex.getCause()).getErrorMessages().length);
+        }
+    }
+
 }
