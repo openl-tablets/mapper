@@ -7,10 +7,13 @@ class CmdLineArgs {
 
     private boolean exportTypes;
     private boolean exportMessages;
+    private String typesXmlPath;
     private boolean help;
     private String jarpath;
     private String outpath;
     private String sourcepath;
+    private boolean quietReflectionErrors;
+    private boolean generateTypes;
 
     public boolean hasHelpOption() {
         return help;
@@ -72,4 +75,27 @@ class CmdLineArgs {
             .toString();
     }
 
+    public String getTypesXmlPath() {
+        return typesXmlPath;
+    }
+
+    public void setTypesXmlPath(String typesXmlPath) {
+        this.typesXmlPath = typesXmlPath;
+    }
+
+    public boolean isQuietReflectionErrors() {
+        return quietReflectionErrors;
+    }
+
+    public void setQuietReflectionErrors(boolean quietReflectionErrors) {
+        this.quietReflectionErrors = quietReflectionErrors;
+    }
+
+    public boolean isGenerateTypes() {
+        return generateTypes;
+    }
+
+    public void setGenerateTypes(boolean generateTypes) {
+        this.generateTypes = generateTypes;
+    }
 }

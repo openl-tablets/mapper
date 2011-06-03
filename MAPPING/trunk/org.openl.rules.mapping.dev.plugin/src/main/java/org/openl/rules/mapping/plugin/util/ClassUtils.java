@@ -24,21 +24,21 @@ public class ClassUtils {
 
     /**
      * Loads classes form specified jars with given class loader. It's a help
-     * method which invokes {@link #loadClassesFromJar(URL, ClassLoader)} method
+     * method which invokes {@link #loadClassesFromJar(java.net.URL, ClassLoader, boolean)} method
      * to process specified jars.
      * 
      * @param jars urls of jars to process
      * @param cl class loader
      * @return list of loaded classes
      * 
-     * @see loadClassesFromJar
+     * @see #loadClassesFromJar(java.net.URL, ClassLoader, boolean)
      */
-    public static List<Class<?>> loadClassesFromJars(URL[] jars, ClassLoader cl) {
+    public static List<Class<?>> loadClassesFromJars(URL[] jars, ClassLoader cl, boolean quietReflectionErrors) {
         List<Class<?>> classes = new ArrayList<Class<?>>();
 
         for (URL jar : jars) {
             try {
-                classes.addAll(loadClassesFromJar(jar, cl));
+                classes.addAll(loadClassesFromJar(jar, cl, quietReflectionErrors));
             } catch (Exception e) {
                 // ignore exception to load rest of classes
             }
@@ -54,7 +54,7 @@ public class ClassUtils {
      * @param cl class loader
      * @return list of loaded classes
      */
-    public static List<Class<?>> loadClassesFromJar(URL jar, ClassLoader cl) {
+    public static List<Class<?>> loadClassesFromJar(URL jar, ClassLoader cl, boolean quietReflectionErrors) {
         List<Class<?>> classes = new ArrayList<Class<?>>();
         JarInputStream jarFile = null;
 
@@ -77,7 +77,9 @@ public class ClassUtils {
                 try {
                     jarEntry = jarFile.getNextJarEntry();
                 } catch (IOException e) {
-                    LOG.error(String.format("An error occurred while open '%s'", jar), e);
+                    if (!quietReflectionErrors) {
+                        LOG.error(String.format("An error occurred while open '%s'", jar), e);
+                    }
                 }
 
                 if (jarEntry == null) {
@@ -99,9 +101,13 @@ public class ClassUtils {
                         clazz = cl.loadClass(className);
                         classes.add(clazz);
                     } catch (ClassNotFoundException e) {
-                        LOG.error(String.format("Class '%s' is not found", className), e);
+                        if (!quietReflectionErrors) {
+                            LOG.error(String.format("Class '%s' is not found", className), e);
+                        }
                     } catch (Throwable e) {
-                        LOG.error(String.format("Class '%s' cannot be loaded", className), e);
+                        if (!quietReflectionErrors) {
+                            LOG.error(String.format("Class '%s' cannot be loaded", className), e);
+                        }
                     }
                 }
             }

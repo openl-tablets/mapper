@@ -1,16 +1,13 @@
 package org.openl.rules.mapping.plugin;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,17 +39,26 @@ public class PluginAdaptor {
     private String inputFilename;
     private boolean exportTypes;
     private boolean exportMessages;
+    private String typesXmlPath;
+    private boolean quietReflectionErrors;
+    private boolean generateTypes;
 
     private PluginAdaptor(String jarpath,
             String outFilename,
             String inputFilename,
             boolean exportTypes,
-            boolean exportMessages) {
+            boolean exportMessages,
+            String typesXmlPath,
+            boolean quietReflectionErrors,
+            boolean generateTypes) {
         this.jarpath = jarpath;
         this.outFilename = outFilename;
         this.inputFilename = inputFilename;
         this.exportTypes = exportTypes;
         this.exportMessages = exportMessages;
+        this.typesXmlPath = typesXmlPath;
+        this.quietReflectionErrors = quietReflectionErrors;
+        this.generateTypes = generateTypes;
     }
 
     /**
@@ -85,22 +91,23 @@ public class PluginAdaptor {
             ApiBasedRulesEngineFactory engine = RulesBeanMapperFactory.initEngine(source, false);
             CompiledOpenClass compiledOpenClass = engine.getCompiledOpenClass();
 
-            ModuleOpenClass openClass = (ModuleOpenClass) compiledOpenClass.getOpenClassWithErrors();
-
-            List<BeanEntry> types = new ArrayList<BeanEntry>();
-            List<MessageEntry> messages = new ArrayList<MessageEntry>();
-
             // Get info about types and compilation messages.
-            if (exportTypes) {
-                types = exportTypes(openClass, jarURLs, cl);
-            }
-            if (exportMessages) {
-                messages = exportMessages(compiledOpenClass.getMessages());
+            if (generateTypes) {
+                out = getOutputStream();
+                writeTypes(out, compiledOpenClass, jarURLs, cl);
+            } else if (exportTypes) {
+                out = getOutputStream();
+                if (typesXmlPath != null) {
+                    copyPreparedXml(out);
+                } else {
+                    writeTypes(out, compiledOpenClass, jarURLs, cl);
+                }
+            } else if (exportMessages) {
+                List<MessageEntry> messages = exportMessages(compiledOpenClass.getMessages());
+                out = getOutputStream();
+                write(out, null, messages);
             }
 
-            // Write data.
-            out = getOutputStream();
-            write(out, types, messages);
         } finally {
             // Return back original class loader.
             Thread.currentThread().setContextClassLoader(originalClassLoader);
@@ -113,6 +120,20 @@ public class PluginAdaptor {
                 }
             }
         }
+    }
+
+    private void writeTypes(OutputStream out, CompiledOpenClass compiledOpenClass, URL[] jarURLs, AdaptorClassLoader cl) {
+        ModuleOpenClass openClass = (ModuleOpenClass) compiledOpenClass.getOpenClassWithErrors();
+        List<BeanEntry> types = exportTypes(openClass, jarURLs, cl);
+        write(out, types, null);
+    }
+
+    private void copyPreparedXml(OutputStream out) {
+        try {
+            IOUtils.copy(new FileInputStream(new File(typesXmlPath)), out);
+        } catch (IOException e) {
+            e.printStackTrace();
+        };
     }
 
     private void write(OutputStream out, List<BeanEntry> types, List<MessageEntry> messages) {
@@ -157,9 +178,9 @@ public class PluginAdaptor {
         // Composite required types.
         List<Class<?>> classes = new ArrayList<Class<?>>();
         classes.addAll(Arrays.asList(OpenClassHelper.getInstanceClasses(internalTypes)));
-        classes.addAll(ClassUtils.loadClassesFromJars(jarURLs, cl));
+        classes.addAll(ClassUtils.loadClassesFromJars(jarURLs, cl, quietReflectionErrors));
 
-        return ClassSerializer.serialize(classes);
+        return ClassSerializer.serialize(classes, quietReflectionErrors);
     }
 
     /**
@@ -190,7 +211,10 @@ public class PluginAdaptor {
                 cmdLineArgs.getOutpath(),
                 cmdLineArgs.getSourcepath(),
                 cmdLineArgs.hasExportTypesOption(),
-                cmdLineArgs.hasExportMessagesOption());
+                cmdLineArgs.hasExportMessagesOption(),
+                cmdLineArgs.getTypesXmlPath(),
+                cmdLineArgs.isQuietReflectionErrors(),
+                cmdLineArgs.isGenerateTypes());
             // Start process
             adaptor.process();
         }

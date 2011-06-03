@@ -20,7 +20,7 @@ public class ClassSerializer {
    
     private static final String[] ignoredProperties = new String [] {"class"};
     
-    public static BeanEntry serialize(Class<?> clazz) {
+    public static BeanEntry serialize(Class<?> clazz, boolean quietReflectionErrors) {
         if (clazz == null) {
             return null;
         }
@@ -33,7 +33,9 @@ public class ClassSerializer {
         try {
             propDescriptors = ReflectionUtils.getPropertyDescriptors(clazz);
         } catch (Throwable e) {
-            LOG.error(String.format("An error has occured while loading properties of class '%s'", clazz.getName()), e);
+            if (!quietReflectionErrors) {
+                LOG.error(String.format("An error has occured while loading properties of class '%s'", clazz.getName()), e);
+            }
         }
         
         if (propDescriptors == null) {
@@ -64,7 +66,9 @@ public class ClassSerializer {
                         fields.add(field);
                     }
                 } catch (Throwable e) {
-                    LOG.error(String.format("An error has occurred while processing property '%s' of class %s", propDescriptor.getName(), clazz.getName()), e);
+                    if (!quietReflectionErrors) {
+                        LOG.error(String.format("An error has occurred while processing property '%s' of class %s", propDescriptor.getName(), clazz.getName()), e);
+                    }
                 }
             }
         }
@@ -74,11 +78,11 @@ public class ClassSerializer {
         return bean;
     }
 
-    public static List<BeanEntry> serialize(List<Class<?>> classes) {
+    public static List<BeanEntry> serialize(List<Class<?>> classes, boolean quietReflectionErrors) {
         List<BeanEntry> beans = new ArrayList<BeanEntry>(classes.size());
 
         for (Class<?> clazz : classes) {
-            beans.add(serialize(clazz));
+            beans.add(serialize(clazz, quietReflectionErrors));
         }
 
         return beans;

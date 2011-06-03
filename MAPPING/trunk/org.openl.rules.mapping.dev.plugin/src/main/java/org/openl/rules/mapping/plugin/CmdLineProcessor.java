@@ -27,8 +27,17 @@ class CmdLineProcessor {
     private static final String TYPE_EXPORT_OPTION_LONG_NAME = "export-types";
     private static final String TYPE_EXPORT_OPTION_NAME = "t";
 
+    private static final String TYPES_XML_PATH_OPTION_LONG_NAME = "types-xml";
+    private static final String TYPES_XML_PATH_OPTION_NAME = "tx";
+
     private static final String MSG_EXPORT_OPTION_LONG_NAME = "export-messages";
     private static final String MSG_EXPORT_OPTION_NAME = "m";
+
+    private static final String QUIET_REFLECTION_ERRORS_OPTION_LONG_NAME = "quiet-reflection-errors";
+    private static final String QUIET_REFLECTION_ERRORS_OPTION_NAME = "qre";
+
+    private static final String GENERATE_TYPES_OPTION_LONG_NAME = "generate-types";
+    private static final String GENERATE_TYPES_OPTION_NAME = "g";
 
     private static final String HELP_OPTION_LONG_NAME = "help";
     private static final String HELP_OPTION_NAME = "h";
@@ -58,20 +67,27 @@ class CmdLineProcessor {
             if (commandLine.hasOption(OUTPUT_XML_PATH_OPTION_NAME)) {
                 cmdArgs.setOutpath(commandLine.getOptionValue(OUTPUT_XML_PATH_OPTION_NAME));
             }
+            if (commandLine.hasOption(TYPES_XML_PATH_OPTION_NAME)) {
+                cmdArgs.setTypesXmlPath(commandLine.getOptionValue(TYPES_XML_PATH_OPTION_NAME));
+            }
 
             cmdArgs.setHelp(commandLine.hasOption(HELP_OPTION_NAME));
             cmdArgs.setExportTypes(commandLine.hasOption(TYPE_EXPORT_OPTION_NAME));
             cmdArgs.setExportMessages(commandLine.hasOption(MSG_EXPORT_OPTION_NAME));
+            cmdArgs.setQuietReflectionErrors(commandLine.hasOption(QUIET_REFLECTION_ERRORS_OPTION_NAME));
+            cmdArgs.setGenerateTypes(commandLine.hasOption(GENERATE_TYPES_OPTION_NAME));
 
-            if (commandLine.getArgs().length == 0) {
-                throw new RuntimeException("Source file is not defined");
+            if (!cmdArgs.hasHelpOption()) {
+                if (commandLine.getArgs().length == 0) {
+                    throw new RuntimeException("Source file is not defined");
+                }
+
+                if (commandLine.getArgs().length > 1) {
+                    throw new RuntimeException("Cannot resolve source file");
+                }
+
+                cmdArgs.setSourcepath(commandLine.getArgs()[0]);
             }
-
-            if (commandLine.getArgs().length > 1) {
-                throw new RuntimeException("Cannot resolve source file");
-            }
-
-            cmdArgs.setSourcepath(commandLine.getArgs()[0]);
         } catch (ParseException parseException) {
             LOG.error("Encountered exception while parsing command line arguments", parseException);
         }
@@ -107,15 +123,32 @@ class CmdLineProcessor {
                 .withLongOpt(TYPE_EXPORT_OPTION_LONG_NAME)
                 .create(TYPE_EXPORT_OPTION_NAME);
 
+            Option typesXmlPath = OptionBuilder.withDescription("types xml file path")
+                .withArgName("path")
+                .hasArg()
+                .withLongOpt(TYPES_XML_PATH_OPTION_LONG_NAME)
+                .create(TYPES_XML_PATH_OPTION_NAME);
+
             Option exportMessages = OptionBuilder.withDescription("export errors and warinings")
                 .withLongOpt(MSG_EXPORT_OPTION_LONG_NAME)
                 .create(MSG_EXPORT_OPTION_NAME);
+
+            Option quietReflectionErrors = OptionBuilder.withDescription("don't log errors loading classes from jars and getting their fields")
+                .withLongOpt(QUIET_REFLECTION_ERRORS_OPTION_LONG_NAME)
+                .create(QUIET_REFLECTION_ERRORS_OPTION_NAME);
+
+            Option generateTypesXml = OptionBuilder.withDescription("generate types xml")
+                .withLongOpt(GENERATE_TYPES_OPTION_LONG_NAME)
+                .create(GENERATE_TYPES_OPTION_NAME);
 
             cmdOptions = new Options();
             cmdOptions.addOption(out);
             cmdOptions.addOption(jarpath);
             cmdOptions.addOption(exportTypes);
+            cmdOptions.addOption(typesXmlPath);
             cmdOptions.addOption(exportMessages);
+            cmdOptions.addOption(quietReflectionErrors);
+            cmdOptions.addOption(generateTypesXml);
             cmdOptions.addOption(help);
         }
 
