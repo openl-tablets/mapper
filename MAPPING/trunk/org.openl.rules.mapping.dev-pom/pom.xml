@@ -52,7 +52,18 @@
 	</reporting>
 
 	<profiles>
-		<profile>
+        <profile>
+            <id>chartis-release-deploy</id>
+            <distributionManagement>
+                <repository>
+                    <id>chartis-release</id>
+                    <name>Chartis Release Repository</name>
+                    <url>http://luxor.internal.corp:8081/nexus/content/repositories/chartis-release</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
+        <profile>
 			<id>internal-deploy</id>
 			<distributionManagement>
 				<site>
