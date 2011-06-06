@@ -54,7 +54,7 @@
 
     <profiles>
       <profile>
-        <id>internal-deploy</id>
+        <id>chartis-release-deploy</id>
         <distributionManagement>
             <repository>
                 <id>chartis-release</id>
