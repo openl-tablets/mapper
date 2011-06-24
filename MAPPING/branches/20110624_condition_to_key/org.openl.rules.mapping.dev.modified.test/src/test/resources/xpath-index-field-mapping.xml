@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozer.sourceforge.net"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+  <mapping wildcard="false" map-id="map1">
+    <class-a>org.openl.rules.mapping.data.xpath.XpathSource</class-a>
+    <class-b>org.openl.rules.mapping.data.xpath.XpathDest</class-b>
+    
+    <field>
+      <a>field2.field1</a>
+      <b>field1</b>
+    </field>
+    <field>
+      <a>field2.field3[1]</a>
+      <b>field2</b>
+    </field>
+    <field type="one-way">
+      <a>field2.field4</a>
+      <b>field3</b>
+    </field>
+    <field>
+      <a>field2.field4[1].field1</a>
+      <b>field4</b>
+    </field>
+    <field type="one-way">
+      <a>field2.field4[@field2 > 10].field1</a>
+      <b>field6.field1</b>
+    </field>
+    <field type="one-way">
+      <a>field2.field4[@field2 &lt; 10].field2</a>
+      <b>field6.field2</b>
+    </field>
+    
+  </mapping>
+
+  <mapping wildcard="false" map-id="map2">
+    <class-a>org.openl.rules.mapping.data.xpath.XpathSource</class-a>
+    <class-b>org.openl.rules.mapping.data.xpath.XpathDest</class-b>
+    <field>
+      <a>field2.field4[@field2 > 1].field1</a>
+      <b>field1</b>
+    </field>
+    <field>
+      <a>field2.field4[@field2 > 1]</a>
+      <b>field3[1]</b>
+    </field>
+  </mapping>
+
+  <mapping wildcard="false" map-id="map3">
+    <class-a>org.openl.rules.mapping.data.xpath.XpathSource</class-a>
+    <class-b>org.openl.rules.mapping.data.xpath.XpathDest</class-b>
+    <field>
+      <a>field2.field4[@field2 > 100].field1</a>
+      <b>field1</b>
+    </field>
+  </mapping>
+
+  <mapping wildcard="false" map-id="map4">
+    <class-a>org.openl.rules.mapping.data.xpath.XpathDest</class-a>
+    <class-b>org.openl.rules.mapping.data.xpath.XpathSource</class-b>
+    <field>
+      <a>field1</a>
+      <b>field2[@field1='test']</b>
+    </field>
+  </mapping>
+
+  <mapping wildcard="false" map-id="map5">
+    <class-a>org.openl.rules.mapping.data.xpath.XpathDest</class-a>
+    <class-b>org.openl.rules.mapping.data.xpath.XpathSource</class-b>
+    <field>
+      <a>field6[@field1='abc']</a>
+      <b>field2.field4[1]</b>
+    </field>
+  </mapping>
+
+</mappings>
