@@ -47,6 +47,11 @@ public final class MappingIdFactory {
             result.append(" (map id: " + mapping.getMapId() + ")");
         }
 
+        if (StringUtils.isNotBlank(mapping.getConditionABId())) {
+            //TODO condition key
+            result.append(" (conditionAB id: " + mapping.getConditionABId() + ")");
+        }
+
         return result.toString();
     }
 }

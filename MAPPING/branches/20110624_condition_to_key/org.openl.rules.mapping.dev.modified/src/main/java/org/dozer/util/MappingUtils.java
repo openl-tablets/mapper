@@ -15,20 +15,6 @@
  */
 package org.dozer.util;
 
-import static org.dozer.util.DozerConstants.BASE_CLASS;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
@@ -50,6 +36,20 @@ import org.dozer.fieldmap.FieldMapUtils;
 import org.dozer.fieldmap.MultiFieldsExcludeFieldMap;
 import org.dozer.fieldmap.MultiSourceFieldMap;
 import org.dozer.propertydescriptor.DozerPropertyDescriptor;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.dozer.util.DozerConstants.BASE_CLASS;
 
 /**
  * Internal class that provides various mapping utilities used throughout the
@@ -645,6 +645,11 @@ public final class MappingUtils {
         }
         if (!(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(fieldMap.getDestFieldKey())) {
             builder.append("{" + fieldMap.getDestFieldKey() + "}");
+        }
+
+        if (!isBlankOrNull(fieldMap.getMappingConditionId())) {
+            //TODO condition key
+            builder.append(" (conditionAB id: " + fieldMap.getMappingConditionId() + ")");
         }
 
         return builder.toString();
