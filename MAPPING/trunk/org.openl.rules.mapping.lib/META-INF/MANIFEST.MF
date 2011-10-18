@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OpenL Rules Mapping Library
 Bundle-SymbolicName: org.openl.rules.mapping.lib
-Bundle-Version: 1.1.1
+Bundle-Version: 1.1.2
 Bundle-Vendor: OpenL
 Bundle-ClassPath: lib/dozer-5.3.1.jar,
  lib/commons-beanutils-1.8.3.jar,
