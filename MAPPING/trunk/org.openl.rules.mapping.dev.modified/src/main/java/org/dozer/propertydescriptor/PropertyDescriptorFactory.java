@@ -17,6 +17,8 @@ package org.dozer.propertydescriptor;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dozer.classmap.ClassMap;
 import org.dozer.fieldmap.DozerField;
 import org.dozer.fieldmap.HintContainer;
@@ -30,6 +32,7 @@ import org.dozer.util.MappingUtils;
  * @author garsombke.franz
  */
 public final class PropertyDescriptorFactory {
+    private static Log LOG = LogFactory.getLog(PropertyDescriptorFactory.class);
 
     private PropertyDescriptorFactory() {
     }
@@ -49,7 +52,21 @@ public final class PropertyDescriptorFactory {
         if (MappingUtils.isBlankOrNull(src.getName())) {
             return new EmptyFieldPropertyDescriptor();
         }
-        
+        LOG.info("clazz = " + clazz.getName());
+        LOG.info("src.getTheGetMethod() = " + src.getTheGetMethod());
+        LOG.info("src.getTheSetMethod() = " + src.getTheSetMethod());
+        LOG.info("src.getMapGetMethod() = " + src.getMapGetMethod());
+        LOG.info("src.getMapSetMethod() = " + src.getMapSetMethod());
+        LOG.info("src.isAccessible() = " + src.isAccessible());
+        LOG.info("src.isIndexed() = " + src.isIndexed());
+        LOG.info("src.getIndex() = " + src.getIndex());
+        LOG.info("src.getName() = " + src.getName());
+        LOG.info("src.getKey() = " + src.getKey());
+        LOG.info("src.isSelfReferenced() = " + src.isSelfReferenced());
+        LOG.info("src.getName() = " + src.getName());
+        LOG.info("src.getDeepIndexHintContainer() = " + src.getDeepIndexHintContainer());
+        LOG.info("classMap.getDestClassBeanFactory() = " + classMap.getDestClassBeanFactory());
+
         return getPropertyDescriptor(clazz, src.getTheGetMethod(), src.getTheSetMethod(), src.getMapGetMethod(),
             src.getMapSetMethod(), src.isAccessible(), src.isIndexed(), src.getIndex(), src.getName(), src
                 .getKey(), src.isSelfReferenced(), src.getName(),  src.getDeepIndexHintContainer(),

@@ -26,7 +26,7 @@ public class FieldDefinition {
 
     private String value;
 
-    private boolean accessible;
+    private Boolean accessible;
     private String createMethod;
     private String key;
     private String mapGetMethod;
@@ -39,6 +39,7 @@ public class FieldDefinition {
     
     private String hint;
     private String deepHint;
+    private boolean iterate;
 
     public FieldDefinition(String value) {
         this.value = value;
@@ -61,6 +62,19 @@ public class FieldDefinition {
         builder.hint(this.hint);
         builder.deepHint(this.deepHint);
         builder.dateFormat(this.dateFormat);
+
+        if (this.iterate) {
+            builder.iterate();
+        }
+    }
+
+    public FieldDefinition iterate() {
+        this.iterate = true;
+        return this;
+    }
+
+    public FieldDefinition accessible() {
+        return accessible(true);
     }
 
     public FieldDefinition dateFormat(String value) {
@@ -129,7 +143,7 @@ public class FieldDefinition {
         return this;
     }
 
-    public String resolve() {
+    String resolve() {
         return value;
     }
 

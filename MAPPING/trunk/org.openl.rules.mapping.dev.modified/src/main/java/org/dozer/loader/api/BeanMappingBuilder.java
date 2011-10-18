@@ -30,6 +30,10 @@ public abstract class BeanMappingBuilder extends MappingOptions {
     public BeanMappingBuilder() {
     }
 
+  /**
+   * For internal use
+   * @return mappings created with given builder
+   */
     public MappingFileData build() {
         dozerBuilder = new DozerBuilder();
         configure();

@@ -9,6 +9,9 @@ import org.openl.rules.mapping.data.Dest;
 import org.openl.rules.mapping.data.Source;
 import org.openl.rules.mapping.dev.modified.test.AbstractFunctionalTest;
 
+import java.io.InputStream;
+import java.net.URL;
+
 public class MultiSourceFieldMappingTest extends AbstractFunctionalTest {
 
     @Test

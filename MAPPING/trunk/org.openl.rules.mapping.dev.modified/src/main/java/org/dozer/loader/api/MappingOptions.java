@@ -111,7 +111,7 @@ public class MappingOptions {
     }
 
     public static FieldsMappingOption fieldOneWay() {
-        return FieldsMappingOptions.fieldOneWay();
+        return FieldsMappingOptions.oneWay();
     }
     
     public static FieldsMappingOption fieldMapNull(boolean value) {

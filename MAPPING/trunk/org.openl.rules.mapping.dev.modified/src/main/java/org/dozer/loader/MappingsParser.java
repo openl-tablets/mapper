@@ -90,6 +90,7 @@ public final class MappingsParser {
             result.add(classMap.getSrcClassToMap(), classMap.getDestClassToMap(), classMap.getMapId(), classMap);
             // now create class map prime
             classMapPrime = new ClassMap(globalConfiguration);
+
             MappingUtils.reverseFields(classMap, classMapPrime);
 
             if (classMap.getFieldMaps() != null) {

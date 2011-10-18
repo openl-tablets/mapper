@@ -52,7 +52,7 @@ public final class ReflectionUtils {
     }
 
     public static PropertyDescriptor findPropertyDescriptor(Class<?> objectClass, String fieldName,
-        HintContainer deepIndexHintContainer) {
+                                                            HintContainer deepIndexHintContainer) {
         PropertyDescriptor result = null;
 
         if (MappingUtils.isDeepMapping(fieldName)) {
@@ -82,9 +82,13 @@ public final class ReflectionUtils {
                     // {
                     // continue;
                     // }
-                    if (fieldName.equalsIgnoreCase(descriptors[i].getName())) {
+                    String propertyName = descriptors[i].getName();
+                    if (fieldName.equals(propertyName)) {
+                        return descriptors[i];
+                    }
+
+                    if (fieldName.equalsIgnoreCase(propertyName)) {
                         result = descriptors[i];
-                        break;
                     }
                 }
             }

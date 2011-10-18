@@ -24,7 +24,7 @@ import org.dozer.loader.DozerBuilder;
 /**
  * @author Dmitry Buzdin
  */
-public class FieldsMappingOptions extends TypeMappingOptions {
+public final class FieldsMappingOptions {
 
     public static FieldsMappingOption copyByReference() {
         return new FieldsMappingOption() {
@@ -104,7 +104,7 @@ public class FieldsMappingOptions extends TypeMappingOptions {
         };
     }
 
-    public static FieldsMappingOption fieldOneWay() {
+    public static FieldsMappingOption oneWay() {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
                 fieldMappingBuilder.type(MappingDirection.ONE_WAY);
@@ -135,6 +135,27 @@ public class FieldsMappingOptions extends TypeMappingOptions {
             }
         };
     }
+
+    public static FieldsMappingOption removeOrphans() {
+      return removeOrphans(true);
+    }
+
+    public static FieldsMappingOption removeOrphans(final boolean removeOrphans) {
+      return new FieldsMappingOption() {
+        public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+          fieldMappingBuilder.removeOrphans(removeOrphans);
+        }
+      };
+    }
+
+    public static FieldsMappingOption relationshipType(final RelationshipType relationshipType) {
+      return new FieldsMappingOption() {
+        public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+          fieldMappingBuilder.relationshipType(relationshipType);
+        }
+      };
+    }
+
 
     public static FieldsMappingOption collectionStrategy(final boolean removeOrphans,
         final RelationshipType relationshipType) {

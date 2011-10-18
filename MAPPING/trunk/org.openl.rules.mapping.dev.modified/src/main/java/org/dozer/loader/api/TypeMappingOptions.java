@@ -23,7 +23,7 @@ import org.dozer.loader.DozerBuilder;
 /**
  * @author Dmitry Buzdin
  */
-public class TypeMappingOptions {
+public final class TypeMappingOptions {
 
     public static TypeMappingOption mapId(final String mapId) {
         return new TypeMappingOption() {
@@ -47,6 +47,10 @@ public class TypeMappingOptions {
                 fieldMappingBuilder.dateFormat(value);
             }
         };
+    }
+
+    public static TypeMappingOption mapEmptyStrings() {
+      return mapEmptyStrings(true);
     }
 
     public static TypeMappingOption mapEmptyStrings(final boolean value) {
@@ -81,12 +85,20 @@ public class TypeMappingOptions {
         };
     }
 
+    public static TypeMappingOption stopOnErrors() {
+      return stopOnErrors(true);
+    }
+
     public static TypeMappingOption stopOnErrors(final boolean value) {
         return new TypeMappingOption() {
             public void apply(DozerBuilder.MappingBuilder fieldMappingBuilder) {
                 fieldMappingBuilder.stopOnErrors(value);
             }
         };
+    }
+
+    public static TypeMappingOption trimStrings() {
+      return trimStrings(true);
     }
 
     public static TypeMappingOption trimStrings(final boolean value) {

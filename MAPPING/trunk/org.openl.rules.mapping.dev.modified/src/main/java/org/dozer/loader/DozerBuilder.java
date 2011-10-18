@@ -52,7 +52,7 @@ import org.dozer.util.MappingUtils;
  * user.
  * <p/>
  * Not thread safe
- * 
+ *
  * @author dmitry.buzdin
  */
 public class DozerBuilder {
@@ -126,7 +126,7 @@ public class DozerBuilder {
             classMap.setTrimStrings(value);
             return this;
         }
-        
+
         public MappingBuilder requiredFields(Boolean value) {
             classMap.setRequiredFields(value);
             return this;
@@ -279,87 +279,72 @@ public class DozerBuilder {
             return new FieldDefinitionBuilder(field);
         }
 
-        public FieldMappingBuilder type(MappingDirection type) {
+        public void type(MappingDirection type) {
             this.type = type;
-            return this;
         }
 
-        public FieldMappingBuilder relationshipType(RelationshipType relationshipType) {
+        public void relationshipType(RelationshipType relationshipType) {
             this.relationshipType = relationshipType;
-            return this;
         }
 
-        public FieldMappingBuilder removeOrphans(boolean value) {
+        public void removeOrphans(boolean value) {
             this.removeOrphans = value;
-            return this;
         }
 
-        public FieldMappingBuilder copyByReference(boolean value) {
+        public void copyByReference(boolean value) {
             this.copyByReferenceSet = true;
             this.copyByReference = value;
-            return this;
         }
 
-        public FieldMappingBuilder mapId(String attribute) {
+        public void mapId(String attribute) {
             this.mapId = attribute;
-            return this;
         }
 
-        public FieldMappingBuilder customConverter(Class<? extends CustomConverter> type) {
-            return customConverter(type.getName());
+        public void customConverter(Class<? extends CustomConverter> type) {
+            customConverter(type.getName());
         }
 
-        public FieldMappingBuilder customConverter(String typeName) {
+        public void customConverter(String typeName) {
             this.customConverter = typeName;
-            return this;
         }
 
-        public FieldMappingBuilder customConverterId(String attribute) {
+        public void customConverterId(String attribute) {
             this.customConverterId = attribute;
-            return this;
         }
 
-        public FieldMappingBuilder customConverterParam(String attribute) {
+        public void customConverterParam(String attribute) {
             this.customConverterParam = attribute;
-            return this;
         }
 
-        public FieldMappingBuilder mappingCondition(String typeName) {
+        public void mappingCondition(String typeName) {
             this.mappingCondition = typeName;
-            return this;
         }
 
-        public FieldMappingBuilder mappingConditionId(String attribute) {
+        public void mappingConditionId(String attribute) {
             this.mappingConditionId = attribute;
-            return this;
         }
 
-        public FieldMappingBuilder collectionItemDiscriminator(String discriminator) {
+        public void collectionItemDiscriminator(String discriminator) {
             this.collectionItemDiscriminator = discriminator;
-            return this;
         }
 
-        public FieldMappingBuilder collectionItemDiscriminatorId(String id) {
+        public void collectionItemDiscriminatorId(String id) {
             this.collectionItemDiscriminatorId = id;
-            return this;
         }
 
-        public FieldMappingBuilder mapNull(boolean value) {
+        public void mapNull(boolean value) {
             this.mapNullSet = true;
             this.mapNull = value;
-            return this;
         }
 
-        public FieldMappingBuilder mapEmptyString(boolean value) {
+        public void mapEmptyString(boolean value) {
             this.mapEmptyStringSet = true;
             this.mapEmptyString = value;
-            return this;
         }
-        
-        public FieldMappingBuilder trimString(boolean value) {
+
+        public void trimString(boolean value) {
             this.trimStringSet = true;
             this.trimString = value;
-            return this;
         }
 
         public void build() {
@@ -373,7 +358,7 @@ public class DozerBuilder {
                 DozerField srcField = src.get(0);
 
                 if (srcField.isMapTypeCustomGetterSetterField() || destField.isMapTypeCustomGetterSetterField() || classMap
-                    .isSrcClassMapTypeCustomGetterSetter() || classMap.isDestClassMapTypeCustomGetterSetter()) {
+                        .isSrcClassMapTypeCustomGetterSetter() || classMap.isDestClassMapTypeCustomGetterSetter()) {
                     result = new MapFieldMap(classMap);
                 } else if (srcField.isCustomGetterSetterField() || destField.isCustomGetterSetterField()) {
                     result = new CustomGetSetMethodFieldMap(classMap);
@@ -407,11 +392,11 @@ public class DozerBuilder {
             if (mapNullSet) {
                 result.setMapNull(mapNull);
             }
-            
+
             if (mapEmptyStringSet) {
                 result.setMapEmptyString(mapEmptyString);
             }
-            
+
             if (trimStringSet) {
                 result.setTrimString(trimString);
             }
@@ -455,11 +440,11 @@ public class DozerBuilder {
             field.setCreateMethod(attribute);
         }
 
-        public void accessible(boolean b) {
+        public void accessible(Boolean b) {
             field.setAccessible(b);
         }
 
-        public void required(boolean b) {
+        public void required(Boolean b) {
             field.setRequired(b);
         }
 
@@ -485,6 +470,10 @@ public class DozerBuilder {
         public void deepHint(String types) {
             HintContainer hintContainer = FieldMapUtils.hint(types);
             field.setDeepIndexHintContainer(hintContainer);
+        }
+
+        public void iterate() {
+            field.setType(DozerConstants.ITERATE);
         }
 
         public DozerField build() {
@@ -536,39 +525,36 @@ public class DozerBuilder {
             this.definition = definition;
         }
 
-        public ClassDefinitionBuilder mapGetMethod(String name) {
+        public void mapGetMethod(String name) {
             definition.setMapGetMethod(name);
-            return this;
         }
 
-        public ClassDefinitionBuilder mapSetMethod(String name) {
+        public void mapSetMethod(String name) {
             definition.setMapSetMethod(name);
-            return this;
         }
 
-        public ClassDefinitionBuilder beanFactory(String beanFactory) {
+        public void beanFactory(String beanFactory) {
             definition.setBeanFactory(beanFactory);
-            return this;
         }
 
-        public ClassDefinitionBuilder factoryBeanId(String id) {
+        public void factoryBeanId(String id) {
             definition.setFactoryBeanId(id);
-            return this;
         }
 
-        public ClassDefinitionBuilder createMethod(String name) {
+        public void createMethod(String name) {
             definition.setCreateMethod(name);
-            return this;
         }
 
-        public ClassDefinitionBuilder mapNull(Boolean value) {
+        public void mapNull(Boolean value) {
             definition.setMapNull(value);
-            return this;
         }
 
-        public ClassDefinitionBuilder mapEmptyString(Boolean value) {
+        public void mapEmptyString(Boolean value) {
             definition.setMapEmptyString(value);
-            return this;
+        }
+
+        public void isAccessible(Boolean value) {
+            definition.setAccessible(value);
         }
 
     }
@@ -583,53 +569,44 @@ public class DozerBuilder {
             this.configuration = configuration;
         }
 
-        public ConfigurationBuilder stopOnErrors(Boolean value) {
+        public void stopOnErrors(Boolean value) {
             configuration.setStopOnErrors(value);
-            return this;
         }
 
-        public ConfigurationBuilder dateFormat(String format) {
+        public void dateFormat(String format) {
             configuration.setDateFormat(format);
-            return this;
         }
 
-        public ConfigurationBuilder wildcard(Boolean value) {
+        public void wildcard(Boolean value) {
             configuration.setWildcard(value);
-            return this;
         }
 
-        public ConfigurationBuilder trimStrings(Boolean value) {
+        public void trimStrings(Boolean value) {
             configuration.setTrimStrings(value);
-            return this;
         }
 
-        public ConfigurationBuilder mapNulls(Boolean value) {
+        public void mapNulls(Boolean value) {
             configuration.setMapNulls(value);
-            return this;
         }
 
-        public ConfigurationBuilder mapEmptyStrings(Boolean value) {
+        public void mapEmptyStrings(Boolean value) {
             configuration.setMapEmptyStrings(value);
-            return this;
         }
 
-        public ConfigurationBuilder requiredFields(Boolean value) {
+        public void requiredFields(Boolean value) {
             configuration.setRequiredFields(value);
-            return this;
         }
 
-        public ConfigurationBuilder relationshipType(RelationshipType value) {
+        public void relationshipType(RelationshipType value) {
             if (value == null) {
                 configuration.setRelationshipType(DozerConstants.DEFAULT_RELATIONSHIP_TYPE_POLICY);
             } else {
                 configuration.setRelationshipType(value);
             }
-            return this;
         }
 
-        public ConfigurationBuilder beanFactory(String name) {
+        public void beanFactory(String name) {
             configuration.setBeanFactory(name);
-            return this;
         }
 
         public CustomConverterBuilder customConverter(String type) {
@@ -670,8 +647,8 @@ public class DozerBuilder {
         public ConfigurationBuilder allowedException(Class type) {
             if (!RuntimeException.class.isAssignableFrom(type)) {
                 MappingUtils
-                    .throwMappingException("allowed-exception Type must extend java.lang.RuntimeException: " + type
-                        .getName());
+                        .throwMappingException("allowed-exception Type must extend java.lang.RuntimeException: " + type
+                                .getName());
             }
             configuration.getAllowedExceptions().getExceptions().add(type);
             return this;

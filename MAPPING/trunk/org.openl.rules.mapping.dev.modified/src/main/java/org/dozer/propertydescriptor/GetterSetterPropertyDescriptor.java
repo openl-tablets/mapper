@@ -209,6 +209,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
             PropertyDescriptor pd = hierarchyElement.getPropDescriptor();
             Object value = ReflectionUtils.invoke(pd.getReadMethod(), parentObj, null);
             Class<?> clazz;
+            Class<?> collectionEntryType;
 
             if (value == null) {
                 clazz = pd.getPropertyType();
@@ -246,7 +247,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                             hintType = fieldMap.getDestDeepIndexHintContainer().getHint(i);
                         }
                         
-                        Class<?> collectionEntryType = ReflectionUtils.getComponentType(clazz, pd, hintType);
+                        collectionEntryType = ReflectionUtils.getComponentType(clazz, pd, hintType);
 
                         o = MappingUtils.prepareIndexedCollection(clazz, null, DestBeanCreator
                             .create(null, collectionEntryType), collectionIndex);

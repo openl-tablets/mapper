@@ -109,9 +109,6 @@ public final class MappingUtils {
         return Map.class.isAssignableFrom(aClass);
     }
 
-    public static boolean isPrimitiveOrWrapper(Class<?> aClass) {
-        return (aClass.isPrimitive() || Number.class.isAssignableFrom(aClass) || aClass.equals(String.class) || aClass.equals(Character.class) || aClass.equals(Boolean.class) || java.util.Date.class.isAssignableFrom(aClass) || java.util.Calendar.class.isAssignableFrom(aClass));
-    }
 
     public static void throwMappingException(Throwable e) throws MappingException {
         if (e instanceof MappingException) {
@@ -301,22 +298,31 @@ public final class MappingUtils {
 
     public static void reverseFields(ClassMap source, ClassMap destination) {
         // reverse the fields
-        destination.setSrcClass(new DozerClass(source.getDestClassName(),
-            source.getDestClassToMap(),
-            source.getDestClassBeanFactory(),
-            source.getDestClassBeanFactoryId(),
-            source.getDestClassMapGetMethod(),
-            source.getDestClassMapSetMethod(),
-            source.isDestMapNull(),
-            source.isDestMapEmptyString()));
-        destination.setDestClass(new DozerClass(source.getSrcClassName(),
-            source.getSrcClassToMap(),
-            source.getSrcClassBeanFactory(),
-            source.getSrcClassBeanFactoryId(),
-            source.getSrcClassMapGetMethod(),
-            source.getSrcClassMapSetMethod(),
-            source.isSrcMapNull(),
-            source.isSrcMapEmptyString()));
+//        destination.setSrcClass(new DozerClass(source.getDestClassName(),
+//            source.getDestClassToMap(),
+//            source.getDestClassBeanFactory(),
+//            source.getDestClassBeanFactoryId(),
+//            source.getDestClassMapGetMethod(),
+//            source.getDestClassMapSetMethod(),
+//            source.isDestMapNull(),
+//            source.isDestMapEmptyString()));
+//        destination.setDestClass(new DozerClass(source.getSrcClassName(),
+//            source.getSrcClassToMap(),
+//            source.getSrcClassBeanFactory(),
+//            source.getSrcClassBeanFactoryId(),
+//            source.getSrcClassMapGetMethod(),
+//            source.getSrcClassMapSetMethod(),
+//            source.isSrcMapNull(),
+//            source.isSrcMapEmptyString()));
+        destination.setSrcClass(new DozerClass(source.getDestClassName(), source.getDestClassToMap(), source.getDestClassBeanFactory(),
+            source.getDestClassBeanFactoryId(), source.getDestClassMapGetMethod(), source.getDestClassMapSetMethod(),
+                source.getDestClass().getCreateMethod(),
+                source.isDestMapNull(), source.isDestMapEmptyString(), source.getDestClass().isAccesible()));
+        destination.setDestClass(new DozerClass(source.getSrcClassName(), source.getSrcClassToMap(), source.getSrcClassBeanFactory(),
+            source.getSrcClassBeanFactoryId(), source.getSrcClassMapGetMethod(), source.getSrcClassMapSetMethod(),
+                source.getSrcClass().getCreateMethod(),
+                source.isSrcMapNull(), source.isSrcMapEmptyString(), source.getSrcClass().isAccesible()));
+
         destination.setType(source.getType());
         destination.setWildcard(source.isWildcard());
         destination.setTrimStrings(source.isTrimStrings());

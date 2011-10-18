@@ -21,16 +21,15 @@ import org.dozer.util.DozerConstants;
 
 /**
  * Only intended for internal use.
- * 
+ *
  * @author garsombke.franz
  * @author sullins.ben
  * @author tierney.matt
  * @author dmitry.buzdin
- * 
  */
-public class DozerField {
+public class DozerField implements Cloneable {
 
-    private final String type;
+    private String type;
     private String name;
     private String dateFormat;
     private String theGetMethod;
@@ -38,7 +37,7 @@ public class DozerField {
     private String key;
     private String mapSetMethod;
     private String mapGetMethod;
-    private boolean accessible;
+    private Boolean accessible = Boolean.FALSE;
     private String createMethod;
     private boolean indexed;
     private String index;
@@ -54,6 +53,10 @@ public class DozerField {
 
     public String getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getName() {
@@ -108,11 +111,14 @@ public class DozerField {
         this.mapSetMethod = mapSetMethod;
     }
 
-    public boolean isAccessible() {
-        return accessible;
+    public Boolean isAccessible() {
+        if (accessible != null) {
+            return accessible;
+        }
+        return Boolean.FALSE;
     }
 
-    public void setAccessible(boolean isAccessible) {
+    public void setAccessible(Boolean isAccessible) {
         this.accessible = isAccessible;
     }
 
@@ -183,7 +189,7 @@ public class DozerField {
     public boolean isMapTypeCustomGetterSetterField() {
         return getMapGetMethod() != null || getMapSetMethod() != null;
     }
-    
+
     public boolean isSelfReferenced() {
         return getName().equals(DozerConstants.SELF_KEYWORD);
     }
@@ -205,11 +211,11 @@ public class DozerField {
         copy.setCreateMethod(createMethod);
         copy.setIndexed(indexed);
         copy.setIndex(index);
-        copy.setRequired(required);
-        copy.setDefaultValue(defaultValue);
-        copy.setHintContainer(hintContainer);
-        copy.setDeepIndexHintContainer(deepIndexHintContainer);
-        
         return copy;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

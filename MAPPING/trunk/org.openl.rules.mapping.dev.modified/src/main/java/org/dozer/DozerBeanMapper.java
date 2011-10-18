@@ -15,6 +15,7 @@
  */
 package org.dozer;
 
+import org.apache.commons.logging.Log;
 import org.dozer.cache.CacheManager;
 import org.dozer.cache.DozerCacheManager;
 import org.dozer.cache.DozerCacheType;
@@ -220,11 +221,16 @@ public class DozerBeanMapper implements Mapper {
     }
 
     protected Mapper getMappingProcessor() {
+        log.info("OpenL Mapper based on Dozer 5.3.2 - you should not see this message, it should be removed after tests.");
+        log.info("OpenL Mapper based on Dozer 5.3.2 - please contact kkachanovskiy@exigenservices.com otherwise");
 
         if (initializing.compareAndSet(false, true)) {
-            loadCustomMappings();
-            eventManager = new DozerEventManager(eventListeners);
-            ready.countDown();
+            try {
+                loadCustomMappings();
+                eventManager = new DozerEventManager(eventListeners);
+            } finally {
+                ready.countDown();
+            }
         }
 
         try {
@@ -254,6 +260,11 @@ public class DozerBeanMapper implements Mapper {
         this.globalConfiguration = loadMappingsResult.getGlobalConfiguration();
     }
 
+    public void setMappings(List<? extends BeanMappingBuilder> mappingBuilder) {
+        for (BeanMappingBuilder builder : mappingBuilder) {
+            addMapping(builder);
+        }
+    }
     public void addMapping(BeanMappingBuilder mappingBuilder) {
         checkIfInitialized();
         MappingFileData mappingFileData = mappingBuilder.build();
