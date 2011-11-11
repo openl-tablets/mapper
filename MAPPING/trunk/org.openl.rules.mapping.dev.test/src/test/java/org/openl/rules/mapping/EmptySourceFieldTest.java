@@ -13,7 +13,7 @@ public class EmptySourceFieldTest {
     @Test
     public void emptySourceTest() {
 
-        File source = new File("src/test/resources/org/openl/rules/mapping/emptySource/EmptySourceTest.xlsx");
+        File source = new File("src/test/resources/org/openl/rules/mapping/emptysource/EmptySourceTest.xlsx");
         Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
 
         A a = new A();

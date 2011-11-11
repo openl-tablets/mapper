@@ -280,7 +280,7 @@ public class ThreadSafetyTest {
         private int counter;
         private List<Exception> exceptions = new ArrayList<Exception>();
 
-        public int getCounter() {
+        public synchronized int getCounter() {
             return counter;
         }
         public List<Exception> getExceptions() {
