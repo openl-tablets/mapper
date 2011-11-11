@@ -221,8 +221,7 @@ public class DozerBeanMapper implements Mapper {
     }
 
     protected Mapper getMappingProcessor() {
-        log.info("OpenL Mapper based on Dozer 5.3.2 - you should not see this message, it should be removed after tests.");
-        log.info("OpenL Mapper based on Dozer 5.3.2 - please contact kkachanovskiy@exigenservices.com otherwise");
+        log.info("OpenL Mapper Framework (Dozer 5.3.2)");
 
         if (initializing.compareAndSet(false, true)) {
             try {
