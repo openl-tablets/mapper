@@ -653,6 +653,16 @@ public final class MappingUtils {
             builder.append("{" + fieldMap.getDestFieldKey() + "}");
         }
 
+        String mappingConditionId = fieldMap.getMappingConditionId();
+        if (!isBlankOrNull(mappingConditionId)) {
+            builder.append(" (conditionId: " + mappingConditionId + ")");
+        }
+
+        String mappingCondition = fieldMap.getMappingCondition();
+        if (!isBlankOrNull(mappingCondition)) {
+            builder.append(" (condition: " + mappingCondition + ")");
+        }
+
         return builder.toString();
     }
 
