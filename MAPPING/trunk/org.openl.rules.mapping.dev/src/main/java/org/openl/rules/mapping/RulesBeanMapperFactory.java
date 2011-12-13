@@ -1,6 +1,8 @@
 package org.openl.rules.mapping;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -98,6 +100,82 @@ public final class RulesBeanMapperFactory {
                 source.getAbsolutePath()), e);
         }
     }
+
+	/**
+	 * Creates mapper instance using input stream with mapping rule definitions.
+	 *
+	 * @param source input stream with mapping rule definitions
+	 * @return mapper instance
+	 */
+	public static Mapper createMapperInstance(InputStream source) {
+
+		return createMapperInstance(source, null, null);
+	}
+
+
+	/**
+	 * Creates mapper instance using input stream with mapping rule definitions.
+	 *
+	 * @param source input stream with mapping rule definitions
+	 * @param customConvertersWithId external custom converters
+	 * @param conditionsWithId external conditions
+	 * @return mapper instance
+	 */
+	public static Mapper createMapperInstance(InputStream source,
+	                                          Map<String, CustomConverter> customConvertersWithId,
+	                                          Map<String, FieldMappingCondition> conditionsWithId) {
+		return createMapperInstance(source, customConvertersWithId, conditionsWithId, true);
+	}
+
+	/**
+	 * Creates mapper instance using input stream with mapping rule definitions.
+	 *
+	 * @param source input stream with mapping rule definitions
+	 * @param customConvertersWithId external custom converters
+	 * @param conditionsWithId external conditions
+	 * @param executionMode execution mode flag
+	 * @return mapper instance
+	 */
+	public static Mapper createMapperInstance(InputStream source,
+	                                          Map<String, CustomConverter> customConvertersWithId,
+	                                          Map<String, FieldMappingCondition> conditionsWithId,
+	                                          boolean executionMode) {
+
+		try {
+			File mappingConfiguration = FileExtractor.copyFileStream(source);
+			ApiBasedRulesEngineFactory factory = initEngine(mappingConfiguration, executionMode);
+
+			Class<?> instanceClass = factory.getInterfaceClass();
+			Object instance = factory.makeInstance();
+
+			// Check that compilation process completed successfully.
+			if (factory.getCompiledOpenClass().hasErrors()) {
+				// TODO: remove OpenL specific exception
+				List<OpenLMessage> messages = factory.getCompiledOpenClass().getMessages();
+				throw new CompositeOpenlException("Compilation failed", new SyntaxNodeException[0], messages);
+			}
+
+			// Get OpenL configuration object. The OpenL configuration object is
+			// created by OpenL engine during compilation process and contains
+			// information about imported types. We should use it to obtain
+			// required types because if user defined, for example, convert
+			// method as an external java static method and didn't use package
+			// name (e.g. MyClass.myConvertMethod) we will not have enough
+			// information to get convert method.
+			//
+			TypeResolver typeResolver = null;
+			if (executionMode) {
+				typeResolver = getTypeResolver(factory);
+			} else {
+				typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getCompiledOpenClass().getOpenClass());
+			}
+
+			return new RulesBeanMapper(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId);
+		} catch (Exception e) {
+			throw new RulesMappingException("Cannot load mapping definitions from input stream", e);
+		}
+	}
+
 
     /**
      * Initializes OpenL engine.
