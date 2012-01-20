@@ -54,16 +54,7 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<relocations>
-								<relocation>
-									<pattern>org.dozer</pattern>
-									<shadedPattern>org.dozer</shadedPattern>
-								</relocation>
-							</relocations>
 							<artifactSet>
-								<includes>
-									<include>net.sf.dozer:dozer</include>
-								</includes>
 								<excludes>
 									<exclude>commons-beanutils:commons-beanutils</exclude>
 									<exclude>commons-logging:commons-logging</exclude>
@@ -74,7 +65,7 @@
 									<exclude>org.slf4j:slf4j-log4j12</exclude>
 								</excludes>
 							</artifactSet>
-							<minimizeJar>true</minimizeJar>
+							<minimizeJar>false</minimizeJar>
 						</configuration>
 					</execution>
 				</executions>
