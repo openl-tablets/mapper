@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -7,10 +8,7 @@
 		<artifactId>org.openl.rules.base-pom</artifactId>
 		<version>5.7.5</version>
 		<relativePath />
-		<!--
-			Workaround to prevent warning. See:
-			http://jira.codehaus.org/browse/MNG-4687
-		-->
+		<!-- Workaround to prevent warning. See: http://jira.codehaus.org/browse/MNG-4687 -->
 	</parent>
 
 	<groupId>org.openl.rules</groupId>
@@ -26,16 +24,12 @@
 		<module>../org.openl.rules.mapping.dev</module>
 		<module>../org.openl.rules.mapping.dev.test</module>
 		<module>../org.openl.rules.mapping.dev.plugin</module>
-		<!--module>../org.openl.rules.mapping.lib</module-->
+		<!--module>../org.openl.rules.mapping.lib</module -->
 	</modules>
 
 	<scm>
-		<connection>
-            scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/trunk
-        </connection>
-		<developerConnection>
-            scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/MAPPING/trunk
-        </developerConnection>
+		<connection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/trunk</connection>
+		<developerConnection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/MAPPING/trunk</developerConnection>
 		<url>http://openl-tablets.svn.sourceforge.net/viewvc/openl-tablets/tags/release-5.7.5/org.openl.rules.mapping.dev-pom</url>
 	</scm>
 
@@ -52,18 +46,18 @@
 	</reporting>
 
 	<profiles>
-        <profile>
-            <id>chartis-release-deploy</id>
-            <distributionManagement>
-                <repository>
-                    <id>chartis-release</id>
-                    <name>Chartis Release Repository</name>
-                    <url>http://luxor.internal.corp:8081/nexus/content/repositories/chartis-release</url>
-                </repository>
-            </distributionManagement>
-        </profile>
+		<profile>
+			<id>chartis-release-deploy</id>
+			<distributionManagement>
+				<repository>
+					<id>chartis-release</id>
+					<name>Chartis Release Repository</name>
+					<url>http://luxor.internal.corp:8081/nexus/content/repositories/chartis-release</url>
+				</repository>
+			</distributionManagement>
+		</profile>
 
-        <profile>
+		<profile>
 			<id>internal-deploy</id>
 			<distributionManagement>
 				<site>
@@ -86,11 +80,13 @@
 
 								<cobertura-merge datafile="target\cobertura-merged-file.ser">
 									<fileset dir="..">
-										<include name="org.openl.apache.poi.enhancements\target\cobertura\cobertura.ser" />
+										<include
+											name="org.openl.apache.poi.enhancements\target\cobertura\cobertura.ser" />
 									</fileset>
 								</cobertura-merge>
 
-								<cobertura-report datafile="target\cobertura-merged-file.ser" destdir="target\site\cobertura-summary">
+								<cobertura-report datafile="target\cobertura-merged-file.ser"
+									destdir="target\site\cobertura-summary">
 									<fileset dir="..\org.openl.rules.mapping.dev.modified\src\">
 										<include name="**\*.java" />
 									</fileset>
