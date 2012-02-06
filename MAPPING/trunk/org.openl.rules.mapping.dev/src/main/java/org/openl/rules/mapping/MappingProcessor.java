@@ -101,15 +101,17 @@ class MappingProcessor {
         dozerBuilder.configBuilder().mapNulls(globalConfiguration.isMapNulls());
         dozerBuilder.configBuilder().mapEmptyStrings(globalConfiguration.isMapEmptyStrings());
         dozerBuilder.configBuilder().requiredFields(globalConfiguration.isRequiredFields());
+	    dozerBuilder.configBuilder().beanFactory(globalConfiguration.getBeanFactory());
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Global configuration: dateFormat=%s, wildcard=%s, trimStrings=%s, mapNulls=%s, mapEmptyStrings=%s, requiredFields=%s",
+            LOG.debug(String.format("Global configuration: dateFormat=%s, wildcard=%s, trimStrings=%s, mapNulls=%s, mapEmptyStrings=%s, requiredFields=%s, beanFactory=%s",
                 globalConfiguration.getDateFormat(),
                 globalConfiguration.isWildcard(),
                 globalConfiguration.isTrimStrings(),
                 globalConfiguration.isMapNulls(),
                 globalConfiguration.isMapEmptyStrings(),
-                globalConfiguration.isRequiredFields()));
+                globalConfiguration.isRequiredFields(),
+		        globalConfiguration.getBeanFactory()));
         }
 
         Map<String, BeanMapConfiguration> mappingConfigurations = mappingsLoader.loadBeanMapConfiguraitons(globalConfiguration);

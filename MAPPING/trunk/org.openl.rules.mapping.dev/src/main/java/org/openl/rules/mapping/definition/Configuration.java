@@ -15,7 +15,8 @@ public class Configuration {
     private Boolean requiredFields;
     private Boolean wildcard;
     private String dateFormat;
-
+	private String beanFactory;
+	
     public boolean isMapNulls() {
         if (mapNulls != null) {
             return mapNulls;
@@ -79,11 +80,19 @@ public class Configuration {
         this.dateFormat = dateFormat;
     }
 
-    @Override
+	public String getBeanFactory() {
+		return beanFactory;
+	}
+
+	public void setBeanFactory(String beanFactory) {
+		this.beanFactory = beanFactory;
+	}
+
+	@Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("mapNulls", mapNulls).append(
-            "mapEmptyStrings", mapEmptyStrings).append("trimStrings", trimStrings).append("requiredFields",
-            requiredFields).append("wildcard", wildcard).append("dateFormat", dateFormat).toString();
+		        "mapEmptyStrings", mapEmptyStrings).append("trimStrings", trimStrings).append("requiredFields",
+            requiredFields).append("wildcard", wildcard).append("dateFormat", dateFormat).append("beanFactory", beanFactory).toString();
     }
 
 }

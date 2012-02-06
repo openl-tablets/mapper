@@ -11,6 +11,7 @@ public class GlobalConfiguration {
     private Boolean requiredFields;
     private Boolean wildcard;
     private String dateFormat;
+	private String beanFactory;
 
     public Boolean getMapNulls() {
         return mapNulls;
@@ -60,4 +61,11 @@ public class GlobalConfiguration {
         this.dateFormat = dateFormat;
     }
 
+	public String getBeanFactory() {
+		return beanFactory;
+	}
+
+	public void setBeanFactory(String beanFactory) {
+		this.beanFactory = beanFactory;
+	}
 }

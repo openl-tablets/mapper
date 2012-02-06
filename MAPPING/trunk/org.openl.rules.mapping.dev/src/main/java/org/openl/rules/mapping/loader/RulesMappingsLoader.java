@@ -362,6 +362,7 @@ public class RulesMappingsLoader {
             configuration.setRequiredFields(globalConfiguration.getRequiredFields());
             configuration.setTrimStrings(globalConfiguration.getTrimStrings());
             configuration.setWildcard(globalConfiguration.getWildcard());
+	        configuration.setBeanFactory(globalConfiguration.getBeanFactory());
         }
 
         return configuration;

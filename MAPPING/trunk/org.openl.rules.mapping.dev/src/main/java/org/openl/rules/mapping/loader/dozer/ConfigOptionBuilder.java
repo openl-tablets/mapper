@@ -46,6 +46,11 @@ public class ConfigOptionBuilder {
         return this;
     }
     
+	public  ConfigOptionBuilder beanFactory(String className) {
+		options.add(MappingOptions.defaultBeanFactory(className));
+		return this;
+	}
+
     public ConfigurationMappingOption[] build() {
         return options.toArray(new ConfigurationMappingOption[options.size()]);
     }

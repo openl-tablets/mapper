@@ -138,10 +138,6 @@ public class MappingOptions {
         return TypeMappingOptions.mapId(mapId);
     }
 
-    public static TypeMappingOption beanFactory(final String value) {
-        return TypeMappingOptions.beanFactory(value);
-    }
-
     public static TypeMappingOption dateFormat(final String value) {
         return TypeMappingOptions.dateFormat(value);
     }

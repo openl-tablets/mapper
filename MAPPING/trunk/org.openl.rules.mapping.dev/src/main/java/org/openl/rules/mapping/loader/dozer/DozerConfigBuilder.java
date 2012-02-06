@@ -60,6 +60,11 @@ public class DozerConfigBuilder {
         return this;
     }
     
+	public DozerConfigBuilder beanFactory(String className) {
+		configOptionBuilder.beanFactory(className);
+		return this;
+	}
+
     private void addDefaultConverter(ConverterDescriptor defaultConverter) {
         configOptionBuilder.defaultConverter(defaultConverter.getInstance(), defaultConverter.getSrcType(),
             defaultConverter.getDestType());
