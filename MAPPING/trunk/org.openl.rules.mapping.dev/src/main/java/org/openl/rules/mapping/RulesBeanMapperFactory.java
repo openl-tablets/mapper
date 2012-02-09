@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import org.dozer.BeanFactory;
 import org.dozer.CustomConverter;
 import org.dozer.FieldMappingCondition;
 import org.openl.ICompileContext;
@@ -49,21 +50,38 @@ public final class RulesBeanMapperFactory {
     public static Mapper createMapperInstance(File source,
             Map<String, CustomConverter> customConvertersWithId,
             Map<String, FieldMappingCondition> conditionsWithId) {
-        return createMapperInstance(source, customConvertersWithId, conditionsWithId, true);
+        return createMapperInstance(source, customConvertersWithId, conditionsWithId, null, true);
     }
 
+	/**
+	 * Creates mapper instance using file with mapping rule definitions.
+	 *
+	 * @param source file with mapping rule definitions
+	 * @param customConvertersWithId external custom converters
+	 * @param conditionsWithId external conditions
+	 * @param factories custom bean factories
+	 * @return mapper instance
+	 */
+	public static Mapper createMapperInstance(File source,
+	                                          Map<String, CustomConverter> customConvertersWithId,
+	                                          Map<String, FieldMappingCondition> conditionsWithId,
+	                                          Map<String, BeanFactory> factories) {
+		return createMapperInstance(source, customConvertersWithId, conditionsWithId, factories, true);
+	}	
     /**
      * Creates mapper instance using file with mapping rule definitions.
      * 
      * @param source file with mapping rule definitions
      * @param customConvertersWithId external custom converters
      * @param conditionsWithId external conditions
+     * @param factories custom bean factories
      * @param executionMode execution mode flag
      * @return mapper instance
      */
     public static Mapper createMapperInstance(File source,
             Map<String, CustomConverter> customConvertersWithId,
             Map<String, FieldMappingCondition> conditionsWithId,
+            Map<String, BeanFactory> factories,
             boolean executionMode) {
 
         try {
@@ -94,7 +112,7 @@ public final class RulesBeanMapperFactory {
                 typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getCompiledOpenClass().getOpenClass());
             }
 
-            return new RulesBeanMapper(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId);
+            return new RulesBeanMapper(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId, factories);
         } catch (Exception e) {
             throw new RulesMappingException(String.format("Cannot load mapping definitions from file: %s",
                 source.getAbsolutePath()), e);

@@ -6,6 +6,10 @@ import org.openl.rules.mapping.to.inheritance.ChildE;
 
 public class MappingParamsAwareCustomBeanFactory extends BaseMappingParamsAwareBeanFactory {
 
+	public MappingParamsAwareCustomBeanFactory() {
+		System.out.println();
+	} 
+	
     @Override
     public Object createBean(MappingParameters params, Object source, Class<?> sourceClass, String targetBeanId) {
         if (E.class.getName().equals(targetBeanId)) {

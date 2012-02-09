@@ -7,11 +7,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
-import org.dozer.CustomConverter;
-import org.dozer.DozerBeanMapper;
-import org.dozer.FieldMappingCondition;
-import org.dozer.MappingContext;
-import org.dozer.MappingException;
+import org.dozer.*;
 import org.openl.rules.mapping.definition.BeanMap;
 import org.openl.rules.mapping.definition.BeanMapConfiguration;
 import org.openl.rules.mapping.definition.Configuration;
@@ -38,6 +34,7 @@ class MappingProcessor {
 
     private Map<String, CustomConverter> customConvertersWithId;
     private Map<String, FieldMappingCondition> conditionsWithId;
+	private Map<String, BeanFactory> factories;
 
     /**
      * Creates new instance of mappings processor using OpenL Rules project
@@ -47,15 +44,18 @@ class MappingProcessor {
      * @param instance instance object
      * @param typeResolver type resolver
      * @param customConvertersWithId user custom converters
+     * @param factories custom bean factories
      */
     public MappingProcessor(Class<?> instanceClass,
             Object instance,
             TypeResolver typeResolver,
             Map<String, CustomConverter> customConvertersWithId,
-            Map<String, FieldMappingCondition> conditionsWithId) {
+            Map<String, FieldMappingCondition> conditionsWithId,
+            Map<String, BeanFactory> factories) {
         this.mappingsLoader = new RulesMappingsLoader(instanceClass, instance, typeResolver);
         this.customConvertersWithId = customConvertersWithId;
         this.conditionsWithId = conditionsWithId;
+	    this.factories = factories;
 
         init();
     }
@@ -147,6 +147,10 @@ class MappingProcessor {
         }
 
         beanMapper = dozerBuilder.buildMapper();
+
+	    if (factories != null) {
+		    beanMapper.setFactories(factories);
+	    }
     }
 
     public void map(Object source, Object destination) {
@@ -180,4 +184,5 @@ class MappingProcessor {
             throw new RulesMappingException(e);
         }
     }
+
 }

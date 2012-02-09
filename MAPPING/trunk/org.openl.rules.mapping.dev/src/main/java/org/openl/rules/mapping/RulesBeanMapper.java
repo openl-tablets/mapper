@@ -2,6 +2,7 @@ package org.openl.rules.mapping;
 
 import java.util.Map;
 
+import org.dozer.BeanFactory;
 import org.dozer.CustomConverter;
 import org.dozer.FieldMappingCondition;
 import org.dozer.MappingContext;
@@ -23,6 +24,8 @@ public class RulesBeanMapper implements Mapper {
     private Map<String, CustomConverter> customConvertersWithId;
     private Map<String, FieldMappingCondition> conditionsWithId;
 
+	private Map<String, BeanFactory> factories;
+	
     public RulesBeanMapper(Class<?> instanceClass, Object instance, TypeResolver typeResolver,
         Map<String, CustomConverter> customConvertersWithId, Map<String, FieldMappingCondition> conditionsWithId) {
         this.instanceClass = instanceClass;
@@ -31,6 +34,17 @@ public class RulesBeanMapper implements Mapper {
         this.customConvertersWithId = customConvertersWithId;
         this.conditionsWithId = conditionsWithId;
     }
+
+	public RulesBeanMapper(Class<?> instanceClass, Object instance, TypeResolver typeResolver,
+	                       Map<String, CustomConverter> customConvertersWithId, Map<String, FieldMappingCondition> conditionsWithId, 
+	                       Map<String, BeanFactory> factories) {
+		this.instanceClass = instanceClass;
+		this.instance = instance;
+		this.typeResolver = typeResolver;
+		this.customConvertersWithId = customConvertersWithId;
+		this.conditionsWithId = conditionsWithId;
+		this.factories = factories;
+	}
 
     public <T> T map(Object source, Class<T> destinationClass) {
         return getMappingProcessor().map(source, destinationClass);
@@ -50,7 +64,7 @@ public class RulesBeanMapper implements Mapper {
 
     private MappingProcessor getMappingProcessor() {
         if (mappingProcessor == null) {
-            mappingProcessor = new MappingProcessor(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId);
+            mappingProcessor = new MappingProcessor(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId, factories);
         }
 
         return mappingProcessor;
