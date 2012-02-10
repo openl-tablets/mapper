@@ -20,17 +20,7 @@ import static org.dozer.util.DozerConstants.ITERATE;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
@@ -106,6 +96,7 @@ public class MappingProcessor implements Mapper {
     private final Cache converterByDestTypeCache;
     private final Cache superTypeCache;
     private final PrimitiveOrWrapperConverter primitiveConverter = new PrimitiveOrWrapperConverter();
+	private Stack<FieldMap> fieldMapStack = new Stack<FieldMap>();
 
     protected MappingProcessor(ClassMappings classMappings, Configuration globalConfiguration, CacheManager cacheMgr,
                                StatisticsManager statsMgr, List<CustomConverter> customConverterObjects, DozerEventManager eventManager,
@@ -285,12 +276,42 @@ public class MappingProcessor implements Mapper {
             if (mappedParentFields != null && mappedParentFields.contains(key)) {
                 continue;
             }
+	        
+	        fieldMapStack.push(fieldMapping);
+	        printStack();
             mapField(fieldMapping, srcObj, destObj, params);
+	        fieldMapStack.pop();
         }
     }
 
+	private void printStack() {
+		StringBuffer src, dst;
+		
+		src = new StringBuffer();
+		dst = new StringBuffer();
+		
+		if (! fieldMapStack.empty()) {
+			Iterator<FieldMap> i = fieldMapStack.iterator();
+			while (i.hasNext()) {
+				FieldMap f = i.next();
+				prependDot(src);
+				prependDot(dst);
+				src.append(f.getSrcFieldName());
+				dst.append(f.getDestFieldName());
+			}
+		}
 
-    private Collection<FieldMap> getFieldMappings(ClassMap classMap, String mapId) {
+		this.log.trace("FULL FIELD PATH: [" + src.toString() + "] -> [" + dst.toString() + "]");
+	}
+
+	private void prependDot(StringBuffer src) {
+		if (src.length() > 0) {
+			src.append(".");
+		}
+	}
+
+
+	private Collection<FieldMap> getFieldMappings(ClassMap classMap, String mapId) {
         if (MappingUtils.isBlankOrNull(mapId)) {
             return getGeneralFieldMaps(classMap);
         } else {
