@@ -96,8 +96,10 @@ public class MappingProcessor implements Mapper {
     private final Cache converterByDestTypeCache;
     private final Cache superTypeCache;
     private final PrimitiveOrWrapperConverter primitiveConverter = new PrimitiveOrWrapperConverter();
+	
 	private Stack<FieldMap> fieldMapStack = new Stack<FieldMap>();
-
+	private String srcFullFieldMap, dstFullFieldMap;
+	
     protected MappingProcessor(ClassMappings classMappings, Configuration globalConfiguration, CacheManager cacheMgr,
                                StatisticsManager statsMgr, List<CustomConverter> customConverterObjects, DozerEventManager eventManager,
                                CustomFieldMapper customFieldMapper, Map<String, CustomConverter> customConverterObjectsWithId,
@@ -276,20 +278,31 @@ public class MappingProcessor implements Mapper {
             if (mappedParentFields != null && mappedParentFields.contains(key)) {
                 continue;
             }
+
+	        // put the field map into the stack to maintain full fieldmap info
+	        // PUSH field maps into the stack
+	        updateFullFieldMapInfo(fieldMapping);
+
+//			if (params != null) {
+//				params.put("SRC_FULL_FIELDMAP", this.srcFullFieldMap);
+//				params.put("DST_FULL_FIELDMAP", this.dstFullFieldMap);
+//			}
 	        
-	        fieldMapStack.push(fieldMapping);
-	        printStack();
             mapField(fieldMapping, srcObj, destObj, params);
+
+	        // POP the recent mapping out from the stack
 	        fieldMapStack.pop();
         }
     }
 
-	private void printStack() {
-		StringBuffer src, dst;
+	private void updateFullFieldMapInfo(FieldMap fieldMap) {
+		fieldMapStack.push(fieldMap);
 		
+		StringBuffer src, dst;
+
 		src = new StringBuffer();
 		dst = new StringBuffer();
-		
+
 		if (! fieldMapStack.empty()) {
 			Iterator<FieldMap> i = fieldMapStack.iterator();
 			while (i.hasNext()) {
@@ -301,7 +314,10 @@ public class MappingProcessor implements Mapper {
 			}
 		}
 
-		this.log.trace("FULL FIELD PATH: [" + src.toString() + "] -> [" + dst.toString() + "]");
+		this.srcFullFieldMap = src.toString();
+		this.dstFullFieldMap = dst.toString();
+
+		this.log.trace("FULL FIELD PATH: [" + this.srcFullFieldMap + "] -> [" + this.dstFullFieldMap + "]");
 	}
 
 	private void prependDot(StringBuffer src) {
