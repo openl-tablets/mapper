@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OpenL Rules Mapping Plug-in
+Bundle-SymbolicName: org.openl.rules.mapping.dev
+Bundle-Version: 1.1.5
+Require-Bundle: org.openl.rules.mapping.dev.modified;visibility:=reexport,
+ org.openl.rules;visibility:=reexport
+Export-Package: org.openl.rules.mapping,
+ org.openl.rules.mapping.exception
