@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -14,7 +13,7 @@
 	<groupId>org.openl.rules</groupId>
 	<artifactId>org.openl.rules.mapping.dev-pom</artifactId>
 	<packaging>pom</packaging>
-	<version>1.1.5-SNAPSHOT</version>
+	<version>1.1.5</version>
 	<name>OpenL - Rules - Mapping - Dev POM</name>
 	<description>Dev</description>
 
@@ -28,9 +27,9 @@
 	</modules>
 
 	<scm>
-		<connection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/trunk</connection>
-		<developerConnection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/MAPPING/trunk</developerConnection>
-		<url>http://openl-tablets.svn.sourceforge.net/viewvc/openl-tablets/tags/release-5.7.5/org.openl.rules.mapping.dev-pom</url>
+		<connection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/OpenL/MAPPING/tags/release-1.1.5</connection>
+		<developerConnection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/tags/release-1.1.5</developerConnection>
+		<url>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/tags/release-1.1.5</url>
 	</scm>
 
 	<reporting>
@@ -80,13 +79,11 @@
 
 								<cobertura-merge datafile="target\cobertura-merged-file.ser">
 									<fileset dir="..">
-										<include
-											name="org.openl.apache.poi.enhancements\target\cobertura\cobertura.ser" />
+										<include name="org.openl.apache.poi.enhancements\target\cobertura\cobertura.ser" />
 									</fileset>
 								</cobertura-merge>
 
-								<cobertura-report datafile="target\cobertura-merged-file.ser"
-									destdir="target\site\cobertura-summary">
+								<cobertura-report datafile="target\cobertura-merged-file.ser" destdir="target\site\cobertura-summary">
 									<fileset dir="..\org.openl.rules.mapping.dev.modified\src\">
 										<include name="**\*.java" />
 									</fileset>
