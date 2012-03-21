@@ -13,7 +13,7 @@
 	<groupId>org.openl.rules</groupId>
 	<artifactId>org.openl.rules.mapping.dev-pom</artifactId>
 	<packaging>pom</packaging>
-	<version>1.1.6</version>
+	<version>1.1.7-SNAPSHOT</version>
 	<name>OpenL - Rules - Mapping - Dev POM</name>
 	<description>Dev</description>
 
@@ -27,9 +27,9 @@
 	</modules>
 
 	<scm>
-		<connection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/OpenL/MAPPING/tags/release-1.1.6</connection>
-		<developerConnection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/tags/release-1.1.6</developerConnection>
-		<url>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/tags/release-1.1.6</url>
+		<connection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/OpenL/MAPPING/trunk</connection>
+		<developerConnection>scm:svn:https://svn-rix.exigengroup.lv/svn/EPB/EPB/DecisionServices/MAPPING/trunk</developerConnection>
+		<url>http://openl-tablets.svn.sourceforge.net/viewvc/openl-tablets/tags/release-5.7.5/org.openl.rules.mapping.dev-pom</url>
 	</scm>
 
 	<reporting>
