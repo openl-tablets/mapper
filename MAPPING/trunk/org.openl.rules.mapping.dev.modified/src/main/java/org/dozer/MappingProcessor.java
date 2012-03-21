@@ -98,6 +98,8 @@ public class MappingProcessor implements Mapper {
     private final PrimitiveOrWrapperConverter primitiveConverter = new PrimitiveOrWrapperConverter();
 	
 	private Stack<FieldMap> fieldMapStack = new Stack<FieldMap>();
+	private MappingParentObjects parentObjects = new MappingParentObjects();
+
 	private String srcFullFieldMap, dstFullFieldMap;
 	
     protected MappingProcessor(ClassMappings classMappings, Configuration globalConfiguration, CacheManager cacheMgr,
@@ -281,20 +283,28 @@ public class MappingProcessor implements Mapper {
 
 	        // put the field map into the stack to maintain full fieldmap info
 	        // PUSH field maps into the stack
-	        updateFullFieldMapInfo(fieldMapping);
+	        if (log.isTraceEnabled()) {
+	            updateFullFieldMapInfo(fieldMapping);
+	        }
 
-//			if (params != null) {
-//				params.put("SRC_FULL_FIELDMAP", this.srcFullFieldMap);
-//				params.put("DST_FULL_FIELDMAP", this.dstFullFieldMap);
-//			}
-	        
+	        parentObjects.push(srcObj, destObj);
+
+	        if (params != null) {
+				params.put("PARENTOBJECTS", parentObjects);
+	        }
+
             mapField(fieldMapping, srcObj, destObj, params);
 
+	        parentObjects.pop();
+
 	        // POP the recent mapping out from the stack
-	        fieldMapStack.pop();
+	        if (log.isTraceEnabled()) {
+	            fieldMapStack.pop();
+	        }
         }
     }
 
+	// prints full field map exactly as it is in the mapping config
 	private void updateFullFieldMapInfo(FieldMap fieldMap) {
 		fieldMapStack.push(fieldMap);
 		
@@ -316,6 +326,7 @@ public class MappingProcessor implements Mapper {
 
 		this.srcFullFieldMap = src.toString();
 		this.dstFullFieldMap = dst.toString();
+
 
 		this.log.trace("FULL FIELD PATH: [" + this.srcFullFieldMap + "] -> [" + this.dstFullFieldMap + "]");
 	}
