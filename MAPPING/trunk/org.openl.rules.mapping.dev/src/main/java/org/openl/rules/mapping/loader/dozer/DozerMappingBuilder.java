@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
+import org.dozer.DozerEventListener;
 import org.dozer.FieldMappingCondition;
 import org.dozer.loader.api.BeanMappingBuilder;
 import org.dozer.loader.api.FieldDefinition;
@@ -42,8 +43,16 @@ public class DozerMappingBuilder {
         }
         return this;
     }
-    
-    public DozerMappingsContainer build() {
+
+	public DozerMappingBuilder eventListeners(List<DozerEventListener> eventListeners) {
+		if ( eventListeners != null ) {
+			mappingsContainer.getEventListeners().addAll(eventListeners);
+		}
+		return this;
+	}
+
+
+	public DozerMappingsContainer build() {
         return mappingsContainer;
     }
     
@@ -221,7 +230,7 @@ public class DozerMappingBuilder {
         return StringUtils.join(names, ",");
     }
 
-    /**
+	/**
      * Intended for internal usage. Holds information about a single field map
      * and used as an intermediate container during mapping models conversion.
      */

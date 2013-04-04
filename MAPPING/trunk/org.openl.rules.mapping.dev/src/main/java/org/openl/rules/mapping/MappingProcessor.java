@@ -2,6 +2,7 @@ package org.openl.rules.mapping;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -35,6 +36,7 @@ class MappingProcessor {
     private Map<String, CustomConverter> customConvertersWithId;
     private Map<String, FieldMappingCondition> conditionsWithId;
 	private Map<String, BeanFactory> factories;
+	private List<DozerEventListener> eventListeners;
 
     /**
      * Creates new instance of mappings processor using OpenL Rules project
@@ -52,19 +54,42 @@ class MappingProcessor {
             Map<String, CustomConverter> customConvertersWithId,
             Map<String, FieldMappingCondition> conditionsWithId,
             Map<String, BeanFactory> factories) {
-        this.mappingsLoader = new RulesMappingsLoader(instanceClass, instance, typeResolver);
-        this.customConvertersWithId = customConvertersWithId;
-        this.conditionsWithId = conditionsWithId;
-	    this.factories = factories;
-
-        init();
+        this(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId, factories, null);
     }
+
+	/**
+	 * Creates new instance of mappings processor using OpenL Rules project
+	 * instance information.
+	 *
+	 * @param instanceClass class definition
+	 * @param instance instance object
+	 * @param typeResolver type resolver
+	 * @param customConvertersWithId user custom converters
+	 * @param factories custom bean factories
+	 * @param eventListeners event listeners
+	 */
+	public MappingProcessor(Class<?> instanceClass,
+							Object instance,
+							TypeResolver typeResolver,
+							Map<String, CustomConverter> customConvertersWithId,
+							Map<String, FieldMappingCondition> conditionsWithId,
+							Map<String, BeanFactory> factories,
+							List<DozerEventListener> eventListeners) {
+		this.mappingsLoader = new RulesMappingsLoader(instanceClass, instance, typeResolver);
+		this.customConvertersWithId = customConvertersWithId;
+		this.conditionsWithId = conditionsWithId;
+		this.factories = factories;
+		this.eventListeners = eventListeners;
+
+		init();
+	}
 
     @SuppressWarnings("unchecked")
     private void init() {
 
         dozerBuilder.mappingBuilder().customConvertersWithId(customConvertersWithId);
         dozerBuilder.mappingBuilder().conditionsWithId(conditionsWithId);
+		dozerBuilder.mappingBuilder().eventListeners(eventListeners);
 
         Collection<ConverterDescriptor> defaultConverters = mappingsLoader.loadDefaultConverters();
 
