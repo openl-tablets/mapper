@@ -5,7 +5,7 @@
   <groupId>org.openl.rules</groupId>
   <artifactId>openl-rules-mapping-lib-svn-pom</artifactId>
   <packaging>pom</packaging>
-  <version>1.1.7-SNAPSHOT</version>
+  <version>1.1.7</version>
   <name>OpenL Rules Mapping LIB SVN root pom</name>
   <url>http://openl-tablets.sourceforge.net/ws-toc401.shtml</url>
 
