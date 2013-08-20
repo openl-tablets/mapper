@@ -102,6 +102,8 @@ public class MappingProcessor implements Mapper {
 
 	private String srcFullFieldMap, dstFullFieldMap;
 	
+    private MappingContext context;
+
     protected MappingProcessor(ClassMappings classMappings, Configuration globalConfiguration, CacheManager cacheMgr,
                                StatisticsManager statsMgr, List<CustomConverter> customConverterObjects, DozerEventManager eventManager,
                                CustomFieldMapper customFieldMapper, Map<String, CustomConverter> customConverterObjectsWithId,
@@ -127,12 +129,13 @@ public class MappingProcessor implements Mapper {
     /* Mapper Interface Implementation */
 
     public <T> T map(final Object srcObj, final Class<T> destClass) {
-        return map(srcObj, destClass, null);
+        return map(srcObj, destClass, (T)null);
     }
 
     public <T> T map(final Object srcObj, final Class<T> destClass, final MappingContext context) {
         MappingValidator.validateMappingRequest(srcObj, destClass);
-        return map(srcObj, destClass, null, context);
+        setContext(context);
+        return map(srcObj, destClass, (T)null);
     }
 
     public void map(final Object srcObj, final Object destObj) {
@@ -141,7 +144,8 @@ public class MappingProcessor implements Mapper {
 
     public void map(final Object srcObj, final Object destObj, final MappingContext context) {
         MappingValidator.validateMappingRequest(srcObj, destObj);
-        map(srcObj, null, destObj, context);
+        setContext(context);
+        map(srcObj, null, destObj);
     }
 
     /* End of Mapper Interface Implementation */
@@ -152,11 +156,10 @@ public class MappingProcessor implements Mapper {
      * @param srcObj    source object
      * @param destClass destination class
      * @param destObj   destination object
-     * @param context   mapping context
      * @param <T>       destination object type
      * @return new or updated destination object
      */
-    private <T> T map(Object srcObj, final Class<T> destClass, final T destObj, final MappingContext mappingContext) {
+    private <T> T map(Object srcObj, final Class<T> destClass, final T destObj) {
         srcObj = MappingUtils.deProxy(srcObj);
 
         Class<T> destType;
@@ -173,7 +176,7 @@ public class MappingProcessor implements Mapper {
 
         try {
             // Find appropriate class mapping.
-            classMap = getClassMap(srcObj.getClass(), destType, getMapId(mappingContext));
+            classMap = getClassMap(srcObj.getClass(), destType, getMapId());
 
             eventMgr.fireEvent(new DozerEvent(DozerEventType.MAPPING_STARTED, classMap, null, srcObj, result, null));
 
@@ -186,11 +189,11 @@ public class MappingProcessor implements Mapper {
 
             if (converter != null) {
                 return (T) mapUsingCustomConverterInstance(converter, srcObj.getClass(), srcObj, destType, result,
-                        null, getUserParams(mappingContext), true);
+                        null, getUserParams(), true);
             }
 
             if (result == null) {
-                result = (T) DestBeanCreator.create(getUserParams(mappingContext), new BeanCreationDirective(srcObj, classMap.getSrcClassToMap(),
+                result = (T) DestBeanCreator.create(getUserParams(), new BeanCreationDirective(srcObj, classMap.getSrcClassToMap(),
                         classMap.getDestClassToMap(), destType, classMap.getDestClassBeanFactory(), classMap
                         .getDestClassBeanFactoryId(), classMap.getDestClassCreateMethod()));
             }
@@ -204,7 +207,7 @@ public class MappingProcessor implements Mapper {
             // mapId parameter is null for this invocation because we already
             // used it to find
             // appropriate mapping description.
-            map(classMap, srcObj, result, false, getMapId(mappingContext), getUserParams(mappingContext));
+            map(classMap, srcObj, result, false, getMapId(), getUserParams());
         } catch (Throwable e) {
             MappingUtils.throwMappingException(e);
         }
@@ -590,7 +593,8 @@ public class MappingProcessor implements Mapper {
         if (log.isDebugEnabled()) {
             log.debug(LogMsgFactory.createFieldMappingSuccessMsg(srcObj.getClass(), destObj.getClass(),
                     fieldMapping.getSrcFieldName(), fieldMapping.getDestFieldName(), srcFieldValue, destFieldValue,
-                    fieldMapping.getClassMap().getMapId()));
+                    fieldMapping.getMapId()));
+//                            getClassMap().getMapId()));
         }
     }
 
@@ -833,7 +837,8 @@ public class MappingProcessor implements Mapper {
                     .getDestFieldCreateMethod() : classMap.getDestClassCreateMethod()));
         }
 
-        map(classMap, srcFieldValue, result, false, fieldMap.getMapId(), params);
+//        map(classMap, srcFieldValue, result, false, fieldMap.getMapId(), params);
+        map(classMap, srcFieldValue, result, false, getMapId(), params);
 
         return result;
     }
@@ -1558,7 +1563,7 @@ public class MappingProcessor implements Mapper {
         return mapping;
     }
 
-    private String getMapId(MappingContext context) {
+    private String getMapId() {
         if (context != null) {
             return context.getMapId();
         }
@@ -1566,7 +1571,7 @@ public class MappingProcessor implements Mapper {
         return null;
     }
 
-    private MappingParameters getUserParams(MappingContext context) {
+    private MappingParameters getUserParams() {
         if (context != null) {
             return context.getParams();
         }
@@ -1574,4 +1579,11 @@ public class MappingProcessor implements Mapper {
         return null;
     }
 
+    public MappingContext getContext() {
+        return context;
+    }
+
+    public void setContext(MappingContext context) {
+        this.context = context;
+    }
 }
