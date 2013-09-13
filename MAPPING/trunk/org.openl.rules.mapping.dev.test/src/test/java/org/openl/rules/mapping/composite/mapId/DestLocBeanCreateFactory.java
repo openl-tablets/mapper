@@ -13,6 +13,7 @@ public class DestLocBeanCreateFactory implements BeanFactory, MappingParamsAware
 
     public Object createBean(Object source, Class<?> sourceClass, String targetBeanId) {
         Object result = null;
+/*
         if (source instanceof SrcLocation) {
             MappingContext context = (MappingContext) params.get("context");
             SrcLocation srcLocation = (SrcLocation) source;
@@ -20,13 +21,14 @@ public class DestLocBeanCreateFactory implements BeanFactory, MappingParamsAware
 
             result = new DestLocDTO();
         } else {
+*/
             try {
                 Class clazz = Class.forName(targetBeanId);
                 result = clazz.newInstance();
             } catch (Exception e) {
                 throw new MappingException("Failed to intantiate: " + e.getMessage());
             }
-        }
+//        }
 
         return result;
     }
