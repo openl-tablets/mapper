@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.dozer.CollectionItemDiscriminator;
 import org.dozer.CustomConverter;
-import org.dozer.DozerEventListener;
 import org.dozer.FieldMappingCondition;
 import org.dozer.loader.api.BeanMappingBuilder;
 
@@ -21,7 +20,6 @@ public class DozerMappingsContainer {
     private final Map<String, CustomConverter> converters = new HashMap<String, CustomConverter>();
     private final Map<String, FieldMappingCondition> conditions = new HashMap<String, FieldMappingCondition>();
     private final Map<String, CollectionItemDiscriminator> collectionItemDiscriminators = new HashMap<String, CollectionItemDiscriminator>();
-	private final List<DozerEventListener> eventListeners = new ArrayList<DozerEventListener>();
 
     public List<BeanMappingBuilder> getMappingBuilders() {
         return mappingBuilders;
@@ -38,8 +36,5 @@ public class DozerMappingsContainer {
     public Map<String, CollectionItemDiscriminator> getCollectionItemDiscriminators() {
         return collectionItemDiscriminators;
     }
-
-	public List<DozerEventListener> getEventListeners() {
-		return eventListeners;
-	}
+    
 }

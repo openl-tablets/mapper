@@ -34,7 +34,6 @@ public class DozerBuilder {
         mapper.setCustomConvertersWithId(mappingsContainer.getConverters());
         mapper.setMappingConditionsWithId(mappingsContainer.getConditions());
         mapper.setCollectionItemDiscriminatorsWithId(mappingsContainer.getCollectionItemDiscriminators());
-		mapper.setEventListeners(mappingsContainer.getEventListeners());
 
         for (BeanMappingBuilder mapping : mappingsContainer.getMappingBuilders()) {
             mapper.addMapping(mapping);

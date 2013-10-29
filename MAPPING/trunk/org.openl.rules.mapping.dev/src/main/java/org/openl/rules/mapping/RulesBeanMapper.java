@@ -1,9 +1,11 @@
 package org.openl.rules.mapping;
 
-import java.util.List;
 import java.util.Map;
 
-import org.dozer.*;
+import org.dozer.BeanFactory;
+import org.dozer.CustomConverter;
+import org.dozer.FieldMappingCondition;
+import org.dozer.MappingContext;
 
 /**
  * The OpenL Rules Tablets based public implementation of the {@link Mapper}
@@ -23,8 +25,6 @@ public class RulesBeanMapper implements Mapper {
     private Map<String, FieldMappingCondition> conditionsWithId;
 
 	private Map<String, BeanFactory> factories;
-
-	private List<DozerEventListener> eventListeners;
 	
     public RulesBeanMapper(Class<?> instanceClass, Object instance, TypeResolver typeResolver,
         Map<String, CustomConverter> customConvertersWithId, Map<String, FieldMappingCondition> conditionsWithId) {
@@ -46,18 +46,6 @@ public class RulesBeanMapper implements Mapper {
 		this.factories = factories;
 	}
 
-	public RulesBeanMapper(Class<?> instanceClass, Object instance, TypeResolver typeResolver,
-						   Map<String, CustomConverter> customConvertersWithId, Map<String, FieldMappingCondition> conditionsWithId,
-						   Map<String, BeanFactory> factories,  List<DozerEventListener> eventListeners) {
-		this.instanceClass = instanceClass;
-		this.instance = instance;
-		this.typeResolver = typeResolver;
-		this.customConvertersWithId = customConvertersWithId;
-		this.conditionsWithId = conditionsWithId;
-		this.factories = factories;
-		this.eventListeners = eventListeners;
-	}
-
     public <T> T map(Object source, Class<T> destinationClass) {
         return getMappingProcessor().map(source, destinationClass);
     }
@@ -76,7 +64,7 @@ public class RulesBeanMapper implements Mapper {
 
     private MappingProcessor getMappingProcessor() {
         if (mappingProcessor == null) {
-            mappingProcessor = new MappingProcessor(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId, factories, eventListeners);
+            mappingProcessor = new MappingProcessor(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId, factories);
         }
 
         return mappingProcessor;
