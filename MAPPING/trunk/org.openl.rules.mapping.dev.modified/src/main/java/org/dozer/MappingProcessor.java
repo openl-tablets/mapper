@@ -139,30 +139,25 @@ public class MappingProcessor implements Mapper {
     /* Mapper Interface Implementation */
 
     public <T> T map(final Object srcObj, final Class<T> destClass) {
-        MappingContext emptyMappingContext = new MappingContext();
-
-        return map(srcObj, destClass, (T)null, emptyMappingContext);
+        return map(srcObj, destClass, (T)null, getContextOrNewEmptyContext(null));
     }
 
     public <T> T map(final Object srcObj, final Class<T> destClass, final MappingContext context) {
-        MappingContext contextToHandle = new MappingContext();
-        if (context != null) {
-            contextToHandle = context;
-        }
-
         MappingValidator.validateMappingRequest(srcObj, destClass);
-        return map(srcObj, destClass, (T)null, contextToHandle);
+        return map(srcObj, destClass, (T)null, getContextOrNewEmptyContext(context));
     }
 
     public void map(final Object srcObj, final Object destObj) {
-        MappingContext emptyMappingContext = new MappingContext();
-
-        map(srcObj, destObj, emptyMappingContext);
+        map(srcObj, destObj, getContextOrNewEmptyContext(null));
     }
 
     public void map(final Object srcObj, final Object destObj, final MappingContext context) {
         MappingValidator.validateMappingRequest(srcObj, destObj);
-        map(srcObj, null, destObj, context);
+        map(srcObj, null, destObj, getContextOrNewEmptyContext(context));
+    }
+
+    private MappingContext getContextOrNewEmptyContext(MappingContext contextFromParams) {
+        return contextFromParams == null ? new MappingContext() : contextFromParams;
     }
 
     /* End of Mapper Interface Implementation */
