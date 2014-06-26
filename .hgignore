@@ -1,0 +1,15 @@
+syntax: glob
+.idea
+*.iws
+*.ipr
+*.iml
+.settings
+.project
+.classpath
+**/target
+**/.studioProps
+*.log
+logs
+**/bin/**
+**/gen/**
+**/WEB-INF/classes/**
