@@ -3,11 +3,11 @@ syntax: glob
 *.iws
 *.ipr
 *.iml
+*.orig
 .settings
 .project
 .classpath
 **/target
-**/.studioProps
 *.log
 logs
 **/bin/**
