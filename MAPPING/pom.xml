@@ -1,12 +1,11 @@
+<!-- This file is for releasing OpenL version with maven-release-plugin -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>org.openl.rules</groupId>
 		<artifactId>openl-tablets</artifactId>
-		<version>5.15.2-SNAPSHOT</version>
+		<version>5.15.2</version>
 		<relativePath />
 		<!-- Workaround to prevent warning. See: http://jira.codehaus.org/browse/MNG-4687 -->
 	</parent>
@@ -14,18 +13,22 @@
 	<groupId>org.openl.rules</groupId>
 	<artifactId>org.openl.rules.mapping.dev-pom</artifactId>
 	<packaging>pom</packaging>
-	<version>1.1.10</version>
-	<name>OpenL - Rules - Mapping - Dev POM</name>
+	<version>1.1.11-SNAPSHOT</version>
+	<name>OpenL - Rules - Mapping - General POM</name>
 	<description>Dev</description>
 
 	<modules>
-		<module>../org.openl.rules.mapping.dev.modified</module>
-		<module>../org.openl.rules.mapping.dev.modified.test</module>
-		<module>../org.openl.rules.mapping.dev</module>
-		<module>../org.openl.rules.mapping.dev.test</module>
-		<module>../org.openl.rules.mapping.dev.plugin</module>
+		<module>org.openl.rules.mapping.dev.modified</module>
+		<module>org.openl.rules.mapping.dev.modified.test</module>
+		<module>org.openl.rules.mapping.dev</module>
+		<module>org.openl.rules.mapping.dev.test</module>
+		<module>org.openl.rules.mapping.dev.plugin</module>
 		<!--module>../org.openl.rules.mapping.lib</module -->
 	</modules>
+
+	<properties>
+		<org.openl.version>5.15.2</org.openl.version>
+	</properties>
 
 	<scm>
 		<connection>scm:hg:https://rix-mercurial01.exigenservices.com/hg/openl/</connection>
@@ -38,7 +41,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
-					<configLocation>../org.openl.rules.mapping.dev-pom/checkstyle.xml</configLocation>
+					<configLocation>checkstyle.xml</configLocation>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -154,7 +157,7 @@
 			<dependency>
 				<groupId>org.openl.rules</groupId>
 				<artifactId>org.openl.rules</artifactId>
-				<version>5.15.2-SNAPSHOT</version>
+				<version>${org.openl.version}</version>
 			</dependency>
 
 			<dependency>

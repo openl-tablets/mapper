@@ -4,8 +4,8 @@
 	<parent>
 		<groupId>org.openl.rules</groupId>
 		<artifactId>org.openl.rules.mapping.dev-pom</artifactId>
-		<version>1.1.10</version>
-		<relativePath>../org.openl.rules.mapping.dev-pom</relativePath>
+		<version>1.1.11-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>org.openl.rules.mapping.dev.plugin</artifactId>
