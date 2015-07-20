@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.openl.rules</groupId>
@@ -7,7 +8,6 @@
 		<relativePath>../org.openl.rules.mapping.dev-pom</relativePath>
 	</parent>
 
-	<groupId>org.openl.rules</groupId>
 	<artifactId>org.openl.rules.mapping.dev.plugin</artifactId>
 	<name>Openl - Rules - Mapping - Excel Plugin</name>
 	<description>
@@ -36,7 +36,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -86,36 +85,29 @@
 				</executions>
 			</plugin>
 		</plugins>
-
 	</build>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.openl.rules</groupId>
 			<artifactId>org.openl.rules.mapping.dev</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-cli</groupId>
 			<artifactId>commons-cli</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</dependency>
-
 	</dependencies>
 
 </project>

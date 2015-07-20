@@ -2,10 +2,10 @@ package org.openl.rules.mapping;
 
 import org.dozer.MappingContext;
 import org.junit.Test;
-import org.openl.rules.mapping.composite.mapId.destination.DestPolicy;
-import org.openl.rules.mapping.composite.mapId.source.SrcAddress;
-import org.openl.rules.mapping.composite.mapId.source.SrcLocation;
-import org.openl.rules.mapping.composite.mapId.source.SrcPolicy;
+import org.openl.rules.mapping.composite.mapid.destination.DestPolicy;
+import org.openl.rules.mapping.composite.mapid.source.SrcAddress;
+import org.openl.rules.mapping.composite.mapid.source.SrcLocation;
+import org.openl.rules.mapping.composite.mapid.source.SrcPolicy;
 import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.B;
 import org.openl.rules.mapping.to.E;

@@ -1,4 +1,4 @@
-package org.openl.rules.mapping.composite.mapId.source;
+package org.openl.rules.mapping.composite.mapid.source;
 
 import java.util.List;
 

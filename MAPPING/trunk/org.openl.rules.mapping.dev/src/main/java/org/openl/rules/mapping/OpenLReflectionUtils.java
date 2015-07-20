@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openl.classloader.OpenLClassLoaderHelper;
+import org.openl.classloader.SimpleBundleClassLoader;
 import org.openl.conf.IOpenLConfiguration;
 import org.openl.conf.IUserContext;
 import org.openl.conf.OpenLConfiguration;
@@ -24,7 +25,12 @@ public class OpenLReflectionUtils {
     public static TypeResolver getTypeResolver(IOpenClass openClass) {
         if (openClass.getMetaInfo() != null && StringUtils.isNotBlank(openClass.getMetaInfo().getSourceUrl())) {
             UserContext userContext = new UserContext(OpenLClassLoaderHelper.getContextClassLoader(), DEFAULT_USER_HOME);
-            return getTypeResolver(openClass.getMetaInfo().getSourceUrl(), userContext);
+            TypeResolver typeResolver = getTypeResolver(openClass.getMetaInfo().getSourceUrl(), userContext);
+            if (typeResolver == null && OpenLClassLoaderHelper.getContextClassLoader() instanceof SimpleBundleClassLoader){
+            	SimpleBundleClassLoader simpleBundleClassLoader = (SimpleBundleClassLoader) OpenLClassLoaderHelper.getContextClassLoader();
+                userContext = new UserContext(simpleBundleClassLoader.getParent(), DEFAULT_USER_HOME);
+                return getTypeResolver(openClass.getMetaInfo().getSourceUrl(), userContext);
+            }
         }
 
         return null;

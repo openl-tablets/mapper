@@ -1,4 +1,4 @@
-package org.openl.rules.mapping.composite.mapId.destination;
+package org.openl.rules.mapping.composite.mapid.destination;
 
 /**
  * @author kkachanovskiy@exigenservices.com

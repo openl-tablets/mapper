@@ -1,7 +1,6 @@
 package org.openl.rules.mapping;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;

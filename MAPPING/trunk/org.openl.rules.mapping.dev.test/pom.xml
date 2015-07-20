@@ -7,7 +7,6 @@
         <relativePath>../org.openl.rules.mapping.dev-pom</relativePath>
     </parent>
 
-    <groupId>org.openl.rules</groupId>
     <artifactId>org.openl.rules.mapping.dev.test</artifactId>
     <name>Openl - Rules - Mapping - Test</name>
     
@@ -47,22 +46,18 @@
     </build>
 
     <dependencies>
-
         <dependency>
             <groupId>org.openl.rules</groupId>
             <artifactId>org.openl.rules.mapping.dev</artifactId>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>
         </dependency>
-
         <dependency>
             <groupId>easypo</groupId>
             <artifactId>easypo</artifactId>
@@ -70,14 +65,10 @@
             <scope>system</scope>
             <systemPath>${basedir}/libs/easypo.jar</systemPath>    
         </dependency>
-
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.8.5</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
-
 </project>

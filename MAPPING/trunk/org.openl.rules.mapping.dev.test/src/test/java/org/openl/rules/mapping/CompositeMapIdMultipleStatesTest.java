@@ -2,13 +2,14 @@ package org.openl.rules.mapping;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+
 import org.dozer.*;
 import org.dozer.classmap.ClassMap;
 import org.junit.Test;
-import org.openl.rules.mapping.composite.mapId.destination.DestPolicy;
-import org.openl.rules.mapping.composite.mapId.source.SrcAddress;
-import org.openl.rules.mapping.composite.mapId.source.SrcLocation;
-import org.openl.rules.mapping.composite.mapId.source.SrcPolicy;
+import org.openl.rules.mapping.composite.mapid.destination.DestPolicy;
+import org.openl.rules.mapping.composite.mapid.source.SrcAddress;
+import org.openl.rules.mapping.composite.mapid.source.SrcLocation;
+import org.openl.rules.mapping.composite.mapid.source.SrcPolicy;
 
 import java.io.File;
 import java.io.FileReader;

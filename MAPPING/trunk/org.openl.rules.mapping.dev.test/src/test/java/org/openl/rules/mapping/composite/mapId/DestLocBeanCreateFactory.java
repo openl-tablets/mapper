@@ -1,9 +1,9 @@
-package org.openl.rules.mapping.composite.mapId;
+package org.openl.rules.mapping.composite.mapid;
 
 import org.dozer.*;
 import org.openl.rules.mapping.RulesBeanMapper;
-import org.openl.rules.mapping.composite.mapId.destination.DestLocDTO;
-import org.openl.rules.mapping.composite.mapId.source.SrcLocation;
+import org.openl.rules.mapping.composite.mapid.destination.DestLocDTO;
+import org.openl.rules.mapping.composite.mapid.source.SrcLocation;
 
 /**
  * @author kkachanovskiy@exigenservices.com
