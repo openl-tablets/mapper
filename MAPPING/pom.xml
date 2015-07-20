@@ -1,6 +1,5 @@
 <!-- This file is for releasing OpenL version with maven-release-plugin -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.openl.rules</groupId>
@@ -13,7 +12,7 @@
 	<groupId>org.openl.rules</groupId>
 	<artifactId>org.openl.rules.mapping.dev-pom</artifactId>
 	<packaging>pom</packaging>
-	<version>1.1.11-SNAPSHOT</version>
+	<version>1.1.11</version>
 	<name>OpenL - Rules - Mapping - General POM</name>
 	<description>Dev</description>
 
@@ -33,7 +32,8 @@
 	<scm>
 		<connection>scm:hg:${staging.hg.repo.url}</connection>
 		<developerConnection>scm:hg:${staging.hg.repo.url}</developerConnection>
-	</scm>
+	  <tag>release-1.1.11</tag>
+  </scm>
 
 	<reporting>
 		<plugins>
@@ -61,13 +61,11 @@
 
 								<cobertura-merge datafile="target\cobertura-merged-file.ser">
 									<fileset dir="..">
-										<include
-											name="org.openl.apache.poi.enhancements\target\cobertura\cobertura.ser" />
+										<include name="org.openl.apache.poi.enhancements\target\cobertura\cobertura.ser" />
 									</fileset>
 								</cobertura-merge>
 
-								<cobertura-report datafile="target\cobertura-merged-file.ser"
-									destdir="target\site\cobertura-summary">
+								<cobertura-report datafile="target\cobertura-merged-file.ser" destdir="target\site\cobertura-summary">
 									<fileset dir="..\org.openl.rules.mapping.dev.modified\src\">
 										<include name="**\*.java" />
 									</fileset>
