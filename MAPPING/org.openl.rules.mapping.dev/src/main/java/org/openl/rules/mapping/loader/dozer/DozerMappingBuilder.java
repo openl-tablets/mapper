@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
+import org.dozer.DozerEventListener;
 import org.dozer.FieldMappingCondition;
 import org.dozer.loader.api.BeanMappingBuilder;
 import org.dozer.loader.api.FieldDefinition;
@@ -118,6 +119,14 @@ public class DozerMappingBuilder {
         //
         mappingsContainer.getMappingBuilders().add(beanMappingBuilder);
     }
+    
+	public DozerMappingBuilder eventListeners(
+			List<DozerEventListener> eventListeners) {
+		if (eventListeners != null) {
+			mappingsContainer.getEventListeners().addAll(eventListeners);
+		}
+		return this;
+	}
 
     private FieldsMapping buildFieldMappping(FieldMap fieldMap) {
 
