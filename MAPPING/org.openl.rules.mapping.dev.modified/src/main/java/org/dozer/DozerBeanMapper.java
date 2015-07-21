@@ -221,7 +221,7 @@ public class DozerBeanMapper implements Mapper {
     }
 
     protected Mapper getMappingProcessor() {
-        log.info("OpenL Mapper Framework v. 1.1.12-SNAPSHOT (Dozer 5.3.2)");
+        log.info("OpenL Mapper Framework v. 1.1.12 (Dozer 5.3.2)");
 
         if (initializing.compareAndSet(false, true)) {
             try {
