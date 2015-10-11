@@ -1,6 +1,6 @@
 package org.openl.rules.mapping;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +60,7 @@ public class OpenLReflectionUtils {
         IOpenMethod bestMatch = null;
         Class<?>[] bestMatchParameterTypes = null;
         
-        List<IOpenMethod> methods = clazz.getMethods();
+        Collection<IOpenMethod> methods = clazz.getMethods();
         
         for (IOpenMethod m : methods) {
             if (m.getName().equals(methodName)) {
