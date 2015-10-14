@@ -92,6 +92,11 @@
 			<groupId>net.sf.dozer</groupId>
 			<artifactId>dozer</artifactId>
 		</dependency>
+		<dependency>
+			<!-- used inside the dozer -->
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-jxpath</groupId>
