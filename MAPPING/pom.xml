@@ -1,13 +1,6 @@
 <!-- This file is for releasing OpenL version with maven-release-plugin -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.openl.rules</groupId>
-		<artifactId>openl-tablets</artifactId>
-		<version>5.17.0-SNAPSHOT</version>
-		<relativePath />
-		<!-- Workaround to prevent warning. See: http://jira.codehaus.org/browse/MNG-4687 -->
-	</parent>
 
 	<groupId>org.openl.rules</groupId>
 	<artifactId>org.openl.rules.mapping.dev-pom</artifactId>
@@ -27,6 +20,8 @@
 
 	<properties>
 		<org.openl.version>5.17.0-SNAPSHOT</org.openl.version>
+		<org.slf4j.version>1.7.7</org.slf4j.version>
+		<org.springframework.version>4.1.5.RELEASE</org.springframework.version>
 	</properties>
 
 	<scm>
@@ -81,6 +76,12 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- Apache log4j, a logging library for Java -->
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.17</version>
+			</dependency>
 			<!-- The slf4j API -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -106,6 +107,35 @@
 				<version>2.6</version>
 			</dependency>
 
+			<!-- The Commons IO library contains utility classes, stream implementations, file filters,
+            file comparators, endian transformation classes, and much more. -->
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>2.4</version>
+			</dependency>
+
+			<!-- Apache Commons BeanUtils provides an easy-to-use but flexible wrapper around reflection and introspection. -->
+			<dependency>
+				<groupId>commons-beanutils</groupId>
+				<artifactId>commons-beanutils</artifactId>
+				<version>1.9.2</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<!-- Mock objects library for java -->
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-all</artifactId>
+				<version>1.10.19</version>
+				<scope>test</scope>
+			</dependency>
+
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
@@ -122,12 +152,6 @@
 			<dependency>
 				<groupId>org.openl.rules</groupId>
 				<artifactId>org.openl.rules.mapping.dev</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.openl.rules</groupId>
-				<artifactId>org.openl.rules.mapping.dev.plugin</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
