@@ -10,6 +10,12 @@
 	<artifactId>org.openl.rules.mapping.dev.modified.test</artifactId>
 	<name>Dozer Mapping - Modified - Test</name>
 	<description />
+
+	<properties>
+		<maven.deploy.skip>true</maven.deploy.skip>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
+	</properties>
+
 	<build>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<testResources>
@@ -36,23 +42,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<configuration>
-						<skip>true</skip>
-					</configuration>
-				</plugin>
-				<plugin>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<configuration>
-						<skip>true</skip>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 
 	<dependencies>
