@@ -85,7 +85,8 @@
                     <configuration>
                         <!-- To skip invalid HTML4 tags -->
                         <!-- http://openjdk.java.net/jeps/172 -->
-                        <additionalparam>-Xdoclint:none</additionalparam>
+                        <!-- commented because of jdk7 -->
+                        <!-- <additionalparam>-Xdoclint:none</additionalparam> -->
                         <skip>${maven.javadoc.skip}</skip>
                     </configuration>
                 </plugin>
