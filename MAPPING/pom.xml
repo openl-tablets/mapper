@@ -8,7 +8,15 @@
     <packaging>pom</packaging>
     <version>1.1.13-SNAPSHOT</version>
     <name>OpenL - Rules - Mapping - General POM</name>
-    <description>Dev</description>
+    <description>Mapper Framework</description>
+    <url>https://openl-tablets.org/mapper</url>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License</name>
+            <url>http://www.gnu.org/licenses/lgpl.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <modules>
         <module>org.openl.rules.mapping.dev.modified</module>
@@ -26,10 +34,35 @@
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>false</maven.javadoc.skip>
     </properties>
+    <developers>
+        <developer>
+            <id>YuryMolchan</id>
+            <name>Yury Molchan</name>
+            <email>ymolchan@eisgroup.com</email>
+            <organization>EIS</organization>
+            <organizationUrl>http://eisgroup.com</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+3</timezone>
+        </developer>
+        <developer>
+            <id>MaratKamalov</id>
+            <name>Marat Kamalov</name>
+            <email>mkamalov@eisgroup.com</email>
+            <organization>EIS</organization>
+            <organizationUrl>http://eisgroup.com</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+3</timezone>
+        </developer>
+    </developers>
 
     <scm>
         <connection>scm:hg:${staging.hg.repo.url}</connection>
         <developerConnection>scm:hg:${staging.hg.repo.url}</developerConnection>
+        <url>scm:git:git://github.com/openl-tablets/mapper.git</url>
         <tag>HEAD</tag>
     </scm>
 
