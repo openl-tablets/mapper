@@ -221,10 +221,10 @@ public class DozerBeanMapper implements Mapper {
     }
 
     protected Mapper getMappingProcessor() {
-        log.info("OpenL Mapper Framework v. 1.1.13-SNAPSHOT (Dozer 5.3.2)");
 
         if (initializing.compareAndSet(false, true)) {
             try {
+                log.info("OpenL Mapper Framework v. 1.1.13-SNAPSHOT (Dozer 5.3.2)");
                 loadCustomMappings();
                 eventManager = new DozerEventManager(eventListeners);
             } finally {
