@@ -14,9 +14,8 @@ import org.openl.message.OpenLMessage;
 import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.validation.MappingBeanValidator;
 import org.openl.rules.mapping.validation.OpenLDataBeanValidator;
-import org.openl.rules.runtime.ApiBasedRulesEngineFactory;
+import org.openl.rules.runtime.RulesEngineFactory;
 import org.openl.runtime.AOpenLEngineFactory;
-import org.openl.runtime.ASourceCodeEngineFactory;
 import org.openl.syntax.exception.CompositeOpenlException;
 import org.openl.syntax.exception.SyntaxNodeException;
 import org.openl.validation.IOpenLValidator;
@@ -122,10 +121,10 @@ public final class RulesBeanMapperFactory {
             boolean executionMode) {
 
         try {
-            ApiBasedRulesEngineFactory factory = initEngine(source, executionMode);
+			RulesEngineFactory factory = initEngine(source, executionMode);
 
             Class<?> instanceClass = factory.getInterfaceClass();
-            Object instance = factory.makeInstance();
+            Object instance = factory.newInstance();
 
             // Check that compilation process completed successfully.
             if (factory.getCompiledOpenClass().hasErrors()) {
@@ -251,7 +250,7 @@ public final class RulesBeanMapperFactory {
 
 		try {
 			File mappingConfiguration = FileExtractor.copyFileStream(source);
-			ApiBasedRulesEngineFactory factory = initEngine(mappingConfiguration, executionMode);
+			RulesEngineFactory factory = initEngine(mappingConfiguration, executionMode);
 
 			Class<?> instanceClass = factory.getInterfaceClass();
 			Object instance = factory.makeInstance();
@@ -292,9 +291,9 @@ public final class RulesBeanMapperFactory {
      * @param executionMode execution mode flag
      * @return rules engine instance
      */
-    public static ApiBasedRulesEngineFactory initEngine(File source, boolean executionMode) {
-        
-        ApiBasedRulesEngineFactory factory = new ApiBasedRulesEngineFactory(source);
+    public static RulesEngineFactory initEngine(File source, boolean executionMode) {
+
+		RulesEngineFactory factory = new RulesEngineFactory(source);
         factory.setExecutionMode(executionMode);
 
         ICompileContext compileContext = factory.getOpenL().getCompileContext();
@@ -319,7 +318,7 @@ public final class RulesBeanMapperFactory {
         factory.getOpenL().getCompileContext().addValidator(validator);
     }
 
-    private static TypeResolver getTypeResolver(ASourceCodeEngineFactory factory) {
+    private static TypeResolver getTypeResolver(RulesEngineFactory factory) {
         return OpenLReflectionUtils.getTypeResolver(factory.getSourceCode().getUri(0), factory.getUserContext());
     }
 }

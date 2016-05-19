@@ -23,7 +23,7 @@ import org.openl.rules.mapping.plugin.serialize.MessageSerializer;
 import org.openl.rules.mapping.plugin.serialize.xml.XmlWriter;
 import org.openl.rules.mapping.plugin.util.AdaptorUtils;
 import org.openl.rules.mapping.plugin.util.ClassUtils;
-import org.openl.rules.runtime.ApiBasedRulesEngineFactory;
+import org.openl.rules.runtime.RulesEngineFactory;
 import org.openl.types.IOpenClass;
 import org.openl.types.java.OpenClassHelper;
 
@@ -88,7 +88,7 @@ public class PluginAdaptor {
 
         try {
             // Compile OpenL project.
-            ApiBasedRulesEngineFactory engine = RulesBeanMapperFactory.initEngine(source, false);
+            RulesEngineFactory engine = RulesBeanMapperFactory.initEngine(source, false);
             CompiledOpenClass compiledOpenClass = engine.getCompiledOpenClass();
 
             // Get info about types and compilation messages.
