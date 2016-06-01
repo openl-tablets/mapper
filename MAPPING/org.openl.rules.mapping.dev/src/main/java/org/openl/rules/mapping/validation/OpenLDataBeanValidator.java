@@ -22,7 +22,6 @@ import org.openl.types.IOpenClass;
 import org.openl.validation.IOpenLValidator;
 import org.openl.validation.ValidationResult;
 import org.openl.validation.ValidationStatus;
-import org.openl.validation.ValidationUtils;
 
 /**
  * The base implementation of {@link IOpenLValidator} which can be used to
@@ -67,13 +66,13 @@ public abstract class OpenLDataBeanValidator<T> implements IOpenLValidator {
                 return new ValidationResult(ValidationStatus.FAIL, validationMessages);
             }
 
-            return ValidationUtils.validationSuccess();
+            return new ValidationResult(ValidationStatus.SUCCESS, null);
         }
 
         // Skip validation if passed open class is not instance of
         // XlsModuleOpenClass.
         //
-        return ValidationUtils.validationSuccess();
+        return new ValidationResult(ValidationStatus.SUCCESS, null);
     }
 
     private ValidationResult validateDataNode(TableSyntaxNode node, IOpenClass openClass) {
@@ -103,7 +102,7 @@ public abstract class OpenLDataBeanValidator<T> implements IOpenLValidator {
             return failedValidationResult;
         }
 
-        return ValidationUtils.validationSuccess();
+        return new ValidationResult(ValidationStatus.SUCCESS, null);
     }
 
     private List<SyntaxNodeException> prepareErrorsList(BeanValidationResult result, int beanIndex,
