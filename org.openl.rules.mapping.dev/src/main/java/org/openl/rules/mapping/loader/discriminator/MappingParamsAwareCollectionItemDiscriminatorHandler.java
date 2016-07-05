@@ -2,7 +2,7 @@ package org.openl.rules.mapping.loader.discriminator;
 
 import java.lang.reflect.Method;
 
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 import org.openl.rules.mapping.loader.ProxyMethodHandler;
 
 class MappingParamsAwareCollectionItemDiscriminatorHandler extends ProxyMethodHandler {

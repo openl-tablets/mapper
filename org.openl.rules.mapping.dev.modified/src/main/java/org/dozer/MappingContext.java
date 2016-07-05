@@ -1,5 +1,7 @@
 package org.dozer;
 
+import org.openl.rules.mapping.MappingParameters;
+
 /**
  * The class that represents context of mapping process. Intended to satisfy
  * user needs to change mapping business logic at runtime.

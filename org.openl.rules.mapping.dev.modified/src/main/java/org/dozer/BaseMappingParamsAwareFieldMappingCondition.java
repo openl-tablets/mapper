@@ -1,5 +1,7 @@
 package org.dozer;
 
+import org.openl.rules.mapping.MappingParameters;
+
 /**
  * The base implementation of {@link MappingParamsAwareFieldMappingCondition}
  * interface. Current implementation prevents raise condition problem and

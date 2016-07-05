@@ -1,6 +1,6 @@
 package org.openl.rules.mapping.loader.condition;
 
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 
 /**
  * Defines contract of supported condition method signatures.

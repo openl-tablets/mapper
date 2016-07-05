@@ -1,6 +1,6 @@
 package org.openl.rules.mapping.to;
 
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 import org.dozer.factory.BaseMappingParamsAwareBeanFactory;
 import org.openl.rules.mapping.to.inheritance.ChildE;
 

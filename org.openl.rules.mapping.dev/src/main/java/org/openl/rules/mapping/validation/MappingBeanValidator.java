@@ -9,7 +9,7 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 import org.dozer.util.MappingUtils;
 import org.openl.rules.mapping.Mapping;
 import org.openl.rules.mapping.OpenLReflectionUtils;

@@ -1,4 +1,4 @@
-package org.dozer;
+package org.openl.rules.mapping;
 
 import java.util.HashMap;
 import java.util.Map;

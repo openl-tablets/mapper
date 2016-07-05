@@ -1,6 +1,6 @@
 package org.dozer.factory;
 
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 
 /**
  * @author Dmitry Buzdin

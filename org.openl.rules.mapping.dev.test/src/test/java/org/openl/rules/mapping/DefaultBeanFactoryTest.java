@@ -1,7 +1,5 @@
 package org.openl.rules.mapping;
 
-import org.dozer.MappingContext;
-import org.dozer.MappingParameters;
 import org.junit.Test;
 import org.openl.rules.mapping.to.B;
 import org.openl.rules.mapping.to.C;
@@ -9,7 +7,6 @@ import org.openl.rules.mapping.to.E;
 import org.openl.rules.mapping.to.inheritance.ChildE;
 
 import java.io.File;
-import java.io.InputStream;
 
 import static org.junit.Assert.assertEquals;
 

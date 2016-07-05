@@ -1,20 +1,11 @@
 package org.openl.rules.mapping;
 
 import org.dozer.*;
-import org.dozer.Mapping;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openl.rules.mapping.to.*;
-import org.openl.rules.mapping.to.xmlbeans.PurchaseOrderTO;
-import org.openuri.easypo.Customer;
-import org.openuri.easypo.LineItem;
-import org.openuri.easypo.PurchaseOrderDocument;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 

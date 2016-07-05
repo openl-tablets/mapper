@@ -15,7 +15,6 @@ import org.dozer.BaseMappingParamsAwareFieldMappingCondition;
 import org.dozer.CustomConverter;
 import org.dozer.FieldMappingCondition;
 import org.dozer.MappingContext;
-import org.dozer.MappingParameters;
 import org.junit.Test;
 import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.B;

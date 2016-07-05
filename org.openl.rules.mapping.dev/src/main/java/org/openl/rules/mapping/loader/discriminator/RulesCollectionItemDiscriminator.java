@@ -1,6 +1,6 @@
 package org.openl.rules.mapping.loader.discriminator;
 
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 
 public interface RulesCollectionItemDiscriminator {
 

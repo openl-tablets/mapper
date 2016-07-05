@@ -1,11 +1,8 @@
 package org.openl.rules.mapping.to;
 
 import org.dozer.BaseMappingParamsAwareCustomConverter;
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 import org.dozer.MappingParentObjects;
-
-import java.util.List;
-import java.util.Stack;
 
 public class ParentAccessCustomConverter extends BaseMappingParamsAwareCustomConverter{
 	@Override

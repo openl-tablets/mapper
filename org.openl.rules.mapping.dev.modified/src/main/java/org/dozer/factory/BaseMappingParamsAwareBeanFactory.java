@@ -1,7 +1,7 @@
 package org.dozer.factory;
 
 import org.dozer.BeanFactory;
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 import org.dozer.MappingParamsAware;
 
 public abstract class BaseMappingParamsAwareBeanFactory implements MappingParamsAware, BeanFactory {

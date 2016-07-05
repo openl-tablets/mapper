@@ -1,7 +1,7 @@
 package org.openl.rules.mapping.loader.converter;
 
 import org.dozer.CustomConverter;
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 import org.dozer.MappingParamsAware;
 
 /**

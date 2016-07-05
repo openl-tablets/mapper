@@ -1,5 +1,7 @@
 package org.dozer;
 
+import org.openl.rules.mapping.MappingParameters;
+
 /**
  * @author: SStrukau
  */

@@ -1,7 +1,7 @@
 package org.openl.rules.mapping.loader.discriminator;
 
 import org.dozer.CollectionItemDiscriminator;
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 import org.dozer.MappingParamsAware;
 
 public class CollectionItemDiscriminatorWrapper implements MappingParamsAware, CollectionItemDiscriminator {

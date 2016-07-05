@@ -20,7 +20,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.dozer.BeanFactory;
 import org.dozer.MappingException;
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 import org.dozer.MappingParamsAware;
 import org.dozer.config.BeanContainer;
 import org.dozer.util.DozerClassLoader;

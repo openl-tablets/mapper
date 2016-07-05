@@ -1,7 +1,7 @@
 package org.openl.rules.mapping.loader.condition;
 
 import org.dozer.FieldMappingCondition;
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 import org.dozer.MappingParamsAware;
 
 /**

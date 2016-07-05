@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.InputStream;
 
 import org.dozer.MappingContext;
-import org.dozer.MappingParameters;
 import org.junit.Test;
 import org.openl.rules.mapping.to.B;
 import org.openl.rules.mapping.to.C;

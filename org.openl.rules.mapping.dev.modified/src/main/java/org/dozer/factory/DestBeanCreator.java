@@ -18,7 +18,7 @@ package org.dozer.factory;
 import java.util.Map;
 
 import org.dozer.BeanFactory;
-import org.dozer.MappingParameters;
+import org.openl.rules.mapping.MappingParameters;
 import org.dozer.util.MappingUtils;
 
 /**
