@@ -36,7 +36,7 @@ public class FieldDefinition {
     private boolean required;
     private String defaultValue;
     private String dateFormat;
-    
+
     private String hint;
     private String deepHint;
     private boolean iterate;
@@ -122,7 +122,7 @@ public class FieldDefinition {
         this.setMethod = setMethod;
         return this;
     }
-    
+
     public FieldDefinition hint(final Class<?>... types) {
         this.hint = ReflectionUtils.mergeTypeNames(types);
         return this;

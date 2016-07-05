@@ -50,7 +50,7 @@ public final class TypeMappingOptions {
     }
 
     public static TypeMappingOption mapEmptyStrings() {
-      return mapEmptyStrings(true);
+        return mapEmptyStrings(true);
     }
 
     public static TypeMappingOption mapEmptyStrings(final boolean value) {
@@ -76,7 +76,7 @@ public final class TypeMappingOptions {
             }
         };
     }
-    
+
     public static TypeMappingOption relationshipType(final RelationshipType value) {
         return new TypeMappingOption() {
             public void apply(DozerBuilder.MappingBuilder fieldMappingBuilder) {
@@ -86,7 +86,7 @@ public final class TypeMappingOptions {
     }
 
     public static TypeMappingOption stopOnErrors() {
-      return stopOnErrors(true);
+        return stopOnErrors(true);
     }
 
     public static TypeMappingOption stopOnErrors(final boolean value) {
@@ -98,7 +98,7 @@ public final class TypeMappingOptions {
     }
 
     public static TypeMappingOption trimStrings() {
-      return trimStrings(true);
+        return trimStrings(true);
     }
 
     public static TypeMappingOption trimStrings(final boolean value) {

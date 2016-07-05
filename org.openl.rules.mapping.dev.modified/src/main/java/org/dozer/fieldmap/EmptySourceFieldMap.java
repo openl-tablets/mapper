@@ -11,7 +11,7 @@ public class EmptySourceFieldMap extends FieldMap {
     public EmptySourceFieldMap(ClassMap classMap) {
         super(classMap);
     }
-    
+
     @Override
     public void validate() {
         if (getDestField() == null) {
@@ -24,7 +24,9 @@ public class EmptySourceFieldMap extends FieldMap {
         DozerPropertyDescriptor result = getSrcPropertyDescriptorMap().get(runtimeSrcClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeSrcClass,
-                getClassMap(), getSrcField(), getDestField());
+                getClassMap(),
+                getSrcField(),
+                getDestField());
             getSrcPropertyDescriptorMap().putIfAbsent(runtimeSrcClass, descriptor);
             result = descriptor;
         }

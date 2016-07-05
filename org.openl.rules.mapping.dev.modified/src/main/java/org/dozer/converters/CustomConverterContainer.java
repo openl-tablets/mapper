@@ -61,7 +61,7 @@ public class CustomConverterContainer {
     }
 
     private CustomConverterDescription findConverter(Class<?> src, Class<?> dest) {
-        // Otherwise, loop through custom converters and look for a match. 
+        // Otherwise, loop through custom converters and look for a match.
         //
         for (CustomConverterDescription customConverter : converters) {
             final Class<?> classA = ClassUtils.primitiveToWrapper(customConverter.getClassA());
@@ -73,12 +73,12 @@ public class CustomConverterContainer {
             // in the converter mapping xml.
             // we also to check to see if it is assignable to either. We then
             // perform these checks in the other direction for classB
-            if ((classA.isAssignableFrom(dest) && classB.isAssignableFrom(src)) || (classA.isAssignableFrom(src) && classB
-                .isAssignableFrom(dest))) {
+            if ((classA.isAssignableFrom(dest) && classB.isAssignableFrom(src)) || (classA
+                .isAssignableFrom(src) && classB.isAssignableFrom(dest))) {
                 return customConverter;
             }
         }
-     
+
         return null;
     }
 

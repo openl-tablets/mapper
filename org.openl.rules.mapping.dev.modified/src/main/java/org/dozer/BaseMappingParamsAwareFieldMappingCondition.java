@@ -33,7 +33,10 @@ public abstract class BaseMappingParamsAwareFieldMappingCondition implements Map
      * @return <code>true</code> if field should be processed by mapper;
      *         <code>false</code> - otherwise
      */
-    public abstract boolean mapField(MappingParameters params, Object sourceFieldValue, Object destFieldValue,
-        Class<?> sourceType, Class<?> destType);
+    public abstract boolean mapField(MappingParameters params,
+            Object sourceFieldValue,
+            Object destFieldValue,
+            Class<?> sourceType,
+            Class<?> destType);
 
 }

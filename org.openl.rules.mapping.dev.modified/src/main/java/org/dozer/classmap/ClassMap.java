@@ -62,9 +62,13 @@ public class ClassMap {
         return fieldMaps;
     }
 
+    public void setFieldMaps(List<FieldMap> fieldMaps) {
+        this.fieldMaps = fieldMaps;
+    }
+
     public boolean isStopOnErrors() {
-        return stopOnErrors != null ? stopOnErrors.booleanValue() : globalConfiguration.getStopOnErrors()
-            .booleanValue();
+        return stopOnErrors != null ? stopOnErrors.booleanValue()
+                                    : globalConfiguration.getStopOnErrors().booleanValue();
     }
 
     public void setStopOnErrors(Boolean stopOnErrors) {
@@ -78,7 +82,7 @@ public class ClassMap {
     public void setTrimStrings(Boolean trimStrings) {
         this.trimStrings = trimStrings;
     }
-    
+
     public Boolean isMapNull() {
         return mapNull != null ? mapNull.booleanValue() : globalConfiguration.getMapNulls().booleanValue();
     }
@@ -88,7 +92,8 @@ public class ClassMap {
     }
 
     public Boolean isMapEmptyString() {
-        return mapEmptyString != null ? mapEmptyString.booleanValue() : globalConfiguration.getMapEmptyStrings().booleanValue();
+        return mapEmptyString != null ? mapEmptyString.booleanValue()
+                                      : globalConfiguration.getMapEmptyStrings().booleanValue();
     }
 
     public void setMapEmptyString(Boolean mapEmptyString) {
@@ -96,7 +101,8 @@ public class ClassMap {
     }
 
     public Boolean isRequiredFields() {
-        return requiredFields != null ? requiredFields.booleanValue() : globalConfiguration.getRequiredFields().booleanValue();
+        return requiredFields != null ? requiredFields.booleanValue()
+                                      : globalConfiguration.getRequiredFields().booleanValue();
     }
 
     public void setRequiredFields(Boolean requiredFields) {
@@ -136,7 +142,7 @@ public class ClassMap {
             }
 
             String alternateFieldName = StringUtils.EMPTY;
-            
+
             if (!MappingUtils.isBlankOrNull(fieldName)) {
                 alternateFieldName = provideAlternateName(fieldName);
             }
@@ -151,7 +157,7 @@ public class ClassMap {
             // happen, but check just in case since the use case
             // doesnt actually error out. It just double maps which is a problem
             // when the data type is a Collections.
-            
+
             // Added new one check for destFieldName value. In case of
             // destFieldName is started with upper-case letter and fieldName
             // value is started with lower-case letter we get double mapping for
@@ -178,23 +184,19 @@ public class ClassMap {
             for (FieldMap fieldMap : fieldMaps) {
                 String fieldName = fieldMap.getSrcFieldName();
                 String alternateFieldName = StringUtils.EMPTY;
-                
+
                 if (!MappingUtils.isBlankOrNull(fieldName)) {
                     alternateFieldName = provideAlternateName(fieldName);
                 }
 
-                if (fieldName != null && (fieldName.equals(srcFieldName) || alternateFieldName.equals(srcFieldName) 
-                        || alternateFieldName.equals(provideAlternateName(srcFieldName)))) {
+                if (fieldName != null && (fieldName.equals(srcFieldName) || alternateFieldName
+                    .equals(srcFieldName) || alternateFieldName.equals(provideAlternateName(srcFieldName)))) {
                     result = fieldMap;
                     break;
                 }
             }
         }
         return result;
-    }
-
-    public void setFieldMaps(List<FieldMap> fieldMaps) {
-        this.fieldMaps = fieldMaps;
     }
 
     public void addFieldMapping(FieldMap fieldMap) {
@@ -254,7 +256,8 @@ public class ClassMap {
     }
 
     public boolean isDestMapEmptyString() {
-        return destClass.getMapEmptyString() != null ? destClass.getMapEmptyString().booleanValue() : isMapEmptyString();
+        return destClass.getMapEmptyString() != null ? destClass.getMapEmptyString().booleanValue()
+                                                     : isMapEmptyString();
     }
 
     public boolean isSrcMapEmptyString() {
@@ -297,6 +300,10 @@ public class ClassMap {
         return destClass.getCreateMethod();
     }
 
+    public void setDestClassCreateMethod(String createMethod) {
+        destClass.setCreateMethod(createMethod);
+    }
+
     public String getSrcClassCreateMethod() {
         return srcClass.getCreateMethod();
     }
@@ -305,24 +312,12 @@ public class ClassMap {
         srcClass.setCreateMethod(createMethod);
     }
 
-    public void setDestClassCreateMethod(String createMethod) {
-        destClass.setCreateMethod(createMethod);
-    }
-
     public boolean isDestClassMapTypeCustomGetterSetter() {
         return destClass.isMapTypeCustomGetterSetterClass();
     }
 
     public boolean isSrcClassMapTypeCustomGetterSetter() {
         return srcClass.isMapTypeCustomGetterSetterClass();
-    }
-
-    public void setSrcClass(DozerClass srcClass) {
-        this.srcClass = srcClass;
-    }
-
-    public void setDestClass(DozerClass destClass) {
-        this.destClass = destClass;
     }
 
     public String getDestClassName() {
@@ -373,20 +368,30 @@ public class ClassMap {
         this.relationshipType = relationshipType;
     }
 
-  public DozerClass getSrcClass() {
-    return srcClass;
-  }
+    public DozerClass getSrcClass() {
+        return srcClass;
+    }
 
-  public DozerClass getDestClass() {
-    return destClass;
-  }
+    public void setSrcClass(DozerClass srcClass) {
+        this.srcClass = srcClass;
+    }
+
+    public DozerClass getDestClass() {
+        return destClass;
+    }
+
+    public void setDestClass(DozerClass destClass) {
+        this.destClass = destClass;
+    }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("source class", getSrcClassName())
-            .append("destination class", getDestClassName()).append("map-id", mapId).toString();
+            .append("destination class", getDestClassName())
+            .append("map-id", mapId)
+            .toString();
     }
-    
+
     public ClassMap copyOf() {
         ClassMap copy = new ClassMap(this.globalConfiguration);
         copy.setSrcClass(srcClass);

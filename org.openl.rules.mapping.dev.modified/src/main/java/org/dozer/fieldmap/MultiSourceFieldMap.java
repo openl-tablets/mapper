@@ -47,22 +47,33 @@ public class MultiSourceFieldMap extends FieldMap {
         DozerPropertyDescriptor result = getSrcPropertyDescriptorMap().get(runtimeSrcClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeSrcClass,
-                getClassMap(), getSrc(), getDestField());
+                getClassMap(),
+                getSrc(),
+                getDestField());
             getSrcPropertyDescriptorMap().putIfAbsent(runtimeSrcClass, descriptor);
             result = descriptor;
         }
         return result;
     }
-    
+
     @Override
     public DozerPropertyDescriptor getDestPropertyDescriptor(Class<?> runtimeDestClass) {
         DozerPropertyDescriptor result = getDestPropertyDescriptorMap().get(runtimeDestClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeDestClass,
-                getDestFieldTheGetMethod(), getDestFieldTheSetMethod(), getDestFieldMapGetMethod(),
-                getDestFieldMapSetMethod(), isDestFieldAccessible(), isDestFieldIndexed(), getDestFieldIndex(),
-                getDestFieldName(), getDestFieldKey(), isDestSelfReferencing(), getSrcFieldName(),
-                getDestDeepIndexHintContainer(), getClassMap().getDestClassBeanFactory());
+                getDestFieldTheGetMethod(),
+                getDestFieldTheSetMethod(),
+                getDestFieldMapGetMethod(),
+                getDestFieldMapSetMethod(),
+                isDestFieldAccessible(),
+                isDestFieldIndexed(),
+                getDestFieldIndex(),
+                getDestFieldName(),
+                getDestFieldKey(),
+                isDestSelfReferencing(),
+                getSrcFieldName(),
+                getDestDeepIndexHintContainer(),
+                getClassMap().getDestClassBeanFactory());
 
             getDestPropertyDescriptorMap().putIfAbsent(runtimeDestClass, descriptor);
             result = descriptor;
@@ -86,7 +97,17 @@ public class MultiSourceFieldMap extends FieldMap {
     }
 
     @Override
+    public void setSrcDeepIndexHintContainer(HintContainer srcDeepIndexHint) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     protected DozerField getSrcField() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSrcField(DozerField sourceField) {
         throw new UnsupportedOperationException();
     }
 
@@ -141,6 +162,11 @@ public class MultiSourceFieldMap extends FieldMap {
     }
 
     @Override
+    public void setSrcHintContainer(HintContainer sourceHint) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean isSrcFieldAccessible() {
         throw new UnsupportedOperationException();
     }
@@ -156,34 +182,26 @@ public class MultiSourceFieldMap extends FieldMap {
     }
 
     @Override
-    public void setSrcDeepIndexHintContainer(HintContainer srcDeepIndexHint) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setSrcField(DozerField sourceField) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setSrcHintContainer(HintContainer sourceHint) {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
     public MappingDirection getType() {
         return MappingDirection.ONE_WAY;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("source field", src).append(
-            "destination field", getDestField()).append("type", getType()).append("customConverter",
-            getCustomConverter()).append("relationshipType", getRelationshipType()).append("removeOrphans",
-            isRemoveOrphans()).append("mapId", getMapId()).append("copyByReference", isCopyByReference()).append(
-            "copyByReferenceOveridden", isCopyByReferenceOveridden()).append("srcTypeHint", getSrcHintContainer())
-            .append("destTypeHint", getDestHintContainer()).append("mapCondition", getMappingCondition()).append(
-                "mapConditionId", getMappingConditionId()).toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("source field", src)
+            .append("destination field", getDestField())
+            .append("type", getType())
+            .append("customConverter", getCustomConverter())
+            .append("relationshipType", getRelationshipType())
+            .append("removeOrphans", isRemoveOrphans())
+            .append("mapId", getMapId())
+            .append("copyByReference", isCopyByReference())
+            .append("copyByReferenceOveridden", isCopyByReferenceOveridden())
+            .append("srcTypeHint", getSrcHintContainer())
+            .append("destTypeHint", getDestHintContainer())
+            .append("mapCondition", getMappingCondition())
+            .append("mapConditionId", getMappingConditionId())
+            .toString();
     }
 
 }

@@ -30,23 +30,24 @@ public abstract class BeanMappingBuilder extends MappingOptions {
     public BeanMappingBuilder() {
     }
 
-  /**
-   * For internal use
-   * @return mappings created with given builder
-   */
+    /**
+     * For internal use
+     * 
+     * @return mappings created with given builder
+     */
     public MappingFileData build() {
         dozerBuilder = new DozerBuilder();
         configure();
         return dozerBuilder.build();
     }
-    
+
     public BeanMappingBuilder config(ConfigurationMappingOption... configMappingOption) {
         DozerBuilder.ConfigurationBuilder configBuilder = dozerBuilder.configuration();
-        
+
         for (ConfigurationMappingOption option : configMappingOption) {
             option.apply(configBuilder);
         }
-        
+
         return this;
     }
 
@@ -74,8 +75,9 @@ public abstract class BeanMappingBuilder extends MappingOptions {
         return mapping(new TypeDefinition(typeA), typeB, typeMappingOption);
     }
 
-    public TypeMappingBuilder mapping(TypeDefinition typeA, TypeDefinition typeB,
-        TypeMappingOption... typeMappingOption) {
+    public TypeMappingBuilder mapping(TypeDefinition typeA,
+            TypeDefinition typeB,
+            TypeMappingOption... typeMappingOption) {
         DozerBuilder.MappingBuilder mappingBuilder = dozerBuilder.mapping();
         DozerBuilder.ClassDefinitionBuilder typeBuilderA = mappingBuilder.classA(typeA.getName());
         DozerBuilder.ClassDefinitionBuilder typeBuilderB = mappingBuilder.classB(typeB.getName());
@@ -108,7 +110,7 @@ public abstract class BeanMappingBuilder extends MappingOptions {
         }
 
         FieldDefinition[] definitions = new FieldDefinition[names.length];
-        
+
         for (int i = 0; i < names.length; i++) {
             String name = names[i];
             definitions[i] = new FieldDefinition(name);
@@ -116,7 +118,7 @@ public abstract class BeanMappingBuilder extends MappingOptions {
 
         return definitions;
     }
-    
+
     public FieldDefinition this_() {
         return new FieldDefinition(DozerConstants.SELF_KEYWORD);
     }

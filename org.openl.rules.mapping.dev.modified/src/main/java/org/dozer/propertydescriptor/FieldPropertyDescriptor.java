@@ -15,15 +15,15 @@
  */
 package org.dozer.propertydescriptor;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+
 import org.dozer.factory.DestBeanCreator;
 import org.dozer.fieldmap.FieldMap;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.util.DozerConstants;
 import org.dozer.util.MappingUtils;
 import org.dozer.util.ReflectionUtils;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 
 /**
  * Internal class that directly accesses the field via reflection. The
@@ -38,8 +38,11 @@ public class FieldPropertyDescriptor extends AbstractPropertyDescriptor {
 
     private final DozerPropertyDescriptor[] descriptorChain;
 
-    public FieldPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, String index,
-        HintContainer deepIndexHintContainer) {
+    public FieldPropertyDescriptor(Class<?> clazz,
+            String fieldName,
+            boolean isIndexed,
+            String index,
+            HintContainer deepIndexHintContainer) {
         super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
 
         String[] tokens = fieldName.split(DozerConstants.DEEP_FIELD_DELIMITER_REGEXP);
@@ -144,12 +147,15 @@ public class FieldPropertyDescriptor extends AbstractPropertyDescriptor {
             try {
                 if (indexed) {
                     Object existingValue = field.get(bean);
-                    
+
                     if (!MappingUtils.isSimpleCollectionIndex(index)) {
-                        MappingUtils.throwMappingException("Destinaiton field path should not contain filter expressions");
+                        MappingUtils
+                            .throwMappingException("Destinaiton field path should not contain filter expressions");
                     }
-                    
-                    Object collection = MappingUtils.prepareIndexedCollection(getPropertyType(), existingValue, value,
+
+                    Object collection = MappingUtils.prepareIndexedCollection(getPropertyType(),
+                        existingValue,
+                        value,
                         MappingUtils.getCollectionIndex(index));
                     field.set(bean, collection);
                 } else {

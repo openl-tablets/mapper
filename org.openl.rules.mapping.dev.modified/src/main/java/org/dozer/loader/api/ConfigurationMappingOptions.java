@@ -38,7 +38,7 @@ public class ConfigurationMappingOptions {
             }
         };
     }
-    
+
     public static ConfigurationMappingOption mapNulls(final Boolean value) {
         return new ConfigurationMappingOption() {
             public void apply(ConfigurationBuilder configBuilder) {
@@ -63,7 +63,6 @@ public class ConfigurationMappingOptions {
         };
     }
 
-
     public static ConfigurationMappingOption relationshipType(final RelationshipType value) {
         return new ConfigurationMappingOption() {
             public void apply(ConfigurationBuilder configBuilder) {
@@ -81,7 +80,8 @@ public class ConfigurationMappingOptions {
     }
 
     public static ConfigurationMappingOption customConverter(final Class<? extends CustomConverter> type,
-        final Class<?> aClass, final Class<?> bClass) {
+            final Class<?> aClass,
+            final Class<?> bClass) {
         return new ConfigurationMappingOption() {
             public void apply(ConfigurationBuilder configBuilder) {
                 CustomConverterBuilder customConverterBuilder = configBuilder.customConverter(type);
@@ -91,8 +91,9 @@ public class ConfigurationMappingOptions {
         };
     }
 
-    public static ConfigurationMappingOption customConverter(final CustomConverter converter, final Class<?> aClass,
-        final Class<?> bClass) {
+    public static ConfigurationMappingOption customConverter(final CustomConverter converter,
+            final Class<?> aClass,
+            final Class<?> bClass) {
         return new ConfigurationMappingOption() {
             public void apply(ConfigurationBuilder configBuilder) {
                 CustomConverterBuilder customConverterBuilder = configBuilder.customConverter(converter);

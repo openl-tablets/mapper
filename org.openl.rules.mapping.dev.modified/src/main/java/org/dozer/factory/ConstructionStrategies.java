@@ -1,19 +1,5 @@
 package org.dozer.factory;
 
-import org.dozer.BeanFactory;
-import org.dozer.MappingException;
-import org.dozer.MappingParameters;
-import org.dozer.MappingParamsAware;
-import org.dozer.config.BeanContainer;
-import org.dozer.util.DozerClassLoader;
-import org.dozer.util.MappingUtils;
-import org.dozer.util.ReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,6 +13,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.dozer.BeanFactory;
+import org.dozer.MappingException;
+import org.dozer.MappingParameters;
+import org.dozer.MappingParamsAware;
+import org.dozer.config.BeanContainer;
+import org.dozer.util.DozerClassLoader;
+import org.dozer.util.MappingUtils;
+import org.dozer.util.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Dmitry Buzdin
@@ -144,17 +145,18 @@ public final class ConstructionStrategies {
             if (factory == null) {
                 Class<?> factoryClass = MappingUtils.loadClass(factoryName);
                 if (!BeanFactory.class.isAssignableFrom(factoryClass)) {
-                    MappingUtils.throwMappingException("Custom bean factory must implement " + BeanFactory.class.getName() + " interface : " + factoryClass);
+                    MappingUtils.throwMappingException("Custom bean factory must implement " + BeanFactory.class
+                        .getName() + " interface : " + factoryClass);
                 }
                 factory = (BeanFactory) ReflectionUtils.newInstance(factoryClass);
                 // put the created factory in our factory map
                 factoryCache.put(factoryName, factory);
             }
-            
+
             if (factory instanceof MappingParamsAware) {
                 ((MappingParamsAware) factory).setMappingParams(params);
             }
-            
+
             Object result = factory.createBean(directive.getSrcObject(), directive.getSrcClass(), beanId);
 
             log.debug("Bean instance created with custom factory -->\n  Bean Type: {}\n  Factory Name: {}",
@@ -162,7 +164,9 @@ public final class ConstructionStrategies {
                 factoryName);
 
             if (!classToCreate.isAssignableFrom(result.getClass())) {
-                MappingUtils.throwMappingException("Custom bean factory (" + factory.getClass() + ") did not return correct type of destination data object. Expected : " + classToCreate + ", Actual : " + result.getClass());
+                MappingUtils.throwMappingException("Custom bean factory (" + factory
+                    .getClass() + ") did not return correct type of destination data object. Expected : " + classToCreate + ", Actual : " + result
+                        .getClass());
             }
             return result;
         }
@@ -183,7 +187,7 @@ public final class ConstructionStrategies {
         public Object create(MappingParameters params, BeanCreationDirective directive) {
             Class<?> actualClass = directive.getActualClass();
             if (Map.class.equals(actualClass)) {
-                return new HashMap<Object,Object>();
+                return new HashMap<Object, Object>();
             } else if (List.class.equals(actualClass)) {
                 return new ArrayList<Object>();
             } else if (Set.class.equals(actualClass)) {
@@ -233,25 +237,6 @@ public final class ConstructionStrategies {
 
     static class ByConstructor implements BeanCreationStrategy {
 
-        public boolean isApplicable(BeanCreationDirective directive) {
-            return true;
-        }
-
-        public Object create(MappingParameters params, BeanCreationDirective directive) {
-            Class<?> classToCreate = directive.getActualClass();
-
-            try {
-                return newInstance(classToCreate);
-            } catch (Exception e) {
-                if (directive.getAlternateClass() != null) {
-                    return newInstance(directive.getAlternateClass());
-                } else {
-                    MappingUtils.throwMappingException(e);
-                }
-            }
-            return null;
-        }
-
         private static <T> T newInstance(Class<T> clazz) {
             // Create using public or private no-arg constructor
             Constructor<T> constructor = null;
@@ -264,7 +249,8 @@ public final class ConstructionStrategies {
             }
 
             if (constructor == null) {
-                MappingUtils.throwMappingException("Could not create a new instance of the dest object: " + clazz + ".  Could not find a no-arg constructor for this class.");
+                MappingUtils.throwMappingException(
+                    "Could not create a new instance of the dest object: " + clazz + ".  Could not find a no-arg constructor for this class.");
             }
 
             // If private, make it accessible
@@ -285,6 +271,25 @@ public final class ConstructionStrategies {
                 MappingUtils.throwMappingException(e);
             }
             return result;
+        }
+
+        public boolean isApplicable(BeanCreationDirective directive) {
+            return true;
+        }
+
+        public Object create(MappingParameters params, BeanCreationDirective directive) {
+            Class<?> classToCreate = directive.getActualClass();
+
+            try {
+                return newInstance(classToCreate);
+            } catch (Exception e) {
+                if (directive.getAlternateClass() != null) {
+                    return newInstance(directive.getAlternateClass());
+                } else {
+                    MappingUtils.throwMappingException(e);
+                }
+            }
+            return null;
         }
 
     }

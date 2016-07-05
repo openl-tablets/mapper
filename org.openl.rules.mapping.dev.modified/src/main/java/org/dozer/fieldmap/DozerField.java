@@ -63,6 +63,10 @@ public class DozerField implements Cloneable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDateFormat() {
         return dateFormat;
     }
@@ -144,10 +148,6 @@ public class DozerField implements Cloneable {
 
     public void setIndexed(boolean isIndexed) {
         this.indexed = isIndexed;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public boolean isRequired() {

@@ -15,7 +15,15 @@
  */
 package org.dozer;
 
-import org.apache.commons.logging.Log;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.dozer.cache.CacheManager;
 import org.dozer.cache.DozerCacheManager;
 import org.dozer.cache.DozerCacheType;
@@ -34,11 +42,6 @@ import org.dozer.stats.StatisticsInterceptor;
 import org.dozer.stats.StatisticsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Proxy;
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Public Dozer Mapper implementation. This should be used/defined as a
@@ -73,23 +76,19 @@ public class DozerBeanMapper implements Mapper {
     private final List<CustomConverter> customConverters = new ArrayList<CustomConverter>();
     private final List<MappingFileData> builderMappings = new ArrayList<MappingFileData>();
     private final Map<String, CustomConverter> customConvertersWithId = new HashMap<String, CustomConverter>();
-    private List<? extends DozerEventListener> eventListeners = new ArrayList<DozerEventListener>();
-    
     private final List<FieldMappingCondition> mappingConditions = new ArrayList<FieldMappingCondition>();
     private final Map<String, FieldMappingCondition> mappingConditionsWithId = new HashMap<String, FieldMappingCondition>();
-
     private final List<CollectionItemDiscriminator> collectionItemDiscriminators = new ArrayList<CollectionItemDiscriminator>();
     private final Map<String, CollectionItemDiscriminator> collectionItemDiscriminatorsWithId = new HashMap<String, CollectionItemDiscriminator>();
-
+    // There are no global caches. Caches are per bean mapper instance
+    private final CacheManager cacheManager = new DozerCacheManager();
+    private List<? extends DozerEventListener> eventListeners = new ArrayList<DozerEventListener>();
     private CustomFieldMapper customFieldMapper;
-
     /*
      * Not accessible for injection
      */
     private ClassMappings customMappings;
     private Configuration globalConfiguration;
-    // There are no global caches. Caches are per bean mapper instance
-    private final CacheManager cacheManager = new DozerCacheManager();
     private DozerEventManager eventManager;
 
     public DozerBeanMapper() {
@@ -158,18 +157,35 @@ public class DozerBeanMapper implements Mapper {
         DestBeanCreator.setStoredFactories(factories);
     }
 
+    public List<CustomConverter> getCustomConverters() {
+        return Collections.unmodifiableList(customConverters);
+    }
+
     public void setCustomConverters(List<CustomConverter> customConverters) {
         checkIfInitialized();
         this.customConverters.clear();
         this.customConverters.addAll(customConverters);
     }
 
-    public List<CustomConverter> getCustomConverters() {
-        return Collections.unmodifiableList(customConverters);
-    }
-
     public Map<String, CustomConverter> getCustomConvertersWithId() {
         return Collections.unmodifiableMap(customConvertersWithId);
+    }
+
+    /**
+     * Converters passed with this method could be further referenced in
+     * mappings via its unique id. Converter instances passed that way are
+     * considered stateful and will not be initialized for each mapping.
+     *
+     * @param customConvertersWithId converter id to converter instance map
+     */
+    public void setCustomConvertersWithId(Map<String, CustomConverter> customConvertersWithId) {
+        checkIfInitialized();
+        this.customConvertersWithId.clear();
+        this.customConvertersWithId.putAll(customConvertersWithId);
+    }
+
+    public List<FieldMappingCondition> getMappingConditions() {
+        return Collections.unmodifiableList(mappingConditions);
     }
 
     public void setMappingConditions(List<FieldMappingCondition> mappingConditions) {
@@ -177,27 +193,36 @@ public class DozerBeanMapper implements Mapper {
         this.mappingConditions.clear();
         this.mappingConditions.addAll(mappingConditions);
     }
-    
+
+    public Map<String, FieldMappingCondition> getMappingConditionsWithId() {
+        return Collections.unmodifiableMap(mappingConditionsWithId);
+    }
+
+    public void setMappingConditionsWithId(Map<String, FieldMappingCondition> mappingConditionsWithId) {
+        checkIfInitialized();
+        this.mappingConditionsWithId.clear();
+        this.mappingConditionsWithId.putAll(mappingConditionsWithId);
+    }
+
+    public List<CollectionItemDiscriminator> getCollectionItemDiscriminators() {
+        return Collections.unmodifiableList(collectionItemDiscriminators);
+    }
+
     public void setCollectionItemDiscriminators(List<CollectionItemDiscriminator> collectionItemDiscriminators) {
         checkIfInitialized();
         this.collectionItemDiscriminators.clear();
         this.collectionItemDiscriminators.addAll(collectionItemDiscriminators);
     }
-    
-    public List<FieldMappingCondition> getMappingConditions() {
-        return Collections.unmodifiableList(mappingConditions);
-    }
-
-    public Map<String, FieldMappingCondition> getMappingConditionsWithId() {
-        return Collections.unmodifiableMap(mappingConditionsWithId);
-    }
-    
-    public List<CollectionItemDiscriminator> getCollectionItemDiscriminators() {
-        return Collections.unmodifiableList(collectionItemDiscriminators);
-    }
 
     public Map<String, CollectionItemDiscriminator> getCollectionItemDiscriminatorsWithId() {
         return Collections.unmodifiableMap(collectionItemDiscriminatorsWithId);
+    }
+
+    public void setCollectionItemDiscriminatorsWithId(
+            Map<String, CollectionItemDiscriminator> collectionItemDiscriminatorsWithId) {
+        checkIfInitialized();
+        this.collectionItemDiscriminatorsWithId.clear();
+        this.collectionItemDiscriminatorsWithId.putAll(collectionItemDiscriminatorsWithId);
     }
 
     private void init() {
@@ -209,7 +234,8 @@ public class DozerBeanMapper implements Mapper {
         // the bean mapper instance and
         // are not shared across the VM.
         GlobalSettings globalSettings = GlobalSettings.getInstance();
-        cacheManager.addCache(DozerCacheType.CONVERTER_BY_DEST_TYPE.name(), globalSettings.getConverterByDestTypeCacheMaxSize());
+        cacheManager.addCache(DozerCacheType.CONVERTER_BY_DEST_TYPE.name(),
+            globalSettings.getConverterByDestTypeCacheMaxSize());
         cacheManager.addCache(DozerCacheType.SUPER_TYPE_CHECK.name(), globalSettings.getSuperTypesCacheMaxSize());
 
         // stats
@@ -238,19 +264,33 @@ public class DozerBeanMapper implements Mapper {
             log.error("Thread interrupted: ", e);
         }
 
-        Mapper processor = new MappingProcessor(customMappings, globalConfiguration, cacheManager, statsMgr,
-            customConverters, eventManager, getCustomFieldMapper(), customConvertersWithId, mappingConditions, 
-            mappingConditionsWithId, collectionItemDiscriminators, collectionItemDiscriminatorsWithId);
+        Mapper processor = new MappingProcessor(customMappings,
+            globalConfiguration,
+            cacheManager,
+            statsMgr,
+            customConverters,
+            eventManager,
+            getCustomFieldMapper(),
+            customConvertersWithId,
+            mappingConditions,
+            mappingConditionsWithId,
+            collectionItemDiscriminators,
+            collectionItemDiscriminatorsWithId);
 
         // If statistics are enabled, then Proxy the processor with a statistics
         // interceptor
         if (statsMgr.isStatisticsEnabled()) {
-            processor = (Mapper) Proxy.newProxyInstance(processor.getClass().getClassLoader(), processor.getClass()
-                .getInterfaces(), new StatisticsInterceptor(processor, statsMgr));
+            processor = (Mapper) Proxy.newProxyInstance(processor.getClass().getClassLoader(),
+                processor.getClass().getInterfaces(),
+                new StatisticsInterceptor(processor, statsMgr));
         }
 
         return processor;
     }
+
+    // public void addDefaultCustomConverter(Class<?> defaultCustomConverter) {
+    //
+    // }
 
     void loadCustomMappings() {
         CustomMappingsLoader customMappingsLoader = new CustomMappingsLoader();
@@ -264,15 +304,12 @@ public class DozerBeanMapper implements Mapper {
             addMapping(builder);
         }
     }
+
     public void addMapping(BeanMappingBuilder mappingBuilder) {
         checkIfInitialized();
         MappingFileData mappingFileData = mappingBuilder.build();
         builderMappings.add(mappingFileData);
     }
-    
-//    public void addDefaultCustomConverter(Class<?> defaultCustomConverter) {
-//        
-//    }
 
     public List<? extends DozerEventListener> getEventListeners() {
         return Collections.unmodifiableList(eventListeners);
@@ -292,34 +329,10 @@ public class DozerBeanMapper implements Mapper {
         this.customFieldMapper = customFieldMapper;
     }
 
-    /**
-     * Converters passed with this method could be further referenced in
-     * mappings via its unique id. Converter instances passed that way are
-     * considered stateful and will not be initialized for each mapping.
-     * 
-     * @param customConvertersWithId converter id to converter instance map
-     */
-    public void setCustomConvertersWithId(Map<String, CustomConverter> customConvertersWithId) {
-        checkIfInitialized();
-        this.customConvertersWithId.clear();
-        this.customConvertersWithId.putAll(customConvertersWithId);
-    }
-    
-    public void setMappingConditionsWithId(Map<String, FieldMappingCondition> mappingConditionsWithId) {
-        checkIfInitialized();
-        this.mappingConditionsWithId.clear();
-        this.mappingConditionsWithId.putAll(mappingConditionsWithId);
-    }
-    
-    public void setCollectionItemDiscriminatorsWithId(Map<String, CollectionItemDiscriminator> collectionItemDiscriminatorsWithId) {
-        checkIfInitialized();
-        this.collectionItemDiscriminatorsWithId.clear();
-        this.collectionItemDiscriminatorsWithId.putAll(collectionItemDiscriminatorsWithId);
-    }
-
     private void checkIfInitialized() {
         if (ready.getCount() == 0) {
-            throw new MappingException("Dozer Bean Mapper is already initialized! Modify settings before calling map()");
+            throw new MappingException(
+                "Dozer Bean Mapper is already initialized! Modify settings before calling map()");
         }
     }
 

@@ -32,8 +32,11 @@ public abstract class AbstractPropertyDescriptor implements DozerPropertyDescrip
     protected HintContainer deepIndexHintContainer;
 
     // TODO Delete this class
-    public AbstractPropertyDescriptor(final Class<?> clazz, final String fieldName, boolean isIndexed, String index,
-        HintContainer deepIndexHintContainer) {
+    public AbstractPropertyDescriptor(final Class<?> clazz,
+            final String fieldName,
+            boolean isIndexed,
+            String index,
+            HintContainer deepIndexHintContainer) {
         this.clazz = clazz;
         this.fieldName = fieldName;
         this.isIndexed = isIndexed;

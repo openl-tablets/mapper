@@ -4,7 +4,7 @@ import org.dozer.CustomConverter;
 import org.dozer.classmap.RelationshipType;
 
 public class MappingOptions {
-    
+
     // Configuration level options
     //
     public static ConfigurationMappingOption defaultStopOnErrors(final Boolean value) {
@@ -31,11 +31,15 @@ public class MappingOptions {
         return ConfigurationMappingOptions.beanFactory(name);
     }
 
-    public static ConfigurationMappingOption defaultCustomConverter(Class<? extends CustomConverter> type, Class<?> aClass, Class<?> bClass) {
-        return ConfigurationMappingOptions.customConverter(type, aClass, bClass); 
+    public static ConfigurationMappingOption defaultCustomConverter(Class<? extends CustomConverter> type,
+            Class<?> aClass,
+            Class<?> bClass) {
+        return ConfigurationMappingOptions.customConverter(type, aClass, bClass);
     }
-    
-    public static ConfigurationMappingOption defaultCustomConverter(CustomConverter converter, Class<?> aClass, Class<?> bClass) {
+
+    public static ConfigurationMappingOption defaultCustomConverter(CustomConverter converter,
+            Class<?> aClass,
+            Class<?> bClass) {
         return ConfigurationMappingOptions.customConverter(converter, aClass, bClass);
     }
 
@@ -78,7 +82,7 @@ public class MappingOptions {
     }
 
     public static FieldsMappingOption customConverter(final Class<? extends CustomConverter> type,
-        final String parameter) {
+            final String parameter) {
         return FieldsMappingOptions.customConverter(type, parameter);
     }
 
@@ -113,7 +117,7 @@ public class MappingOptions {
     public static FieldsMappingOption fieldOneWay() {
         return FieldsMappingOptions.oneWay();
     }
-    
+
     public static FieldsMappingOption fieldMapNull(boolean value) {
         return FieldsMappingOptions.mapNull(value);
     }
@@ -125,13 +129,12 @@ public class MappingOptions {
     public static FieldsMappingOption fieldMapEmptyString(boolean value) {
         return FieldsMappingOptions.mapEmptyString(value);
     }
-    
+
     public static FieldsMappingOption collectionStrategy(final boolean removeOrphans,
-        final RelationshipType relationshipType) {
+            final RelationshipType relationshipType) {
         return FieldsMappingOptions.collectionStrategy(removeOrphans, relationshipType);
     }
 
-    
     // Type map level options.
     //
     public static TypeMappingOption mapId(final String mapId) {
@@ -141,7 +144,7 @@ public class MappingOptions {
     public static TypeMappingOption dateFormat(final String value) {
         return TypeMappingOptions.dateFormat(value);
     }
-    
+
     public static TypeMappingOption requiredFields(boolean value) {
         return TypeMappingOptions.requiredFields(value);
     }
@@ -173,6 +176,5 @@ public class MappingOptions {
     public static TypeMappingOption wildcard(final boolean value) {
         return TypeMappingOptions.wildcard(value);
     }
-
 
 }

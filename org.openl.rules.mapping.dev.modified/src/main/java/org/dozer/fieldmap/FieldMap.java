@@ -49,7 +49,9 @@ import org.slf4j.LoggerFactory;
 public abstract class FieldMap implements Cloneable {
 
     private static final Logger log = LoggerFactory.getLogger(FieldMap.class);
-
+    // For Caching Purposes
+    private final ConcurrentMap<Class<?>, DozerPropertyDescriptor> srcPropertyDescriptorMap = new ConcurrentHashMap<Class<?>, DozerPropertyDescriptor>();
+    private final ConcurrentMap<Class<?>, DozerPropertyDescriptor> destPropertyDescriptorMap = new ConcurrentHashMap<Class<?>, DozerPropertyDescriptor>();
     private ClassMap classMap;
     private DozerField srcField;
     private DozerField destField;
@@ -69,10 +71,6 @@ public abstract class FieldMap implements Cloneable {
     private Boolean mapNull;
     private Boolean mapEmptyString;
     private Boolean trimString;
-
-    // For Caching Purposes
-    private final ConcurrentMap<Class<?>, DozerPropertyDescriptor> srcPropertyDescriptorMap = new ConcurrentHashMap<Class<?>, DozerPropertyDescriptor>();
-    private final ConcurrentMap<Class<?>, DozerPropertyDescriptor> destPropertyDescriptorMap = new ConcurrentHashMap<Class<?>, DozerPropertyDescriptor>();
 
     public FieldMap(ClassMap classMap) {
         this.classMap = classMap;
@@ -121,7 +119,8 @@ public abstract class FieldMap implements Cloneable {
 
             if (hintContainer != null) {
                 result = hintContainer.getHint();
-            } else if ((result.isArray() || (Collection.class.isAssignableFrom(result)) && MappingUtils.getSupportedCollectionEntryType(getDestPropertyDescriptor(runtimeDestClass)) != null)) {
+            } else if ((result.isArray() || (Collection.class.isAssignableFrom(result)) && MappingUtils
+                .getSupportedCollectionEntryType(getDestPropertyDescriptor(runtimeDestClass)) != null)) {
 
                 result = MappingUtils.getSupportedCollectionEntryType(getDestPropertyDescriptor(runtimeDestClass));
             } else {
@@ -185,22 +184,22 @@ public abstract class FieldMap implements Cloneable {
 
     public String getSrcFieldMapGetMethod() {
         return !MappingUtils.isBlankOrNull(srcField.getMapGetMethod()) ? srcField.getMapGetMethod()
-                                                                      : classMap.getSrcClassMapGetMethod();
+                                                                       : classMap.getSrcClassMapGetMethod();
     }
 
     public String getSrcFieldMapSetMethod() {
         return !MappingUtils.isBlankOrNull(srcField.getMapSetMethod()) ? srcField.getMapSetMethod()
-                                                                      : classMap.getSrcClassMapSetMethod();
+                                                                       : classMap.getSrcClassMapSetMethod();
     }
 
     public String getDestFieldMapGetMethod() {
         return !MappingUtils.isBlankOrNull(destField.getMapGetMethod()) ? destField.getMapGetMethod()
-                                                                       : classMap.getDestClassMapGetMethod();
+                                                                        : classMap.getDestClassMapGetMethod();
     }
 
     public String getDestFieldMapSetMethod() {
         return !MappingUtils.isBlankOrNull(destField.getMapSetMethod()) ? destField.getMapSetMethod()
-                                                                       : classMap.getDestClassMapSetMethod();
+                                                                        : classMap.getDestClassMapSetMethod();
     }
 
     public String getSrcFieldName() {
@@ -278,32 +277,24 @@ public abstract class FieldMap implements Cloneable {
     }
 
     public boolean isDestFieldAccessible() {
-    return determineAccess(destField, classMap.getDestClass());
-  }
+        return determineAccess(destField, classMap.getDestClass());
+    }
 
     public boolean isSrcFieldAccessible() {
-    return determineAccess(srcField, classMap.getSrcClass());
-  }
+        return determineAccess(srcField, classMap.getSrcClass());
+    }
 
     private boolean determineAccess(DozerField field, DozerClass clazz) {
-      Boolean fieldLevel = field.isAccessible();
-      if (fieldLevel != null) {
-        return fieldLevel;
-      } else {
-        Boolean classLevel = clazz.isAccesible();
-        if (classLevel == null) {
-          return false;
+        Boolean fieldLevel = field.isAccessible();
+        if (fieldLevel != null) {
+            return fieldLevel;
+        } else {
+            Boolean classLevel = clazz.isAccesible();
+            if (classLevel == null) {
+                return false;
+            }
+            return classLevel;
         }
-        return classLevel;
-      }
-    }
-
-    public void setSrcField(DozerField sourceField) {
-        this.srcField = sourceField;
-    }
-
-    public void setDestField(DozerField destField) {
-        this.destField = destField;
     }
 
     public boolean isDestFieldRequired() {
@@ -458,27 +449,35 @@ public abstract class FieldMap implements Cloneable {
     }
 
     public DozerField getSrcFieldCopy() {
-      try {
-        return (DozerField) srcField.clone();
-      } catch (CloneNotSupportedException e) {
-        throw new MappingException(e);
-      }
+        try {
+            return (DozerField) srcField.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new MappingException(e);
+        }
     }
 
     public DozerField getDestFieldCopy() {
-      try {
-        return (DozerField) destField.clone();
-      } catch (CloneNotSupportedException e) {
-        throw new MappingException(e);
-      }
+        try {
+            return (DozerField) destField.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new MappingException(e);
+        }
     }
 
     protected DozerField getSrcField() {
         return srcField;
     }
 
+    public void setSrcField(DozerField sourceField) {
+        this.srcField = sourceField;
+    }
+
     protected DozerField getDestField() {
         return destField;
+    }
+
+    public void setDestField(DozerField destField) {
+        this.destField = destField;
     }
 
     public String getCustomConverterId() {

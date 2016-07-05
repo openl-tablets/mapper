@@ -15,7 +15,6 @@
  */
 package org.dozer.converters;
 
-
 /**
  * Internal class that contains the custom converter definition information.
  * Only intended for internal use.

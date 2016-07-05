@@ -109,7 +109,6 @@ public final class MappingUtils {
         return Map.class.isAssignableFrom(aClass);
     }
 
-
     public static void throwMappingException(Throwable e) throws MappingException {
         if (e instanceof MappingException) {
             // in this case we do not want to re-wrap an existing mapping
@@ -256,8 +255,9 @@ public final class MappingUtils {
         if (fieldMap != null && fieldMap.isDestFieldIndexed()) {
             if (destClass.isArray()) {
                 destType = destClass.getComponentType();
-            } else if (destClass.isAssignableFrom(Collection.class) && fieldMap.getDestHintContainer() != null && !fieldMap.getDestHintContainer()
-                .hasMoreThanOneHint()) {
+            } else if (destClass
+                .isAssignableFrom(Collection.class) && fieldMap.getDestHintContainer() != null && !fieldMap
+                    .getDestHintContainer().hasMoreThanOneHint()) {
                 // use hint when trying to find a custom converter
                 destType = fieldMap.getDestHintContainer().getHint();
             }
@@ -276,7 +276,8 @@ public final class MappingUtils {
         // implementation of exclude field map
         //
         if (source instanceof MultiSourceFieldMap) {
-            ((MultiFieldsExcludeFieldMap) reversed).setDest(FieldMapUtils.getCopy(((MultiSourceFieldMap) source).getSrc()));
+            ((MultiFieldsExcludeFieldMap) reversed)
+                .setDest(FieldMapUtils.getCopy(((MultiSourceFieldMap) source).getSrc()));
             ((MultiFieldsExcludeFieldMap) reversed).setSrc(Arrays.asList(source.getDestFieldCopy()));
         } else {
             DozerField destField = source.getSrcFieldCopy();
@@ -298,30 +299,42 @@ public final class MappingUtils {
 
     public static void reverseFields(ClassMap source, ClassMap destination) {
         // reverse the fields
-//        destination.setSrcClass(new DozerClass(source.getDestClassName(),
-//            source.getDestClassToMap(),
-//            source.getDestClassBeanFactory(),
-//            source.getDestClassBeanFactoryId(),
-//            source.getDestClassMapGetMethod(),
-//            source.getDestClassMapSetMethod(),
-//            source.isDestMapNull(),
-//            source.isDestMapEmptyString()));
-//        destination.setDestClass(new DozerClass(source.getSrcClassName(),
-//            source.getSrcClassToMap(),
-//            source.getSrcClassBeanFactory(),
-//            source.getSrcClassBeanFactoryId(),
-//            source.getSrcClassMapGetMethod(),
-//            source.getSrcClassMapSetMethod(),
-//            source.isSrcMapNull(),
-//            source.isSrcMapEmptyString()));
-        destination.setSrcClass(new DozerClass(source.getDestClassName(), source.getDestClassToMap(), source.getDestClassBeanFactory(),
-            source.getDestClassBeanFactoryId(), source.getDestClassMapGetMethod(), source.getDestClassMapSetMethod(),
-                source.getDestClass().getCreateMethod(),
-                source.isDestMapNull(), source.isDestMapEmptyString(), source.getDestClass().isAccesible()));
-        destination.setDestClass(new DozerClass(source.getSrcClassName(), source.getSrcClassToMap(), source.getSrcClassBeanFactory(),
-            source.getSrcClassBeanFactoryId(), source.getSrcClassMapGetMethod(), source.getSrcClassMapSetMethod(),
-                source.getSrcClass().getCreateMethod(),
-                source.isSrcMapNull(), source.isSrcMapEmptyString(), source.getSrcClass().isAccesible()));
+        // destination.setSrcClass(new DozerClass(source.getDestClassName(),
+        // source.getDestClassToMap(),
+        // source.getDestClassBeanFactory(),
+        // source.getDestClassBeanFactoryId(),
+        // source.getDestClassMapGetMethod(),
+        // source.getDestClassMapSetMethod(),
+        // source.isDestMapNull(),
+        // source.isDestMapEmptyString()));
+        // destination.setDestClass(new DozerClass(source.getSrcClassName(),
+        // source.getSrcClassToMap(),
+        // source.getSrcClassBeanFactory(),
+        // source.getSrcClassBeanFactoryId(),
+        // source.getSrcClassMapGetMethod(),
+        // source.getSrcClassMapSetMethod(),
+        // source.isSrcMapNull(),
+        // source.isSrcMapEmptyString()));
+        destination.setSrcClass(new DozerClass(source.getDestClassName(),
+            source.getDestClassToMap(),
+            source.getDestClassBeanFactory(),
+            source.getDestClassBeanFactoryId(),
+            source.getDestClassMapGetMethod(),
+            source.getDestClassMapSetMethod(),
+            source.getDestClass().getCreateMethod(),
+            source.isDestMapNull(),
+            source.isDestMapEmptyString(),
+            source.getDestClass().isAccesible()));
+        destination.setDestClass(new DozerClass(source.getSrcClassName(),
+            source.getSrcClassToMap(),
+            source.getSrcClassBeanFactory(),
+            source.getSrcClassBeanFactoryId(),
+            source.getSrcClassMapGetMethod(),
+            source.getSrcClassMapSetMethod(),
+            source.getSrcClass().getCreateMethod(),
+            source.isSrcMapNull(),
+            source.isSrcMapEmptyString(),
+            source.getSrcClass().isAccesible()));
 
         destination.setType(source.getType());
         destination.setWildcard(source.isWildcard());
@@ -372,7 +385,8 @@ public final class MappingUtils {
             return false;
         }
         String className = clazz.getName();
-        return className.contains(DozerConstants.CGLIB_ID) || className.startsWith(DozerConstants.JAVASSIST_PACKAGE) || className.contains(DozerConstants.JAVASSIST_NAME);
+        return className.contains(DozerConstants.CGLIB_ID) || className
+            .startsWith(DozerConstants.JAVASSIST_PACKAGE) || className.contains(DozerConstants.JAVASSIST_NAME);
     }
 
     /**
@@ -473,7 +487,8 @@ public final class MappingUtils {
         } else if (Collection.class.isAssignableFrom(collectionType)) {
             result = prepareIndexedCollectionType(collectionType, existingCollection, collectionEntry, index);
         } else {
-            throwMappingException("Only types java.lang.Object[] and java.util.Collection are supported for indexed properties.");
+            throwMappingException(
+                "Only types java.lang.Object[] and java.util.Collection are supported for indexed properties.");
         }
 
         return result;
@@ -515,7 +530,8 @@ public final class MappingUtils {
             } else if (collectionType.equals(List.class)) {
                 result = new ArrayList();
             } else {
-                throwMappingException("Only interface types java.util.Set and java.util.List are supported for java.util.Collection type indexed properties.");
+                throwMappingException(
+                    "Only interface types java.util.Set and java.util.List are supported for java.util.Collection type indexed properties.");
             }
         } else {
             // It is an implementation class of Collection
@@ -638,10 +654,12 @@ public final class MappingUtils {
         } else {
             builder.append(fieldMap.getSrcFieldName());
         }
-        if (!(fieldMap instanceof MultiSourceFieldMap) && !(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(fieldMap.getSrcFieldIndex())) {
+        if (!(fieldMap instanceof MultiSourceFieldMap) && !(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(
+            fieldMap.getSrcFieldIndex())) {
             builder.append("[" + fieldMap.getSrcFieldIndex() + "]");
         }
-        if (!(fieldMap instanceof MultiSourceFieldMap) && !(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(fieldMap.getSrcFieldKey())) {
+        if (!(fieldMap instanceof MultiSourceFieldMap) && !(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(
+            fieldMap.getSrcFieldKey())) {
             builder.append("{" + fieldMap.getSrcFieldKey() + "}");
         }
         builder.append("-->");

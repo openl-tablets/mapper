@@ -15,12 +15,12 @@
  */
 package org.dozer.propertydescriptor;
 
+import java.lang.ref.SoftReference;
+import java.lang.reflect.Method;
+
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.util.MappingUtils;
 import org.dozer.util.ReflectionUtils;
-
-import java.lang.ref.SoftReference;
-import java.lang.reflect.Method;
 
 /**
  * 
@@ -38,8 +38,13 @@ public class CustomGetSetPropertyDescriptor extends JavaBeanPropertyDescriptor {
     private SoftReference<Method> writeMethod;
     private SoftReference<Method> readMethod;
 
-    public CustomGetSetPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, String index,
-        String customSetMethod, String customGetMethod, HintContainer deepIndexHintContainer) {
+    public CustomGetSetPropertyDescriptor(Class<?> clazz,
+            String fieldName,
+            boolean isIndexed,
+            String index,
+            String customSetMethod,
+            String customGetMethod,
+            HintContainer deepIndexHintContainer) {
         super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
         this.customSetMethod = customSetMethod;
         this.customGetMethod = customGetMethod;

@@ -15,12 +15,12 @@
  */
 package org.dozer.propertydescriptor;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.util.MappingUtils;
 import org.dozer.util.ReflectionUtils;
-
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
 
 /**
  * 
@@ -35,8 +35,11 @@ import java.lang.reflect.Method;
 public class JavaBeanPropertyDescriptor extends GetterSetterPropertyDescriptor {
     private PropertyDescriptor pd;
 
-    public JavaBeanPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, String index,
-        HintContainer deepIndexHintContainer) {
+    public JavaBeanPropertyDescriptor(Class<?> clazz,
+            String fieldName,
+            boolean isIndexed,
+            String index,
+            HintContainer deepIndexHintContainer) {
         super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
     }
 

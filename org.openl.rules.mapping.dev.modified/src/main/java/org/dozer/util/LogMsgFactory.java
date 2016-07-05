@@ -15,14 +15,14 @@
  */
 package org.dozer.util;
 
+import java.util.Collection;
+
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.dozer.fieldmap.FieldMap;
 import org.dozer.fieldmap.MultiSourceFieldMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 
 /**
  * Internal class used to build various types of log messages. Only intended for
@@ -38,8 +38,10 @@ public final class LogMsgFactory {
     private LogMsgFactory() {
     }
 
-    public static String createFieldMappingErrorMsg(Object srcObj, FieldMap fieldMapping, Object srcFieldValue,
-        Object destObj) {
+    public static String createFieldMappingErrorMsg(Object srcObj,
+            FieldMap fieldMapping,
+            Object srcFieldValue,
+            Object destObj) {
         String srcClassName = null;
         if (srcObj != null) {
             srcClassName = srcObj.getClass().getName();
@@ -82,17 +84,23 @@ public final class LogMsgFactory {
 
         return "Field mapping error -->" + "\n  MapId: " + fieldMapping.getMapId() + "\n  Type: " + fieldMapping
             .getType() + "\n  Source parent class: " + srcClassName + "\n  Source field name: " + fieldMapping
-            .getSrcFieldName() + "\n  Source field type: " + srcValueType + "\n  Source field value: " + srcFieldValueString + "\n  Dest parent class: " + destClassName + "\n  Dest field name: " + fieldMapping
-            .getDestFieldName() + "\n  Dest field type: " + destFieldTypeName;
+                .getSrcFieldName() + "\n  Source field type: " + srcValueType + "\n  Source field value: " + srcFieldValueString + "\n  Dest parent class: " + destClassName + "\n  Dest field name: " + fieldMapping
+                    .getDestFieldName() + "\n  Dest field type: " + destFieldTypeName;
     }
 
-    public static String createFieldMappingSuccessMsg(Class<?> srcClass, Class<?> destClass, String srcFieldName,
-        String destFieldName, Object srcFieldValue, Object destFieldValue, String classMapId) {
+    public static String createFieldMappingSuccessMsg(Class<?> srcClass,
+            Class<?> destClass,
+            String srcFieldName,
+            String destFieldName,
+            Object srcFieldValue,
+            Object destFieldValue,
+            String classMapId) {
         String srcClassStr = MappingUtils.getClassNameWithoutPackage(srcClass);
         String destClassStr = MappingUtils.getClassNameWithoutPackage(destClass);
 
-        return "MAPPED: " + srcClassStr + "." + srcFieldName + " --> " + destClassStr + "." + destFieldName + "    VALUES: " + getLogOutput(srcFieldValue) + " --> " + getLogOutput(destFieldValue) + "    MAPID: " + (classMapId != null ? classMapId
-                                                                                                                                                                                                                                         : "");
+        return "MAPPED: " + srcClassStr + "." + srcFieldName + " --> " + destClassStr + "." + destFieldName + "    VALUES: " + getLogOutput(
+            srcFieldValue) + " --> " + getLogOutput(
+                destFieldValue) + "    MAPID: " + (classMapId != null ? classMapId : "");
     }
 
     public static String getLogOutput(Object object) {

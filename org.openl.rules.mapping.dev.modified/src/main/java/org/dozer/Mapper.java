@@ -15,7 +15,6 @@
  */
 package org.dozer;
 
-
 /**
  * Public root interface for performing Dozer mappings from application code.
  * 

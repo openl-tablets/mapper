@@ -15,11 +15,11 @@
  */
 package org.dozer.factory;
 
+import java.util.Map;
+
 import org.dozer.BeanFactory;
 import org.dozer.MappingParameters;
 import org.dozer.util.MappingUtils;
-
-import java.util.Map;
 
 /**
  * Internal class that contains the logic used to create a new instance of the
@@ -34,9 +34,12 @@ public final class DestBeanCreator {
 
     // order in this collection determines resolving priority
     static final BeanCreationStrategy[] availableStrategies = new BeanCreationStrategy[] {
-            ConstructionStrategies.byCreateMethod(), ConstructionStrategies.byGetInstance(),
-            ConstructionStrategies.xmlGregorianCalendar(), ConstructionStrategies.byInterface(),
-            ConstructionStrategies.xmlBeansBased(), ConstructionStrategies.byFactory(),
+            ConstructionStrategies.byCreateMethod(),
+            ConstructionStrategies.byGetInstance(),
+            ConstructionStrategies.xmlGregorianCalendar(),
+            ConstructionStrategies.byInterface(),
+            ConstructionStrategies.xmlBeansBased(),
+            ConstructionStrategies.byFactory(),
             ConstructionStrategies.byConstructor() };
 
     private DestBeanCreator() {
@@ -50,7 +53,7 @@ public final class DestBeanCreator {
         if (targetClass == null) {
             MappingUtils.throwMappingException("Destination bean class is not defined");
         }
-        
+
         return create(params, new BeanCreationDirective(null, null, targetClass, alternateClass, null, null, null));
     }
 

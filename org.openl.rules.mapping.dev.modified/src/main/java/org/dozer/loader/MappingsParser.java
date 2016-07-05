@@ -15,12 +15,17 @@
  */
 package org.dozer.loader;
 
+import static org.dozer.util.MappingUtils.isSupportedMap;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.dozer.classmap.ClassMap;
 import org.dozer.classmap.ClassMappings;
 import org.dozer.classmap.Configuration;
 import org.dozer.classmap.MappingDirection;
-import org.dozer.fieldmap.EmptySourceFieldMap;
 import org.dozer.fieldmap.ExcludeFieldMap;
 import org.dozer.fieldmap.FieldMap;
 import org.dozer.fieldmap.GenericFieldMap;
@@ -29,12 +34,6 @@ import org.dozer.fieldmap.MultiFieldsExcludeFieldMap;
 import org.dozer.fieldmap.MultiSourceFieldMap;
 import org.dozer.util.MappingUtils;
 import org.dozer.util.ReflectionUtils;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.dozer.util.MappingUtils.isSupportedMap;
 
 /**
  * Internal class that decorates raw ClassMap objects and performs various
@@ -50,11 +49,11 @@ public final class MappingsParser {
 
     private static final MappingsParser INSTANCE = new MappingsParser();
 
-    public static MappingsParser getInstance() {
-        return INSTANCE;
+    private MappingsParser() {
     }
 
-    private MappingsParser() {
+    public static MappingsParser getInstance() {
+        return INSTANCE;
     }
 
     public ClassMappings processMappings(List<ClassMap> classMaps, Configuration globalConfiguration) {
@@ -105,13 +104,15 @@ public final class MappingsParser {
                     // only apply transformation if it is map to non-map
                     // mapping.
                     if (!(fieldMap instanceof ExcludeFieldMap)) {
-                        if ((isSupportedMap(classMap.getDestClassToMap()) && !isSupportedMap(classMap
-                            .getSrcClassToMap())) || (isSupportedMap(classMap.getSrcClassToMap()) && !isSupportedMap(classMap
-                            .getDestClassToMap())) || (isSupportedMap(fieldMap.getDestFieldType(classMap
-                            .getDestClassToMap())) && !isSupportedMap(fieldMap.getSrcFieldType(classMap
-                            .getSrcClassToMap()))) || (isSupportedMap(fieldMap.getSrcFieldType(classMap
-                            .getSrcClassToMap()))) && !isSupportedMap(fieldMap.getDestFieldType(classMap
-                            .getDestClassToMap()))) {
+                        if ((isSupportedMap(classMap.getDestClassToMap()) && !isSupportedMap(
+                            classMap.getSrcClassToMap())) || (isSupportedMap(
+                                classMap.getSrcClassToMap()) && !isSupportedMap(
+                                    classMap.getDestClassToMap())) || (isSupportedMap(
+                                        fieldMap.getDestFieldType(classMap.getDestClassToMap())) && !isSupportedMap(
+                                            fieldMap.getSrcFieldType(classMap.getSrcClassToMap()))) || (isSupportedMap(
+                                                fieldMap
+                                                    .getSrcFieldType(classMap.getSrcClassToMap()))) && !isSupportedMap(
+                                                        fieldMap.getDestFieldType(classMap.getDestClassToMap()))) {
                             FieldMap fm = new MapFieldMap(fieldMap);
                             classMap.removeFieldMapping(fieldMap);
                             classMap.addFieldMapping(fm);
@@ -124,23 +125,28 @@ public final class MappingsParser {
                     // be mapped
                     // one way class mappings we do not need to add any fields
                     if (!MappingDirection.ONE_WAY.equals(classMap.getType())) {
-//                        if (fieldMap instanceof MultiSourceFieldMap && !MappingDirection.ONE_WAY.equals(fieldMap
-//                            .getType())) {
-//                            MappingUtils.throwMappingException("n to 1 field mapping type should be one way");
-//                        }
-//
-//                        if (fieldMap instanceof EmptySourceFieldMap && !MappingDirection.ONE_WAY.equals(fieldMap
-//                            .getType())) {
-//                            MappingUtils.throwMappingException("Empty source field mapping type should be one way");
-//                        }
+                        // if (fieldMap instanceof MultiSourceFieldMap &&
+                        // !MappingDirection.ONE_WAY.equals(fieldMap
+                        // .getType())) {
+                        // MappingUtils.throwMappingException("n to 1 field
+                        // mapping type should be one way");
+                        // }
+                        //
+                        // if (fieldMap instanceof EmptySourceFieldMap &&
+                        // !MappingDirection.ONE_WAY.equals(fieldMap
+                        // .getType())) {
+                        // MappingUtils.throwMappingException("Empty source
+                        // field mapping type should be one way");
+                        // }
 
-                        if (!(MappingDirection.ONE_WAY.equals(fieldMap.getType()) && !(fieldMap instanceof ExcludeFieldMap))) {
+                        if (!(MappingDirection.ONE_WAY
+                            .equals(fieldMap.getType()) && !(fieldMap instanceof ExcludeFieldMap))) {
                             // make a prime field map
                             fieldMapPrime = (FieldMap) fieldMap.clone();
                             fieldMapPrime.setClassMap(classMapPrime);
                             // check to see if it is only an exclude one way
-                            if (fieldMapPrime instanceof ExcludeFieldMap && MappingDirection.ONE_WAY.equals(fieldMap
-                                .getType())) {
+                            if (fieldMapPrime instanceof ExcludeFieldMap && MappingDirection.ONE_WAY
+                                .equals(fieldMap.getType())) {
                                 // need to make a generic field map for the
                                 // other direction
                                 fieldMapPrime = new GenericFieldMap(classMapPrime);
@@ -154,7 +160,8 @@ public final class MappingsParser {
                                 MappingUtils.applyGlobalCopyByReference(globalConfiguration, fieldMap, classMap);
                             }
                             if (!(fieldMapPrime instanceof ExcludeFieldMap)) {
-                                MappingUtils.applyGlobalCopyByReference(globalConfiguration, fieldMapPrime,
+                                MappingUtils.applyGlobalCopyByReference(globalConfiguration,
+                                    fieldMapPrime,
                                     classMapPrime);
                             }
                         } else {
@@ -203,7 +210,9 @@ public final class MappingsParser {
             // can not bi-directionally map
             // Map Prime could actually be empty
             if (!MappingDirection.ONE_WAY.equals(classMap.getType())) {
-                result.add(classMap.getDestClassToMap(), classMap.getSrcClassToMap(), classMap.getMapId(),
+                result.add(classMap.getDestClassToMap(),
+                    classMap.getSrcClassToMap(),
+                    classMap.getMapId(),
                     classMapPrime);
             }
         }

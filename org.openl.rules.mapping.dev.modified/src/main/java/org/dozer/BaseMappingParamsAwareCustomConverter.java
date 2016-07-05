@@ -12,14 +12,20 @@ public abstract class BaseMappingParamsAwareCustomConverter implements MappingPa
      * Thread local variable which holds user defined mapping parameters.
      */
     private ThreadLocal<MappingParameters> parameters = new ThreadLocal<MappingParameters>();
-    
+
     public void setMappingParams(MappingParameters params) {
         this.parameters.set(params);
     }
-    
-    public Object convert(Object existingDestinationFieldValue, Object sourceFieldValue, Class<?> destinationClass,
-        Class<?> sourceClass) {
-        return convert(parameters.get(), existingDestinationFieldValue, sourceFieldValue, destinationClass, sourceClass);
+
+    public Object convert(Object existingDestinationFieldValue,
+            Object sourceFieldValue,
+            Class<?> destinationClass,
+            Class<?> sourceClass) {
+        return convert(parameters.get(),
+            existingDestinationFieldValue,
+            sourceFieldValue,
+            destinationClass,
+            sourceClass);
     }
 
     /**
@@ -32,7 +38,10 @@ public abstract class BaseMappingParamsAwareCustomConverter implements MappingPa
      * @param sourceClass source class
      * @return converted value
      */
-    public abstract Object convert(MappingParameters mappingParameters, Object existingDestinationFieldValue,
-        Object sourceFieldValue, Class<?> destinationClass, Class<?> sourceClass);
+    public abstract Object convert(MappingParameters mappingParameters,
+            Object existingDestinationFieldValue,
+            Object sourceFieldValue,
+            Class<?> destinationClass,
+            Class<?> sourceClass);
 
 }

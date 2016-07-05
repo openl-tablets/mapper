@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.dozer.classmap.ClassMap;
-import org.dozer.classmap.MappingDirection;
 import org.dozer.propertydescriptor.DozerPropertyDescriptor;
 import org.dozer.propertydescriptor.PropertyDescriptorFactory;
 import org.dozer.util.MappingUtils;
@@ -52,6 +51,11 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
 
     @Override
     public HintContainer getDestDeepIndexHintContainer() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setDestDeepIndexHintContainer(HintContainer destDeepIndexHintHint) {
         throw new UnsupportedOperationException();
     }
 
@@ -129,6 +133,11 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
     }
 
     @Override
+    public void setDestHintContainer(HintContainer destHint) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Class<?> getDestHintType(Class<?> runtimeSrcClass) {
         throw new UnsupportedOperationException();
     }
@@ -138,7 +147,9 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
         DozerPropertyDescriptor result = getSrcPropertyDescriptorMap().get(runtimeSrcClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeSrcClass,
-                getClassMap(), getSrc(), getDestField());
+                getClassMap(),
+                getSrc(),
+                getDestField());
             getSrcPropertyDescriptorMap().putIfAbsent(runtimeSrcClass, descriptor);
             result = descriptor;
         }
@@ -150,7 +161,9 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
         DozerPropertyDescriptor result = getDestPropertyDescriptorMap().get(runtimeDestClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeDestClass,
-                getClassMap(), getDest(), null);
+                getClassMap(),
+                getDest(),
+                null);
             getDestPropertyDescriptorMap().putIfAbsent(runtimeDestClass, descriptor);
             result = descriptor;
         }
@@ -173,7 +186,17 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
     }
 
     @Override
+    public void setSrcDeepIndexHintContainer(HintContainer srcDeepIndexHint) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     protected DozerField getSrcField() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setSrcField(DozerField sourceField) {
         throw new UnsupportedOperationException();
     }
 
@@ -233,6 +256,11 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
     }
 
     @Override
+    public void setSrcHintContainer(HintContainer sourceHint) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean isDestFieldAccessible() {
         throw new UnsupportedOperationException();
     }
@@ -278,43 +306,24 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
     }
 
     @Override
-    public void setDestDeepIndexHintContainer(HintContainer destDeepIndexHintHint) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void setDestField(DozerField destField) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setDestHintContainer(HintContainer destHint) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setSrcDeepIndexHintContainer(HintContainer srcDeepIndexHint) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setSrcField(DozerField sourceField) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setSrcHintContainer(HintContainer sourceHint) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("source field", src).append(
-            "destination field", dest).append("type", getType()).append("customConverter", getCustomConverter())
-            .append("relationshipType", getRelationshipType()).append("removeOrphans", isRemoveOrphans()).append(
-                "mapId", getMapId()).append("copyByReference", isCopyByReference()).append("copyByReferenceOveridden",
-                isCopyByReferenceOveridden()).append("mappingCondition", getMappingCondition()).append("mappingConditionId",
-                getMappingConditionId()).toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE).append("source field", src)
+            .append("destination field", dest)
+            .append("type", getType())
+            .append("customConverter", getCustomConverter())
+            .append("relationshipType", getRelationshipType())
+            .append("removeOrphans", isRemoveOrphans())
+            .append("mapId", getMapId())
+            .append("copyByReference", isCopyByReference())
+            .append("copyByReferenceOveridden", isCopyByReferenceOveridden())
+            .append("mappingCondition", getMappingCondition())
+            .append("mappingConditionId", getMappingConditionId())
+            .toString();
     }
 
     @Override
@@ -332,9 +341,9 @@ public class MultiFieldsExcludeFieldMap extends ExcludeFieldMap {
         throw new UnsupportedOperationException();
     }
 
-//    @Override
-//    public MappingDirection getType() {
-//        return MappingDirection.ONE_WAY;
-//    }
+    // @Override
+    // public MappingDirection getType() {
+    // return MappingDirection.ONE_WAY;
+    // }
 
 }

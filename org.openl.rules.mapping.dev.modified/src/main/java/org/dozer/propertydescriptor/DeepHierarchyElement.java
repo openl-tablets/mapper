@@ -39,5 +39,5 @@ public class DeepHierarchyElement {
     public Class<?> getHintType() {
         return hintType;
     }
-    
+
 }

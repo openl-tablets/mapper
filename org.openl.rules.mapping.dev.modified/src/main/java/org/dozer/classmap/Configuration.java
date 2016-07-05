@@ -31,6 +31,9 @@ import org.dozer.util.DozerConstants;
  */
 public class Configuration {
 
+    private final CustomConverterContainer customConverters = new CustomConverterContainer();
+    private final CopyByReferenceContainer copyByReferences = new CopyByReferenceContainer();
+    private final AllowedExceptionContainer allowedExceptions = new AllowedExceptionContainer();
     private Boolean wildcard;
     private Boolean stopOnErrors;
     private Boolean trimStrings;
@@ -40,10 +43,6 @@ public class Configuration {
     private String dateFormat;
     private String beanFactory;
     private RelationshipType relationshipType;
-
-    private final CustomConverterContainer customConverters = new CustomConverterContainer();
-    private final CopyByReferenceContainer copyByReferences = new CopyByReferenceContainer();
-    private final AllowedExceptionContainer allowedExceptions = new AllowedExceptionContainer();
 
     public AllowedExceptionContainer getAllowedExceptions() {
         return allowedExceptions;
@@ -96,7 +95,7 @@ public class Configuration {
     public void setTrimStrings(Boolean trimStrings) {
         this.trimStrings = trimStrings;
     }
-    
+
     public Boolean getMapNulls() {
         return mapNulls != null ? mapNulls : Boolean.valueOf(DozerConstants.DEFAULT_MAP_NULL_POLICY);
     }
@@ -106,7 +105,8 @@ public class Configuration {
     }
 
     public Boolean getMapEmptyStrings() {
-        return mapEmptyStrings  != null ? mapEmptyStrings : Boolean.valueOf(DozerConstants.DEFAULT_MAP_EMPTY_STRING_POLICY);
+        return mapEmptyStrings != null ? mapEmptyStrings
+                                       : Boolean.valueOf(DozerConstants.DEFAULT_MAP_EMPTY_STRING_POLICY);
     }
 
     public void setMapEmptyStrings(Boolean mapEmptyStrings) {
@@ -114,7 +114,7 @@ public class Configuration {
     }
 
     public Boolean getRequiredFields() {
-        return requiredFields  != null ? requiredFields : Boolean.valueOf(DozerConstants.DEFAULT_REQUIRED_FIELDS_POLICY);
+        return requiredFields != null ? requiredFields : Boolean.valueOf(DozerConstants.DEFAULT_REQUIRED_FIELDS_POLICY);
     }
 
     public void setRequiredFields(Boolean requiredFields) {

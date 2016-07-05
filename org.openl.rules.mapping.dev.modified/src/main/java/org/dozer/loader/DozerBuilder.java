@@ -57,8 +57,44 @@ import org.dozer.util.MappingUtils;
  */
 public class DozerBuilder {
 
-    MappingFileData data = new MappingFileData();
     private final List<MappingBuilder> mappingBuilders = new ArrayList<MappingBuilder>();
+    MappingFileData data = new MappingFileData();
+
+    private static DozerField prepareField(String name, String type) {
+        String fieldName;
+        String fieldType = null;
+        if (isIndexed(name)) {
+            fieldName = getFieldNameOfIndexedField(name);
+        } else {
+            fieldName = name;
+        }
+        if (StringUtils.isNotEmpty(type)) {
+            fieldType = type;
+        }
+        DozerField field = new DozerField(fieldName, fieldType);
+        if (isIndexed(name)) {
+            field.setIndexed(true);
+            field.setIndex(getIndexOfIndexedField(name));
+        }
+        return field;
+    }
+
+    private static boolean isIndexed(String fieldName) {
+        return (fieldName != null) && (fieldName.matches(".+\\[.+?\\]$"));
+    }
+
+    static String getFieldNameOfIndexedField(String fieldName) {
+        if (fieldName == null) {
+            return null;
+        }
+
+        return fieldName.substring(0, fieldName.lastIndexOf('['));
+    }
+
+    private static String getIndexOfIndexedField(String fieldName) {
+        return fieldName.substring(fieldName.lastIndexOf('[') + 1, fieldName.lastIndexOf(']'));
+        // return fieldName.replaceAll(".*\\[", "").replaceAll("\\]", "");
+    }
 
     public MappingFileData build() {
         for (MappingBuilder builder : mappingBuilders) {
@@ -82,10 +118,18 @@ public class DozerBuilder {
         return mappingDefinitionBuilder;
     }
 
+    public interface FieldBuider {
+        FieldDefinitionBuilder a(String name, String type);
+
+        FieldDefinitionBuilder b(String name, String type);
+
+        void build();
+    }
+
     public static class MappingBuilder {
 
-        private ClassMap classMap;
         private final List<FieldBuider> fieldBuilders = new ArrayList<FieldBuider>();
+        private ClassMap classMap;
 
         public MappingBuilder(ClassMap classMap) {
             this.classMap = classMap;
@@ -190,14 +234,6 @@ public class DozerBuilder {
             }
         }
 
-    }
-
-    public interface FieldBuider {
-        FieldDefinitionBuilder a(String name, String type);
-
-        FieldDefinitionBuilder b(String name, String type);
-
-        void build();
     }
 
     public static class FieldExclusionBuilder implements FieldBuider {
@@ -357,7 +393,8 @@ public class DozerBuilder {
             } else {
                 DozerField srcField = src.get(0);
 
-                if (srcField.isMapTypeCustomGetterSetterField() || destField.isMapTypeCustomGetterSetterField() || classMap
+                if (srcField.isMapTypeCustomGetterSetterField() || destField
+                    .isMapTypeCustomGetterSetterField() || classMap
                         .isSrcClassMapTypeCustomGetterSetter() || classMap.isDestClassMapTypeCustomGetterSetter()) {
                     result = new MapFieldMap(classMap);
                 } else if (srcField.isCustomGetterSetterField() || destField.isCustomGetterSetterField()) {
@@ -452,20 +489,20 @@ public class DozerBuilder {
             field.setDefaultValue(attribute);
         }
 
-//        public void hint(Class<?>... types) {
-//            HintContainer hintContainer = FieldMapUtils.hint(types);
-//            field.setHintContainer(hintContainer);
-//        }
+        // public void hint(Class<?>... types) {
+        // HintContainer hintContainer = FieldMapUtils.hint(types);
+        // field.setHintContainer(hintContainer);
+        // }
 
         public void hint(String types) {
             HintContainer hintContainer = FieldMapUtils.hint(types);
             field.setHintContainer(hintContainer);
         }
 
-//        public void deepHint(Class<?>... types) {
-//            HintContainer hintContainer = FieldMapUtils.hint(types);
-//            field.setDeepIndexHintContainer(hintContainer);
-//        }
+        // public void deepHint(Class<?>... types) {
+        // HintContainer hintContainer = FieldMapUtils.hint(types);
+        // field.setDeepIndexHintContainer(hintContainer);
+        // }
 
         public void deepHint(String types) {
             HintContainer hintContainer = FieldMapUtils.hint(types);
@@ -479,42 +516,6 @@ public class DozerBuilder {
         public DozerField build() {
             return field;
         }
-    }
-
-    private static DozerField prepareField(String name, String type) {
-        String fieldName;
-        String fieldType = null;
-        if (isIndexed(name)) {
-            fieldName = getFieldNameOfIndexedField(name);
-        } else {
-            fieldName = name;
-        }
-        if (StringUtils.isNotEmpty(type)) {
-            fieldType = type;
-        }
-        DozerField field = new DozerField(fieldName, fieldType);
-        if (isIndexed(name)) {
-            field.setIndexed(true);
-            field.setIndex(getIndexOfIndexedField(name));
-        }
-        return field;
-    }
-
-    private static boolean isIndexed(String fieldName) {
-        return (fieldName != null) && (fieldName.matches(".+\\[.+?\\]$"));
-    }
-
-    static String getFieldNameOfIndexedField(String fieldName) {
-        if (fieldName == null) {
-            return null;
-        }
-
-        return fieldName.substring(0, fieldName.lastIndexOf('['));
-    }
-
-    private static String getIndexOfIndexedField(String fieldName) {
-        return fieldName.substring(fieldName.lastIndexOf('[') + 1, fieldName.lastIndexOf(']'));
-//        return fieldName.replaceAll(".*\\[", "").replaceAll("\\]", "");
     }
 
     public static class ClassDefinitionBuilder {
@@ -646,9 +647,8 @@ public class DozerBuilder {
         // TODO Restrict with generic
         public ConfigurationBuilder allowedException(Class type) {
             if (!RuntimeException.class.isAssignableFrom(type)) {
-                MappingUtils
-                        .throwMappingException("allowed-exception Type must extend java.lang.RuntimeException: " + type
-                                .getName());
+                MappingUtils.throwMappingException(
+                    "allowed-exception Type must extend java.lang.RuntimeException: " + type.getName());
             }
             configuration.getAllowedExceptions().getExceptions().add(type);
             return this;

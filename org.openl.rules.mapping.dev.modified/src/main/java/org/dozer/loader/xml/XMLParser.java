@@ -292,29 +292,31 @@ public class XMLParser implements MappingsSource {
     }
 
     private DozerBuilder.FieldMappingBuilder determineFieldMap(DozerBuilder.MappingBuilder definitionBuilder,
-        Element ele) {
+            Element ele) {
         DozerBuilder.FieldMappingBuilder fieldMapBuilder = definitionBuilder.field();
 
-//        NodeList nl = ele.getChildNodes();
-//        for (int i = 0; i < nl.getLength(); i++) {
-//            Node node = nl.item(i);
-//            if (node instanceof Element) {
-//                Element element = (Element) node;
-//
-//                if (A_ELEMENT.equals(element.getNodeName())) {
-//                    String name = getNodeValue(element);
-//                    String type = getAttribute(element, TYPE_ATTRIBUTE);
-//                    DozerBuilder.FieldDefinitionBuilder builder = fieldMapBuilder.a(name, type);
-//                    parseField(element, builder);
-//                }
-//                if (B_ELEMENT.equals(element.getNodeName())) {
-//                    String name = getNodeValue(element);
-//                    String type = getAttribute(element, TYPE_ATTRIBUTE);
-//                    DozerBuilder.FieldDefinitionBuilder builder = fieldMapBuilder.b(name, type);
-//                    parseField(element, builder);
-//                }
-//            }
-//        }
+        // NodeList nl = ele.getChildNodes();
+        // for (int i = 0; i < nl.getLength(); i++) {
+        // Node node = nl.item(i);
+        // if (node instanceof Element) {
+        // Element element = (Element) node;
+        //
+        // if (A_ELEMENT.equals(element.getNodeName())) {
+        // String name = getNodeValue(element);
+        // String type = getAttribute(element, TYPE_ATTRIBUTE);
+        // DozerBuilder.FieldDefinitionBuilder builder = fieldMapBuilder.a(name,
+        // type);
+        // parseField(element, builder);
+        // }
+        // if (B_ELEMENT.equals(element.getNodeName())) {
+        // String name = getNodeValue(element);
+        // String type = getAttribute(element, TYPE_ATTRIBUTE);
+        // DozerBuilder.FieldDefinitionBuilder builder = fieldMapBuilder.b(name,
+        // type);
+        // parseField(element, builder);
+        // }
+        // }
+        // }
 
         return fieldMapBuilder;
     }
@@ -377,14 +379,14 @@ public class XMLParser implements MappingsSource {
         if (StringUtils.isNotEmpty(getAttribute(ele, DEFAULT_VALUE_ATTRIBUTE))) {
             fieldBuilder.defaultValue(getAttribute(ele, DEFAULT_VALUE_ATTRIBUTE));
         }
-        
+
         NodeList nl = ele.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element element = (Element) node;
                 debugElement(element);
-                
+
                 if (HINT_ELEMENT.equals(element.getNodeName())) {
                     String hint = getNodeValue(element);
                     fieldBuilder.hint(hint);

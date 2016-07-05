@@ -50,8 +50,11 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
 
     private Class<?> propertyType;
 
-    public GetterSetterPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, String index,
-        HintContainer deepIndexHintContainer) {
+    public GetterSetterPropertyDescriptor(Class<?> clazz,
+            String fieldName,
+            boolean isIndexed,
+            String index,
+            HintContainer deepIndexHintContainer) {
         super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
     }
 
@@ -124,7 +127,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
         Object parentObj = srcObj;
         Object hierarchyValue = parentObj;
         // get deep hierarchy for current source object
-        // 
+        //
         DeepHierarchyElement[] hierarchy = getDeepFieldHierarchy(srcObj, deepIndexHintContainer);
         int hierarchyLength = hierarchy.length;
 
@@ -140,7 +143,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
             if (!MappingUtils.isBlankOrNull(hierarchyElement.getIndex())) {
                 Object bean = ReflectionUtils.invoke(pd.getReadMethod(), hierarchyValue, null);
                 // Obtain field value with appropriate method
-                // 
+                //
                 if (MappingUtils.isSimpleCollectionIndex(hierarchyElement.getIndex())) {
                     int collectionIndex = MappingUtils.getCollectionIndex(hierarchyElement.getIndex());
                     hierarchyValue = MappingUtils.getCollectionIndexedValue(bean, collectionIndex);
@@ -236,8 +239,10 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                     int collectionIndex = MappingUtils.getCollectionIndex(index);
 
                     if (clazz.isArray()) {
-                        o = MappingUtils.prepareIndexedCollection(clazz, null, DestBeanCreator.create(null, clazz
-                            .getComponentType()), collectionIndex);
+                        o = MappingUtils.prepareIndexedCollection(clazz,
+                            null,
+                            DestBeanCreator.create(null, clazz.getComponentType()),
+                            collectionIndex);
                     }
 
                     if (Collection.class.isAssignableFrom(clazz)) {
@@ -246,27 +251,35 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                         if (fieldMap.getDestDeepIndexHintContainer() != null) {
                             hintType = fieldMap.getDestDeepIndexHintContainer().getHint(i);
                         }
-                        
+
                         collectionEntryType = ReflectionUtils.getComponentType(clazz, pd, hintType);
 
-                        o = MappingUtils.prepareIndexedCollection(clazz, null, DestBeanCreator
-                            .create(null, collectionEntryType), collectionIndex);
+                        o = MappingUtils.prepareIndexedCollection(clazz,
+                            null,
+                            DestBeanCreator.create(null, collectionEntryType),
+                            collectionIndex);
                     }
                 } else {
-                    // if user defined another type of property we should use it 
-                    if (fieldMap.getDestDeepIndexHintContainer() != null && fieldMap.getDestDeepIndexHintContainer().hasHintType(i)) {
+                    // if user defined another type of property we should use it
+                    if (fieldMap.getDestDeepIndexHintContainer() != null && fieldMap.getDestDeepIndexHintContainer()
+                        .hasHintType(i)) {
                         clazz = fieldMap.getDestDeepIndexHintContainer().getHint(i);
                     }
-                    
+
                     try {
                         o = DestBeanCreator.create(null, clazz);
                     } catch (Exception e) {
                         // lets see if they have a factory we can try as a last
                         // ditch. If not...throw the exception:
                         if (fieldMap.getClassMap().getDestClassBeanFactory() != null) {
-                            o = DestBeanCreator.create(null, new BeanCreationDirective(null, fieldMap.getClassMap()
-                                .getSrcClassToMap(), clazz, clazz, fieldMap.getClassMap().getDestClassBeanFactory(),
-                                fieldMap.getClassMap().getDestClassBeanFactoryId(), null));
+                            o = DestBeanCreator.create(null,
+                                new BeanCreationDirective(null,
+                                    fieldMap.getClassMap().getSrcClassToMap(),
+                                    clazz,
+                                    clazz,
+                                    fieldMap.getClassMap().getDestClassBeanFactory(),
+                                    fieldMap.getClassMap().getDestClassBeanFactoryId(),
+                                    null));
                         } else {
                             MappingUtils.throwMappingException(e);
                         }
@@ -285,17 +298,18 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                 // We cannot use another type of collection index for
                 // destination field path except simple one because, for
                 // example, xpath filtered index can return different elements
-                // during mapping process. 
+                // during mapping process.
                 if (!MappingUtils.isSimpleCollectionIndex(index)) {
                     MappingUtils.throwMappingException("Destination field path should not contain filter expressions");
                 }
 
                 int collectionIndex = MappingUtils.getCollectionIndex(index);
-                
+
                 // Check that collection should be resized if it has
                 // inappropriate length or element at the collectionIndex is
                 // null.
-                if (currentSize < collectionIndex + 1 || MappingUtils.getCollectionIndexedValue(value, collectionIndex) == null) {
+                if (currentSize < collectionIndex + 1 || MappingUtils.getCollectionIndexedValue(value,
+                    collectionIndex) == null) {
                     Class<?> hintType = null;
 
                     if (fieldMap.getDestDeepIndexHintContainer() != null) {
@@ -304,9 +318,12 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
 
                     Class<?> componentType = ReflectionUtils.getComponentType(pd.getPropertyType(), pd, hintType);
                     // Update collection with new one element.
-                    value = MappingUtils.prepareIndexedCollection(pd.getPropertyType(), value, DestBeanCreator.create(null, componentType), collectionIndex);
+                    value = MappingUtils.prepareIndexedCollection(pd.getPropertyType(),
+                        value,
+                        DestBeanCreator.create(null, componentType),
+                        collectionIndex);
                     // At previous step collection instance was changed so we
-                    // have to update appropriate property of parent object.  
+                    // have to update appropriate property of parent object.
                     ReflectionUtils.invoke(pd.getWriteMethod(), parentObj, new Object[] { value });
                     // Re-read value object from parent object to avoid using
                     // invalid instance of property value.
@@ -386,7 +403,7 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
 
             int collectionIndex = MappingUtils.getCollectionIndex(index);
             Object existingValue = invokeReadMethod(destObj);
-            
+
             if (collectionIndex == -1) {
                 if (existingValue != null) {
                     collectionIndex = CollectionUtils.getLengthOfCollection(existingValue);
@@ -400,12 +417,14 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
     }
 
     private void writeIndexedValue(Object destObj, int collectionIndex, Object existingValue, Object destFieldValue) {
-        Object indexedValue = MappingUtils.prepareIndexedCollection(getPropertyType(), existingValue, destFieldValue,
+        Object indexedValue = MappingUtils.prepareIndexedCollection(getPropertyType(),
+            existingValue,
+            destFieldValue,
             collectionIndex);
 
         invokeWriteMethod(destObj, indexedValue);
-    } 
-    
+    }
+
     private Class determinePropertyType() {
         Method readMethod = getBridgedReadMethod();
         Method writeMethod = getBridgedWriteMethod();

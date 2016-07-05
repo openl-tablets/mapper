@@ -39,7 +39,7 @@ public final class FieldsMappingOptions {
     }
 
     public static FieldsMappingOption customConverter(final Class<? extends CustomConverter> type,
-        final String parameter) {
+            final String parameter) {
         return customConverter(type.getName(), parameter);
     }
 
@@ -127,7 +127,7 @@ public final class FieldsMappingOptions {
             }
         };
     }
-    
+
     public static FieldsMappingOption trimString(final boolean value) {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
@@ -137,28 +137,27 @@ public final class FieldsMappingOptions {
     }
 
     public static FieldsMappingOption removeOrphans() {
-      return removeOrphans(true);
+        return removeOrphans(true);
     }
 
     public static FieldsMappingOption removeOrphans(final boolean removeOrphans) {
-      return new FieldsMappingOption() {
-        public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
-          fieldMappingBuilder.removeOrphans(removeOrphans);
-        }
-      };
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.removeOrphans(removeOrphans);
+            }
+        };
     }
 
     public static FieldsMappingOption relationshipType(final RelationshipType relationshipType) {
-      return new FieldsMappingOption() {
-        public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
-          fieldMappingBuilder.relationshipType(relationshipType);
-        }
-      };
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.relationshipType(relationshipType);
+            }
+        };
     }
 
-
     public static FieldsMappingOption collectionStrategy(final boolean removeOrphans,
-        final RelationshipType relationshipType) {
+            final RelationshipType relationshipType) {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
                 fieldMappingBuilder.removeOrphans(removeOrphans);
@@ -166,5 +165,5 @@ public final class FieldsMappingOptions {
             }
         };
     }
-    
+
 }

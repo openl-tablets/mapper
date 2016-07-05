@@ -16,7 +16,6 @@ public class MappingContext {
      */
     private MappingParameters userParams;
 
-    
     public String getMapId() {
         return mapId;
     }

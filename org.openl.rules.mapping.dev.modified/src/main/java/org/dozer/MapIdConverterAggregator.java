@@ -11,18 +11,46 @@ public class MapIdConverterAggregator extends MapIdConverter {
     private List<MapIdConverter> mapIdConverters = new ArrayList<MapIdConverter>();
 
     @Override
-    public boolean canConvert(MappingParameters mappingParameters, Object existingDestinationFieldValue, Object sourceFieldValue, Class<?> destinationClass, Class<?> sourceClass) {
-        return getConverter(mappingParameters, existingDestinationFieldValue, sourceFieldValue, destinationClass, sourceClass) != null;
+    public boolean canConvert(MappingParameters mappingParameters,
+            Object existingDestinationFieldValue,
+            Object sourceFieldValue,
+            Class<?> destinationClass,
+            Class<?> sourceClass) {
+        return getConverter(mappingParameters,
+            existingDestinationFieldValue,
+            sourceFieldValue,
+            destinationClass,
+            sourceClass) != null;
     }
 
     @Override
-    public String convert(MappingParameters mappingParameters, Object existingDestinationFieldValue, Object sourceFieldValue, Class<?> destinationClass, Class<?> sourceClass) {
-        return getConverter(mappingParameters, existingDestinationFieldValue, sourceFieldValue, destinationClass, sourceClass).convert(mappingParameters, existingDestinationFieldValue, sourceFieldValue, destinationClass, sourceClass);
+    public String convert(MappingParameters mappingParameters,
+            Object existingDestinationFieldValue,
+            Object sourceFieldValue,
+            Class<?> destinationClass,
+            Class<?> sourceClass) {
+        return getConverter(mappingParameters,
+            existingDestinationFieldValue,
+            sourceFieldValue,
+            destinationClass,
+            sourceClass).convert(mappingParameters,
+                existingDestinationFieldValue,
+                sourceFieldValue,
+                destinationClass,
+                sourceClass);
     }
 
-    private MapIdConverter getConverter(MappingParameters mappingParameters, Object existingDestinationFieldValue, Object sourceFieldValue, Class<?> destinationClass, Class<?> sourceClass) {
+    private MapIdConverter getConverter(MappingParameters mappingParameters,
+            Object existingDestinationFieldValue,
+            Object sourceFieldValue,
+            Class<?> destinationClass,
+            Class<?> sourceClass) {
         for (MapIdConverter mapIdConverter : mapIdConverters) {
-            if (mapIdConverter.canConvert(mappingParameters, existingDestinationFieldValue, sourceFieldValue, destinationClass, sourceClass)) {
+            if (mapIdConverter.canConvert(mappingParameters,
+                existingDestinationFieldValue,
+                sourceFieldValue,
+                destinationClass,
+                sourceClass)) {
                 return mapIdConverter;
             }
         }

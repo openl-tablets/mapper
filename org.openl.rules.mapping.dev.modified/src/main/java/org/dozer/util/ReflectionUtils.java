@@ -15,14 +15,6 @@
  */
 package org.dozer.util;
 
-import org.apache.commons.lang.reflect.MethodUtils;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
-import org.dozer.MappingException;
-import org.dozer.fieldmap.HintContainer;
-import org.dozer.propertydescriptor.DeepHierarchyElement;
-
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -35,6 +27,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
+import org.dozer.MappingException;
+import org.dozer.fieldmap.HintContainer;
+import org.dozer.propertydescriptor.DeepHierarchyElement;
 
 /**
  * Internal class that provides a various reflection utilities(specific to Dozer
@@ -51,8 +51,9 @@ public final class ReflectionUtils {
     private ReflectionUtils() {
     }
 
-    public static PropertyDescriptor findPropertyDescriptor(Class<?> objectClass, String fieldName,
-                                                            HintContainer deepIndexHintContainer) {
+    public static PropertyDescriptor findPropertyDescriptor(Class<?> objectClass,
+            String fieldName,
+            HintContainer deepIndexHintContainer) {
         PropertyDescriptor result = null;
 
         if (MappingUtils.isDeepMapping(fieldName)) {
@@ -97,8 +98,9 @@ public final class ReflectionUtils {
         return result;
     }
 
-    public static DeepHierarchyElement[] getDeepFieldHierarchy(Class<?> parentClass, String field,
-        HintContainer deepIndexHintContainer) {
+    public static DeepHierarchyElement[] getDeepFieldHierarchy(Class<?> parentClass,
+            String field,
+            HintContainer deepIndexHintContainer) {
         if (!MappingUtils.isDeepMapping(field)) {
             MappingUtils.throwMappingException("Field does not contain deep field delimitor");
         }
@@ -118,13 +120,15 @@ public final class ReflectionUtils {
                 indexExpression = aFieldName.substring(aFieldName.indexOf('[') + 1, aFieldName.indexOf(']'));
             }
 
-            PropertyDescriptor propDescriptor = findPropertyDescriptor(latestClass, theFieldName, deepIndexHintContainer);
+            PropertyDescriptor propDescriptor = findPropertyDescriptor(latestClass,
+                theFieldName,
+                deepIndexHintContainer);
 
             if (propDescriptor == null) {
-                MappingUtils
-                    .throwMappingException("Exception occurred determining deep field hierarchy for Class --> " + parentClass
+                MappingUtils.throwMappingException(
+                    "Exception occurred determining deep field hierarchy for Class --> " + parentClass
                         .getName() + ", Field --> " + field + ".  Unable to determine property descriptor for Class --> " + latestClass
-                        .getName() + ", Field Name: " + aFieldName);
+                            .getName() + ", Field Name: " + aFieldName);
             }
 
             latestClass = propDescriptor.getPropertyType();
@@ -138,7 +142,7 @@ public final class ReflectionUtils {
                         // just ignore the exception
                     }
                 }
-                
+
                 if (hintType != null) {
                     latestClass = hintType;
                 } else if (latestClass.isArray()) {
@@ -147,10 +151,10 @@ public final class ReflectionUtils {
                     Class<?> genericType = determineGenericsType(propDescriptor);
 
                     if (genericType == null && deepIndexHintContainer == null) {
-                        MappingUtils
-                            .throwMappingException("Hint(s) or Generics not specified.  Hint(s) or Generics must be specified for deep mapping with indexed field(s). Exception occurred determining deep field hierarchy for Class --> " + parentClass
+                        MappingUtils.throwMappingException(
+                            "Hint(s) or Generics not specified.  Hint(s) or Generics must be specified for deep mapping with indexed field(s). Exception occurred determining deep field hierarchy for Class --> " + parentClass
                                 .getName() + ", Field --> " + field + ".  Unable to determine property descriptor for Class --> " + latestClass
-                                .getName() + ", Field Name: " + aFieldName);
+                                    .getName() + ", Field Name: " + aFieldName);
                     }
                     if (genericType != null) {
                         latestClass = genericType;
@@ -209,8 +213,9 @@ public final class ReflectionUtils {
         return result;
     }
 
-    private static Method findMethodWithParam(Class<?> parentDestClass, String methodName, String params)
-        throws NoSuchMethodException {
+    private static Method findMethodWithParam(Class<?> parentDestClass,
+            String methodName,
+            String params) throws NoSuchMethodException {
         List<Class<?>> list = new ArrayList<Class<?>>();
         if (params != null) {
             StringTokenizer tokenizer = new StringTokenizer(params, ",");
@@ -343,7 +348,9 @@ public final class ReflectionUtils {
         return message.toString();
     }
 
-    public static Method getMethod(Class<?> clazz, String name, Class<?>[] parameterTypes) throws NoSuchMethodException {
+    public static Method getMethod(Class<?> clazz,
+            String name,
+            Class<?>[] parameterTypes) throws NoSuchMethodException {
         return clazz.getMethod(name, parameterTypes);
     }
 
@@ -435,7 +442,7 @@ public final class ReflectionUtils {
     public static Method findMatchingAccessibleMethod(Class<?> clazz, String methodName, Class<?>[] paramTypes) {
         return MethodUtils.getMatchingAccessibleMethod(clazz, methodName, paramTypes);
     }
-    
+
     public static Class<?> loadClass(ClassLoader classLoader, String className) {
         try {
             return ClassUtils.getClass(classLoader, className);
@@ -445,7 +452,7 @@ public final class ReflectionUtils {
 
         return null;
     }
-    
+
     public static Class<?> getComponentType(Class<?> container, PropertyDescriptor pd, Class<?> hintType) {
 
         Class<?> componentType = null;

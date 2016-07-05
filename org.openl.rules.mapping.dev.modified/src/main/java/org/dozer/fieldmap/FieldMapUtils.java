@@ -11,33 +11,33 @@ public final class FieldMapUtils {
 
     private FieldMapUtils() {
     }
-    
+
     public static String getFieldName(List<DozerField> fields) {
         String name = StringUtils.EMPTY;
-        for (DozerField field: fields) {
-            name = StringUtils.join(new Object[]{name, field.getName()}, ",");
+        for (DozerField field : fields) {
+            name = StringUtils.join(new Object[] { name, field.getName() }, ",");
         }
-        
+
         return name;
     }
 
     public static String getFieldKey(List<DozerField> fields) {
         String key = StringUtils.EMPTY;
-        for (DozerField field: fields) {
+        for (DozerField field : fields) {
             String fieldKey = field.getKey() != null ? field.getKey() : field.getName();
-            key = StringUtils.join(new Object[]{key, fieldKey}, ",");
+            key = StringUtils.join(new Object[] { key, fieldKey }, ",");
         }
-        
+
         return key;
     }
-    
+
     public static HintContainer hint(String types) {
         if (StringUtils.isNotEmpty(types)) {
             HintContainer hintContainer = new HintContainer();
             hintContainer.setHintName(types);
             return hintContainer;
         }
-        
+
         return null;
     }
 
@@ -55,17 +55,17 @@ public final class FieldMapUtils {
         if (!MappingUtils.isBlankOrNull(field.getDateFormat())) {
             return field.getDateFormat();
         }
-          
+
         return classMap.getDateFormat();
     }
-    
+
     public static List<DozerField> getCopy(List<DozerField> fields) {
         List<DozerField> copy = new ArrayList<DozerField>(fields.size());
-        
+
         for (DozerField field : fields) {
             copy.add(field.copyOf());
         }
-        
+
         return copy;
     }
 

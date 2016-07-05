@@ -20,6 +20,9 @@ public abstract class BaseMappingParamsAwareBeanFactory implements MappingParams
         return createBean(parameters.get(), source, sourceClass, targetBeanId);
     }
 
-    public abstract Object createBean(MappingParameters params, Object source, Class<?> sourceClass, String targetBeanId);
+    public abstract Object createBean(MappingParameters params,
+            Object source,
+            Class<?> sourceClass,
+            String targetBeanId);
 
 }

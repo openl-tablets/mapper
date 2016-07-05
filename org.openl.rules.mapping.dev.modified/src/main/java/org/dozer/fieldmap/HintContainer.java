@@ -53,13 +53,13 @@ public class HintContainer {
     }
 
     public boolean hasHintType(int index) {
-        return index < getHints().size() && getHint(index) != null; 
+        return index < getHints().size() && getHint(index) != null;
     }
-    
+
     public List<Class<?>> getHints() {
         if (hints == null) {
             List<Class<?>> list = new ArrayList<Class<?>>();
-            
+
             if (!MappingUtils.isBlankOrNull(hintName)) {
                 String[] tokens = hintName.split(",");
 
@@ -87,8 +87,8 @@ public class HintContainer {
         }
         // validate sizes
         if (clazzHints.size() != hintsSize) {
-            MappingUtils
-                .throwMappingException("When using multiple source and destination hints there must be exactly the same number of hints on the source and the destination.");
+            MappingUtils.throwMappingException(
+                "When using multiple source and destination hints there must be exactly the same number of hints on the source and the destination.");
         }
         int count = 0;
         String myClazName = MappingUtils.getRealClass(clazz).getName();

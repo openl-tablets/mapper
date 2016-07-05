@@ -15,14 +15,14 @@
  */
 package org.dozer.propertydescriptor;
 
+import java.lang.ref.SoftReference;
+import java.lang.reflect.Method;
+
 import org.dozer.MappingException;
 import org.dozer.fieldmap.FieldMap;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.util.MappingUtils;
 import org.dozer.util.ReflectionUtils;
-
-import java.lang.ref.SoftReference;
-import java.lang.reflect.Method;
 
 /**
  * Internal class used to read and write values for Map backed objects that use
@@ -50,8 +50,14 @@ public class MapPropertyDescriptor extends GetterSetterPropertyDescriptor {
     private SoftReference<Method> writeMethod;
     private SoftReference<Method> readMethod;
 
-    public MapPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, String index, String setMethod,
-        String getMethod, String key, HintContainer deepIndexHintContainer) {
+    public MapPropertyDescriptor(Class<?> clazz,
+            String fieldName,
+            boolean isIndexed,
+            String index,
+            String setMethod,
+            String getMethod,
+            String key,
+            HintContainer deepIndexHintContainer) {
         super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
         this.setMethodName = setMethod;
         this.getMethodName = getMethod;

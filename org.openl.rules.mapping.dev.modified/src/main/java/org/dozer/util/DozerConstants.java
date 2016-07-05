@@ -30,11 +30,7 @@ import org.dozer.factory.XMLBeanFactory;
  */
 public final class DozerConstants {
 
-    private DozerConstants() {
-    }
-
     public static final String CURRENT_VERSION = "5.3.2";
-
     public static final boolean DEFAULT_WILDCARD_POLICY = true;
     public static final boolean DEFAULT_ERROR_POLICY = true;
     public static final boolean DEFAULT_MAP_NULL_POLICY = true;
@@ -49,7 +45,6 @@ public final class DozerConstants {
     public static final boolean DEFAULT_AUTOREGISTER_JMX_BEANS = true;
     public static final boolean DEFAULT_STATISTICS_ENABLED = false;
     public static final boolean DEFAULT_EL_ENABLED = false;
-
     public static final String XSD_NAME = "beanmapping.xsd";
     public static final String CONFIG_FILE_SYS_PROP = "dozer.configuration"; // i.e)-Ddozer.configuration=somefile.properties
     public static final String DEBUG_SYS_PROP = "dozer.debug";// i.e)-Ddozer.debug=true
@@ -60,11 +55,12 @@ public final class DozerConstants {
     public static final String CGLIB_ID = "$$EnhancerByCGLIB$$";
     public static final String BASE_CLASS = Object.class.getName();
     public static final String XML_BEAN_FACTORY = XMLBeanFactory.class.getName();
-
     public static final String DEFAULT_CLASS_LOADER_BEAN = DefaultClassLoader.class.getName();
     public static final String DEFAULT_PROXY_RESOLVER_BEAN = DefaultProxyResolver.class.getName();
-
     public static final String JAVASSIST_PACKAGE = "org.javassist.tmp.";
     public static final String JAVASSIST_NAME = "_$$_javassist_";
+
+    private DozerConstants() {
+    }
 
 }
