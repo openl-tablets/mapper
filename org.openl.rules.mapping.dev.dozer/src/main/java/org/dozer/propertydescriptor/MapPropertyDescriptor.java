@@ -29,14 +29,14 @@ import org.dozer.util.ReflectionUtils;
  * key/value pairs. The specified "key" is used when invoking getter/setter. It
  * is assumed that Map setter method has two parameters (for "key" and "value"),
  * but getter method one parameter (for "key").
- *
+ * 
  * Overloaded methods are supported. Map class can have two set methods with
  * different signatures, but class will choose the one with appropriate number
  * of parameters.
- *
+ * 
  * <p/>
  * Only intended for internal use.
- *
+ * 
  * @author garsombke.franz
  * @author tierney.matt
  * @author dmitry.buzdin
@@ -53,13 +53,12 @@ public class MapPropertyDescriptor extends GetterSetterPropertyDescriptor {
     public MapPropertyDescriptor(Class<?> clazz,
             String fieldName,
             boolean isIndexed,
-            int index,
+            String index,
             String setMethod,
             String getMethod,
             String key,
-            HintContainer srcDeepIndexHintContainer,
-            HintContainer destDeepIndexHintContainer) {
-        super(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
+            HintContainer deepIndexHintContainer) {
+        super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
         this.setMethodName = setMethod;
         this.getMethodName = getMethod;
         this.key = key;

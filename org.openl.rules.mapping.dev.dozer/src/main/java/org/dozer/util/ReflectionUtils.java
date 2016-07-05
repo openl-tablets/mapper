@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.dozer.MappingException;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.propertydescriptor.DeepHierarchyElement;
@@ -37,7 +40,7 @@ import org.dozer.propertydescriptor.DeepHierarchyElement;
  * Internal class that provides a various reflection utilities(specific to Dozer
  * requirements) used throughout the code base. Not intended for direct use by
  * application code.
- *
+ * 
  * @author tierney.matt
  * @author garsombke.franz
  */
@@ -52,6 +55,7 @@ public final class ReflectionUtils {
             String fieldName,
             HintContainer deepIndexHintContainer) {
         PropertyDescriptor result = null;
+
         if (MappingUtils.isDeepMapping(fieldName)) {
             DeepHierarchyElement[] hierarchy = getDeepFieldHierarchy(objectClass, fieldName, deepIndexHintContainer);
             result = hierarchy[hierarchy.length - 1].getPropDescriptor();
@@ -79,7 +83,6 @@ public final class ReflectionUtils {
                     // {
                     // continue;
                     // }
-
                     String propertyName = descriptors[i].getName();
                     if (fieldName.equals(propertyName)) {
                         return descriptors[i];
@@ -106,22 +109,20 @@ public final class ReflectionUtils {
         Class<?> latestClass = parentClass;
         DeepHierarchyElement[] hierarchy = new DeepHierarchyElement[toks.countTokens()];
         int index = 0;
-        int hintIndex = 0;
+
         while (toks.hasMoreTokens()) {
             String aFieldName = toks.nextToken();
             String theFieldName = aFieldName;
-            int collectionIndex = -1;
+            String indexExpression = null;
 
             if (aFieldName.contains("[")) {
-                theFieldName = aFieldName.substring(0, aFieldName.indexOf("["));
-                collectionIndex = Integer
-                    .parseInt(aFieldName.substring(aFieldName.indexOf("[") + 1, aFieldName.indexOf("]")));
+                theFieldName = aFieldName.substring(0, aFieldName.indexOf('['));
+                indexExpression = aFieldName.substring(aFieldName.indexOf('[') + 1, aFieldName.indexOf(']'));
             }
 
             PropertyDescriptor propDescriptor = findPropertyDescriptor(latestClass,
                 theFieldName,
                 deepIndexHintContainer);
-            DeepHierarchyElement r = new DeepHierarchyElement(propDescriptor, collectionIndex);
 
             if (propDescriptor == null) {
                 MappingUtils.throwMappingException(
@@ -132,7 +133,19 @@ public final class ReflectionUtils {
 
             latestClass = propDescriptor.getPropertyType();
             if (toks.hasMoreTokens()) {
-                if (latestClass.isArray()) {
+                Class<?> hintType = null;
+
+                if (deepIndexHintContainer != null) {
+                    try {
+                        hintType = deepIndexHintContainer.getHint(index);
+                    } catch (Exception e) {
+                        // just ignore the exception
+                    }
+                }
+
+                if (hintType != null) {
+                    latestClass = hintType;
+                } else if (latestClass.isArray()) {
                     latestClass = latestClass.getComponentType();
                 } else if (Collection.class.isAssignableFrom(latestClass)) {
                     Class<?> genericType = determineGenericsType(propDescriptor);
@@ -146,11 +159,12 @@ public final class ReflectionUtils {
                     if (genericType != null) {
                         latestClass = genericType;
                     } else {
-                        latestClass = deepIndexHintContainer.getHint(hintIndex);
-                        hintIndex += 1;
+                        latestClass = deepIndexHintContainer.getHint(index);
                     }
                 }
             }
+            DeepHierarchyElement r = new DeepHierarchyElement(propDescriptor, indexExpression, latestClass);
+
             hierarchy[index++] = r;
         }
 
@@ -393,4 +407,66 @@ public final class ReflectionUtils {
         return result;
     }
 
+    /**
+     * Checks that given object is not null and is array.
+     * 
+     * @param obj object to check
+     * @return <code>true</code> if given is not null and is array;
+     *         <code>false</code> - otherwise
+     */
+    public static boolean isArray(Object obj) {
+        return obj != null && obj.getClass().isArray();
+    }
+
+    public static String mergeTypeNames(Class<?>[] type) {
+        String[] typeNames = new String[type.length];
+        for (int i = 0; i < type.length; i++) {
+            Class<?> t = type[i];
+            typeNames[i] = t.getName();
+        }
+        return StringUtils.join(typeNames, ",");
+    }
+
+    /**
+     * Find an accessible method that matches the given name and has compatible
+     * parameters. Compatible parameters mean that every method parameter is
+     * assignable from the given parameters. In other words, it finds a method
+     * with the given name that will take the parameters given.
+     * 
+     * @param clazz find method in this class
+     * @param methodName find method with this name
+     * @param paramTypes find method with most compatible parameters
+     * @return {@link Method} object if matching method is found;
+     *         <code>null</code> - otherwise
+     */
+    public static Method findMatchingAccessibleMethod(Class<?> clazz, String methodName, Class<?>[] paramTypes) {
+        return MethodUtils.getMatchingAccessibleMethod(clazz, methodName, paramTypes);
+    }
+
+    public static Class<?> loadClass(ClassLoader classLoader, String className) {
+        try {
+            return ClassUtils.getClass(classLoader, className);
+        } catch (ClassNotFoundException e) {
+            MappingUtils.throwMappingException(e);
+        }
+
+        return null;
+    }
+
+    public static Class<?> getComponentType(Class<?> container, PropertyDescriptor pd, Class<?> hintType) {
+
+        Class<?> componentType = null;
+        if (container.isArray()) {
+            componentType = container.getComponentType();
+        } else if (Collection.class.isAssignableFrom(container)) {
+            Class<?> genericType = ReflectionUtils.determineGenericsType(pd);
+            if (genericType != null) {
+                componentType = genericType;
+            } else {
+                componentType = hintType;
+            }
+        }
+
+        return componentType;
+    }
 }

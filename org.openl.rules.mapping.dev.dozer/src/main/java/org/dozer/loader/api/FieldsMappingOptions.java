@@ -16,15 +16,12 @@
 
 package org.dozer.loader.api;
 
-import org.apache.commons.lang.StringUtils;
 import org.dozer.CustomConverter;
 import org.dozer.classmap.MappingDirection;
 import org.dozer.classmap.RelationshipType;
 import org.dozer.loader.DozerBuilder;
 
 /**
- * Mapping options applied on Field level.
- *
  * @author Dmitry Buzdin
  */
 public final class FieldsMappingOptions {
@@ -67,6 +64,38 @@ public final class FieldsMappingOptions {
         };
     }
 
+    public static FieldsMappingOption condition(final String type) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.mappingCondition(type);
+            }
+        };
+    }
+
+    public static FieldsMappingOption conditionId(final String id) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.mappingConditionId(id);
+            }
+        };
+    }
+
+    public static FieldsMappingOption collectionItemDiscriminator(final String type) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.collectionItemDiscriminator(type);
+            }
+        };
+    }
+
+    public static FieldsMappingOption collectionItemDiscriminatorId(final String id) {
+        return new FieldsMappingOption() {
+            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.collectionItemDiscriminatorId(id);
+            }
+        };
+    }
+
     public static FieldsMappingOption useMapId(final String mapId) {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
@@ -83,49 +112,28 @@ public final class FieldsMappingOptions {
         };
     }
 
-    public static FieldsMappingOption hintA(final Class<?>... type) {
+    public static FieldsMappingOption mapNull(final boolean value) {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
-                String declaration = mergeTypeNames(type);
-                fieldMappingBuilder.srcHintContainer(declaration);
+                fieldMappingBuilder.mapNull(value);
             }
         };
     }
 
-    public static FieldsMappingOption hintB(final Class<?>... type) {
+    public static FieldsMappingOption mapEmptyString(final boolean value) {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
-                String declaration = mergeTypeNames(type);
-                fieldMappingBuilder.destHintContainer(declaration);
+                fieldMappingBuilder.mapEmptyString(value);
             }
         };
     }
 
-    public static FieldsMappingOption deepHintA(final Class<?>... type) {
+    public static FieldsMappingOption trimString(final boolean value) {
         return new FieldsMappingOption() {
             public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
-                String declaration = mergeTypeNames(type);
-                fieldMappingBuilder.srcDeepIndexHintContainer(declaration);
+                fieldMappingBuilder.trimString(value);
             }
         };
-    }
-
-    public static FieldsMappingOption deepHintB(final Class<?>... type) {
-        return new FieldsMappingOption() {
-            public void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder) {
-                String declaration = mergeTypeNames(type);
-                fieldMappingBuilder.destDeepIndexHintContainer(declaration);
-            }
-        };
-    }
-
-    private static String mergeTypeNames(Class<?>[] type) {
-        String[] typeNames = new String[type.length];
-        for (int i = 0; i < type.length; i++) {
-            Class<?> t = type[i];
-            typeNames[i] = t.getName();
-        }
-        return StringUtils.join(typeNames, ",");
     }
 
     public static FieldsMappingOption removeOrphans() {

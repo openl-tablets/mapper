@@ -42,12 +42,22 @@ public final class TypeMappingBuilder {
     }
 
     public TypeMappingBuilder fields(FieldDefinition a, FieldDefinition b, FieldsMappingOption... options) {
+        return fields(new FieldDefinition[] { a }, b, options);
+    }
+
+    public TypeMappingBuilder fields(FieldDefinition[] as, String b, FieldsMappingOption... options) {
+        return fields(as, new FieldDefinition(b), options);
+    }
+
+    public TypeMappingBuilder fields(FieldDefinition[] as, FieldDefinition b, FieldsMappingOption... options) {
         DozerBuilder.FieldMappingBuilder builder = beanMappingBuilder.field();
 
-        String aText = a.resolve();
-        String bText = b.resolve();
+        for (FieldDefinition a : as) {
+            String aText = a.resolve();
+            a.build(builder.a(aText));
+        }
 
-        a.build(builder.a(aText));
+        String bText = b.resolve();
         b.build(builder.b(bText));
 
         for (FieldsMappingOption option : options) {

@@ -21,13 +21,11 @@ import java.util.List;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.dozer.cache.Cache;
-import org.dozer.cache.CacheKeyFactory;
 
 /**
  * Internal class for holding custom converter definitions. Only intended for
  * internal use.
- *
+ * 
  * @author sullins.ben
  * @author dmitry.buzdin
  */
@@ -41,7 +39,7 @@ public class CustomConverterContainer {
 
     public void setConverters(List<CustomConverterDescription> converters) {
         if (converters == null) {
-            throw new NullPointerException("Converters can not be null!");
+            throw new IllegalArgumentException("Converters can not be null!");
         }
         this.converters = converters;
     }
@@ -50,33 +48,24 @@ public class CustomConverterContainer {
         getConverters().add(converter);
     }
 
-    public Class getCustomConverter(Class<?> srcClass, Class<?> destClass, Cache converterTypeCache) {
+    public CustomConverterDescription getCustomConverter(Class<?> srcClass, Class<?> destClass) {
         if (converters.isEmpty()) {
             return null;
         }
 
-        // Check cache first
-        final Object cacheKey = CacheKeyFactory.createKey(destClass, srcClass);
-        if (converterTypeCache.containsKey(cacheKey)) { // even null
-            return (Class) converterTypeCache.get(cacheKey);
-        }
-
         // Let's see if the incoming class is a primitive:
-        final Class src = ClassUtils.primitiveToWrapper(srcClass);
-        final Class dest = ClassUtils.primitiveToWrapper(destClass);
+        final Class<?> src = ClassUtils.primitiveToWrapper(srcClass);
+        final Class<?> dest = ClassUtils.primitiveToWrapper(destClass);
 
-        Class appropriateConverter = findConverter(src, dest);
-        converterTypeCache.put(cacheKey, appropriateConverter);
-
-        return appropriateConverter;
+        return findConverter(src, dest);
     }
 
-    private Class findConverter(Class src, Class dest) {
-        // Otherwise, loop through custom converters and look for a match. Also,
-        // store the result in the cache
+    private CustomConverterDescription findConverter(Class<?> src, Class<?> dest) {
+        // Otherwise, loop through custom converters and look for a match.
+        //
         for (CustomConverterDescription customConverter : converters) {
-            final Class classA = customConverter.getClassA();
-            final Class classB = customConverter.getClassB();
+            final Class<?> classA = ClassUtils.primitiveToWrapper(customConverter.getClassA());
+            final Class<?> classB = ClassUtils.primitiveToWrapper(customConverter.getClassB());
 
             // we check to see if the destination class is the same as classA
             // defined in the converter mapping xml.
@@ -86,9 +75,10 @@ public class CustomConverterContainer {
             // perform these checks in the other direction for classB
             if ((classA.isAssignableFrom(dest) && classB.isAssignableFrom(src)) || (classA
                 .isAssignableFrom(src) && classB.isAssignableFrom(dest))) {
-                return customConverter.getType();
+                return customConverter;
             }
         }
+
         return null;
     }
 

@@ -38,18 +38,17 @@ public class JavaBeanPropertyDescriptor extends GetterSetterPropertyDescriptor {
     public JavaBeanPropertyDescriptor(Class<?> clazz,
             String fieldName,
             boolean isIndexed,
-            int index,
-            HintContainer srcDeepIndexHintContainer,
-            HintContainer destDeepIndexHintContainer) {
-        super(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
+            String index,
+            HintContainer deepIndexHintContainer) {
+        super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
     }
 
     @Override
     public Method getWriteMethod() throws NoSuchMethodException {
-        Method writeMethod = getPropertyDescriptor(destDeepIndexHintContainer).getWriteMethod();
+        Method writeMethod = getPropertyDescriptor(deepIndexHintContainer).getWriteMethod();
         if (writeMethod == null) {
             throw new NoSuchMethodException(
-                "Unable to determine write method for Field: '" + fieldName + "' in Class: " + clazz);
+                "Unable to determine write method for Field: " + fieldName + " in Class: " + clazz);
         }
 
         return writeMethod;
@@ -62,10 +61,10 @@ public class JavaBeanPropertyDescriptor extends GetterSetterPropertyDescriptor {
 
     @Override
     protected Method getReadMethod() throws NoSuchMethodException {
-        Method result = getPropertyDescriptor(srcDeepIndexHintContainer).getReadMethod();
+        Method result = getPropertyDescriptor(deepIndexHintContainer).getReadMethod();
         if (result == null) {
             throw new NoSuchMethodException(
-                "Unable to determine read method for Field: '" + fieldName + "' in Class: " + clazz);
+                "Unable to determine read method for Field: " + fieldName + " in Class: " + clazz);
         }
         return result;
     }
@@ -79,7 +78,7 @@ public class JavaBeanPropertyDescriptor extends GetterSetterPropertyDescriptor {
         if (pd == null) {
             pd = ReflectionUtils.findPropertyDescriptor(clazz, fieldName, deepIndexHintContainer);
             if (pd == null) {
-                MappingUtils.throwMappingException("Property: '" + fieldName + "' not found in Class: " + clazz);
+                MappingUtils.throwMappingException("Property: " + fieldName + " not found in Class: " + clazz);
             }
         }
         return pd;

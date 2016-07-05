@@ -19,18 +19,25 @@ import java.beans.PropertyDescriptor;
 
 public class DeepHierarchyElement {
     private PropertyDescriptor propDescriptor;
-    private int index;
+    private String index;
+    private Class<?> hintType;
 
-    public DeepHierarchyElement(PropertyDescriptor propDescriptor, int index) {
+    public DeepHierarchyElement(PropertyDescriptor propDescriptor, String index, Class<?> hintType) {
         this.propDescriptor = propDescriptor;
         this.index = index;
+        this.hintType = hintType;
     }
 
-    public int getIndex() {
+    public String getIndex() {
         return index;
     }
 
     public PropertyDescriptor getPropDescriptor() {
         return propDescriptor;
     }
+
+    public Class<?> getHintType() {
+        return hintType;
+    }
+
 }

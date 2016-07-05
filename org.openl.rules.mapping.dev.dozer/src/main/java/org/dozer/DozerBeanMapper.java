@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * It is technically possible to have multiple DozerBeanMapper instances
  * initialized, but it will hinder internal performance optimizations such as
  * caching.
- *
+ * 
  * @author tierney.matt
  * @author garsombke.franz
  * @author dmitry.buzdin
@@ -76,6 +76,10 @@ public class DozerBeanMapper implements Mapper {
     private final List<CustomConverter> customConverters = new ArrayList<CustomConverter>();
     private final List<MappingFileData> builderMappings = new ArrayList<MappingFileData>();
     private final Map<String, CustomConverter> customConvertersWithId = new HashMap<String, CustomConverter>();
+    private final List<FieldMappingCondition> mappingConditions = new ArrayList<FieldMappingCondition>();
+    private final Map<String, FieldMappingCondition> mappingConditionsWithId = new HashMap<String, FieldMappingCondition>();
+    private final List<CollectionItemDiscriminator> collectionItemDiscriminators = new ArrayList<CollectionItemDiscriminator>();
+    private final Map<String, CollectionItemDiscriminator> collectionItemDiscriminatorsWithId = new HashMap<String, CollectionItemDiscriminator>();
     // There are no global caches. Caches are per bean mapper instance
     private final CacheManager cacheManager = new DozerCacheManager();
     private List<? extends DozerEventListener> eventListeners = new ArrayList<DozerEventListener>();
@@ -99,15 +103,15 @@ public class DozerBeanMapper implements Mapper {
     /**
      * {@inheritDoc}
      */
-    public void map(Object source, Object destination, String mapId) throws MappingException {
-        getMappingProcessor().map(source, destination, mapId);
+    public void map(Object source, Object destination, MappingContext mappingContext) throws MappingException {
+        getMappingProcessor().map(source, destination, mappingContext);
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T> T map(Object source, Class<T> destinationClass, String mapId) throws MappingException {
-        return getMappingProcessor().map(source, destinationClass, mapId);
+    public <T> T map(Object source, Class<T> destinationClass, MappingContext mappingContext) throws MappingException {
+        return getMappingProcessor().map(source, destinationClass, mappingContext);
     }
 
     /**
@@ -126,7 +130,7 @@ public class DozerBeanMapper implements Mapper {
 
     /**
      * Returns list of provided mapping file URLs
-     *
+     * 
      * @return unmodifiable list of mapping files
      */
     public List<String> getMappingFiles() {
@@ -138,7 +142,7 @@ public class DozerBeanMapper implements Mapper {
      * mapper gets initialized. It is possible to load files from file system
      * via file: prefix. If no prefix is given mapping files are loaded from
      * classpath and can be packaged along with the application.
-     *
+     * 
      * @param mappingFileUrls URLs referencing custom mapping files
      * @see java.net.URL
      */
@@ -180,6 +184,47 @@ public class DozerBeanMapper implements Mapper {
         this.customConvertersWithId.putAll(customConvertersWithId);
     }
 
+    public List<FieldMappingCondition> getMappingConditions() {
+        return Collections.unmodifiableList(mappingConditions);
+    }
+
+    public void setMappingConditions(List<FieldMappingCondition> mappingConditions) {
+        checkIfInitialized();
+        this.mappingConditions.clear();
+        this.mappingConditions.addAll(mappingConditions);
+    }
+
+    public Map<String, FieldMappingCondition> getMappingConditionsWithId() {
+        return Collections.unmodifiableMap(mappingConditionsWithId);
+    }
+
+    public void setMappingConditionsWithId(Map<String, FieldMappingCondition> mappingConditionsWithId) {
+        checkIfInitialized();
+        this.mappingConditionsWithId.clear();
+        this.mappingConditionsWithId.putAll(mappingConditionsWithId);
+    }
+
+    public List<CollectionItemDiscriminator> getCollectionItemDiscriminators() {
+        return Collections.unmodifiableList(collectionItemDiscriminators);
+    }
+
+    public void setCollectionItemDiscriminators(List<CollectionItemDiscriminator> collectionItemDiscriminators) {
+        checkIfInitialized();
+        this.collectionItemDiscriminators.clear();
+        this.collectionItemDiscriminators.addAll(collectionItemDiscriminators);
+    }
+
+    public Map<String, CollectionItemDiscriminator> getCollectionItemDiscriminatorsWithId() {
+        return Collections.unmodifiableMap(collectionItemDiscriminatorsWithId);
+    }
+
+    public void setCollectionItemDiscriminatorsWithId(
+            Map<String, CollectionItemDiscriminator> collectionItemDiscriminatorsWithId) {
+        checkIfInitialized();
+        this.collectionItemDiscriminatorsWithId.clear();
+        this.collectionItemDiscriminatorsWithId.putAll(collectionItemDiscriminatorsWithId);
+    }
+
     private void init() {
         DozerInitializer.getInstance().init();
 
@@ -205,6 +250,7 @@ public class DozerBeanMapper implements Mapper {
 
         if (initializing.compareAndSet(false, true)) {
             try {
+                log.info("OpenL Mapper Framework v. 1.1.13-SNAPSHOT (Dozer 5.3.2)");
                 loadCustomMappings();
                 eventManager = new DozerEventManager(eventListeners);
             } finally {
@@ -225,7 +271,11 @@ public class DozerBeanMapper implements Mapper {
             customConverters,
             eventManager,
             getCustomFieldMapper(),
-            customConvertersWithId);
+            customConvertersWithId,
+            mappingConditions,
+            mappingConditionsWithId,
+            collectionItemDiscriminators,
+            collectionItemDiscriminatorsWithId);
 
         // If statistics are enabled, then Proxy the processor with a statistics
         // interceptor
@@ -237,6 +287,10 @@ public class DozerBeanMapper implements Mapper {
 
         return processor;
     }
+
+    // public void addDefaultCustomConverter(Class<?> defaultCustomConverter) {
+    //
+    // }
 
     void loadCustomMappings() {
         CustomMappingsLoader customMappingsLoader = new CustomMappingsLoader();

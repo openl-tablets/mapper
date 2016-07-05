@@ -18,11 +18,11 @@ package org.dozer.classmap;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.dozer.converters.CustomConverterContainer;
 import org.dozer.fieldmap.FieldMap;
-import org.dozer.util.DozerConstants;
 import org.dozer.util.MappingUtils;
 
 /**
@@ -44,8 +44,9 @@ public class ClassMap {
     private MappingDirection type;
     private String dateFormat;
     private String beanFactory;
-    private boolean mapNull = DozerConstants.DEFAULT_MAP_NULL_POLICY;
-    private boolean mapEmptyString = DozerConstants.DEFAULT_MAP_EMPTY_STRING_POLICY;
+    private Boolean mapNull;
+    private Boolean mapEmptyString;
+    private Boolean requiredFields;
     private Boolean wildcard;
     private Boolean stopOnErrors;
     private Boolean trimStrings;
@@ -82,6 +83,32 @@ public class ClassMap {
         this.trimStrings = trimStrings;
     }
 
+    public Boolean isMapNull() {
+        return mapNull != null ? mapNull.booleanValue() : globalConfiguration.getMapNulls().booleanValue();
+    }
+
+    public void setMapNull(Boolean mapNull) {
+        this.mapNull = mapNull;
+    }
+
+    public Boolean isMapEmptyString() {
+        return mapEmptyString != null ? mapEmptyString.booleanValue()
+                                      : globalConfiguration.getMapEmptyStrings().booleanValue();
+    }
+
+    public void setMapEmptyString(Boolean mapEmptyString) {
+        this.mapEmptyString = mapEmptyString;
+    }
+
+    public Boolean isRequiredFields() {
+        return requiredFields != null ? requiredFields.booleanValue()
+                                      : globalConfiguration.getRequiredFields().booleanValue();
+    }
+
+    public void setRequiredFields(Boolean requiredFields) {
+        this.requiredFields = requiredFields;
+    }
+
     public List<Class<RuntimeException>> getAllowedExceptions() {
         if (!allowedExceptions.isEmpty()) {
             return allowedExceptions;
@@ -105,14 +132,20 @@ public class ClassMap {
 
         FieldMap result = null;
 
-        for (FieldMap fieldMap : fieldMaps) {
+        int size = fieldMaps.size();
+        for (int i = 0; i < size; i++) {
+            FieldMap fieldMap = fieldMaps.get(i);
             String fieldName = fieldMap.getDestFieldName();
 
             if (isMap && MappingUtils.isDeepMapping(fieldName)) {
                 fieldName = fieldName.split("\\.")[0];
             }
 
-            String alternateFieldName = provideAlternateName(fieldName);
+            String alternateFieldName = StringUtils.EMPTY;
+
+            if (!MappingUtils.isBlankOrNull(fieldName)) {
+                alternateFieldName = provideAlternateName(fieldName);
+            }
 
             // Check for exact match on field name. Also, check against
             // alternate field name. The alternate field
@@ -124,7 +157,14 @@ public class ClassMap {
             // happen, but check just in case since the use case
             // doesnt actually error out. It just double maps which is a problem
             // when the data type is a Collections.
-            if (fieldName.equals(destFieldName) || alternateFieldName.equals(destFieldName)) {
+
+            // Added new one check for destFieldName value. In case of
+            // destFieldName is started with upper-case letter and fieldName
+            // value is started with lower-case letter we get double mapping for
+            // the same field.
+            //
+            if (fieldName.equals(destFieldName) || alternateFieldName.equals(destFieldName) || alternateFieldName
+                .equals(provideAlternateName(destFieldName))) {
                 result = fieldMap;
                 break;
             }
@@ -133,7 +173,7 @@ public class ClassMap {
         return result;
     }
 
-    String provideAlternateName(String fieldName) {
+    private String provideAlternateName(String fieldName) {
         return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
     }
 
@@ -143,8 +183,14 @@ public class ClassMap {
         if (fieldMaps != null) {
             for (FieldMap fieldMap : fieldMaps) {
                 String fieldName = fieldMap.getSrcFieldName();
+                String alternateFieldName = StringUtils.EMPTY;
 
-                if ((fieldName != null) && fieldName.equals(srcFieldName)) {
+                if (!MappingUtils.isBlankOrNull(fieldName)) {
+                    alternateFieldName = provideAlternateName(fieldName);
+                }
+
+                if (fieldName != null && (fieldName.equals(srcFieldName) || alternateFieldName
+                    .equals(srcFieldName) || alternateFieldName.equals(provideAlternateName(srcFieldName)))) {
                     result = fieldMap;
                     break;
                 }
@@ -202,19 +248,20 @@ public class ClassMap {
     }
 
     public boolean isDestMapNull() {
-        return destClass.getMapNull() != null ? destClass.getMapNull().booleanValue() : mapNull;
+        return destClass.getMapNull() != null ? destClass.getMapNull().booleanValue() : isMapNull();
     }
 
     public boolean isSrcMapNull() {
-        return srcClass.getMapNull() != null ? srcClass.getMapNull().booleanValue() : mapNull;
+        return srcClass.getMapNull() != null ? srcClass.getMapNull().booleanValue() : isMapNull();
     }
 
     public boolean isDestMapEmptyString() {
-        return destClass.getMapEmptyString() != null ? destClass.getMapEmptyString().booleanValue() : mapEmptyString;
+        return destClass.getMapEmptyString() != null ? destClass.getMapEmptyString().booleanValue()
+                                                     : isMapEmptyString();
     }
 
     public boolean isSrcMapEmptyString() {
-        return srcClass.getMapEmptyString() != null ? srcClass.getMapEmptyString().booleanValue() : mapEmptyString;
+        return srcClass.getMapEmptyString() != null ? srcClass.getMapEmptyString().booleanValue() : isMapEmptyString();
     }
 
     public String getDestClassBeanFactory() {
@@ -343,5 +390,26 @@ public class ClassMap {
             .append("destination class", getDestClassName())
             .append("map-id", mapId)
             .toString();
+    }
+
+    public ClassMap copyOf() {
+        ClassMap copy = new ClassMap(this.globalConfiguration);
+        copy.setSrcClass(srcClass);
+        copy.setDestClass(destClass);
+        copy.setFieldMaps(new ArrayList<FieldMap>(fieldMaps));
+        copy.setAllowedExceptions(new ArrayList<Class<RuntimeException>>(allowedExceptions));
+        copy.setType(type);
+        copy.setDateFormat(dateFormat);
+        copy.setBeanFactory(beanFactory);
+        copy.setMapNull(mapNull);
+        copy.setMapEmptyString(mapEmptyString);
+        copy.setWildcard(wildcard);
+        copy.setStopOnErrors(stopOnErrors);
+        copy.setTrimStrings(trimStrings);
+        copy.setCustomConverters(customConverters);
+        copy.setMapId(mapId);
+        copy.setRelationshipType(relationshipType);
+
+        return copy;
     }
 }

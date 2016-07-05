@@ -17,6 +17,7 @@
 package org.dozer.loader.api;
 
 import org.dozer.loader.DozerBuilder;
+import org.dozer.util.ReflectionUtils;
 
 /**
  * @author Dmitry Buzdin
@@ -32,6 +33,12 @@ public class FieldDefinition {
     private String mapSetMethod;
     private String getMethod;
     private String setMethod;
+    private boolean required;
+    private String defaultValue;
+    private String dateFormat;
+
+    private String hint;
+    private String deepHint;
     private boolean iterate;
 
     public FieldDefinition(String value) {
@@ -49,6 +56,13 @@ public class FieldDefinition {
         builder.theGetMethod(this.getMethod);
         builder.theSetMethod(this.setMethod);
 
+        builder.required(this.required);
+        builder.defaultValue(this.defaultValue);
+
+        builder.hint(this.hint);
+        builder.deepHint(this.deepHint);
+        builder.dateFormat(this.dateFormat);
+
         if (this.iterate) {
             builder.iterate();
         }
@@ -61,6 +75,21 @@ public class FieldDefinition {
 
     public FieldDefinition accessible() {
         return accessible(true);
+    }
+
+    public FieldDefinition dateFormat(String value) {
+        this.dateFormat = value;
+        return this;
+    }
+
+    public FieldDefinition defaultValue(String value) {
+        this.defaultValue = value;
+        return this;
+    }
+
+    public FieldDefinition required(boolean value) {
+        this.required = value;
+        return this;
     }
 
     public FieldDefinition accessible(boolean value) {
@@ -91,6 +120,26 @@ public class FieldDefinition {
 
     public FieldDefinition setMethod(String setMethod) {
         this.setMethod = setMethod;
+        return this;
+    }
+
+    public FieldDefinition hint(final Class<?>... types) {
+        this.hint = ReflectionUtils.mergeTypeNames(types);
+        return this;
+    }
+
+    public FieldDefinition deepHint(final Class<?>... types) {
+        this.deepHint = ReflectionUtils.mergeTypeNames(types);
+        return this;
+    }
+
+    public FieldDefinition hint(String types) {
+        this.hint = types;
+        return this;
+    }
+
+    public FieldDefinition deepHint(String types) {
+        this.deepHint = types;
         return this;
     }
 

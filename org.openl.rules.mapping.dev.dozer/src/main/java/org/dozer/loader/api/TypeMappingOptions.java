@@ -21,8 +21,6 @@ import org.dozer.classmap.RelationshipType;
 import org.dozer.loader.DozerBuilder;
 
 /**
- * Mapping options applie on Type level.
- *
  * @author Dmitry Buzdin
  */
 public final class TypeMappingOptions {
@@ -51,11 +49,11 @@ public final class TypeMappingOptions {
         };
     }
 
-    public static TypeMappingOption mapEmptyString() {
-        return mapEmptyString(true);
+    public static TypeMappingOption mapEmptyStrings() {
+        return mapEmptyStrings(true);
     }
 
-    public static TypeMappingOption mapEmptyString(final boolean value) {
+    public static TypeMappingOption mapEmptyStrings(final boolean value) {
         return new TypeMappingOption() {
             public void apply(DozerBuilder.MappingBuilder fieldMappingBuilder) {
                 fieldMappingBuilder.mapEmptyString(value);
@@ -63,14 +61,18 @@ public final class TypeMappingOptions {
         };
     }
 
-    public static TypeMappingOption mapNull() {
-        return mapNull(true);
-    }
-
-    public static TypeMappingOption mapNull(final boolean value) {
+    public static TypeMappingOption mapNulls(final boolean value) {
         return new TypeMappingOption() {
             public void apply(DozerBuilder.MappingBuilder fieldMappingBuilder) {
                 fieldMappingBuilder.mapNull(value);
+            }
+        };
+    }
+
+    public static TypeMappingOption requiredFields(final boolean value) {
+        return new TypeMappingOption() {
+            public void apply(DozerBuilder.MappingBuilder fieldMappingBuilder) {
+                fieldMappingBuilder.requiredFields(value);
             }
         };
     }

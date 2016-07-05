@@ -30,9 +30,9 @@
     <packaging>jar</packaging>
     <url>http://dozer.sourceforge.net</url>
     <description>
-        Dozer is a powerful Java Bean to Java Bean mapper that recursively copies data from one object to another
+        The customization of the Dozer's framework.
     </description>
-    <name>Openl - Origin Dozer</name>
+    <name>Dozer Mapping - Modified</name>
     <inceptionYear>2005</inceptionYear>
 
     <dependencies>
@@ -47,6 +47,10 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-jxpath</groupId>
+            <artifactId>commons-jxpath</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.el</groupId>

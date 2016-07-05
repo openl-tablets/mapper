@@ -28,23 +28,20 @@ public abstract class AbstractPropertyDescriptor implements DozerPropertyDescrip
     protected final Class<?> clazz;
     protected final String fieldName;
     protected boolean isIndexed = false;
-    protected int index;
-    protected HintContainer srcDeepIndexHintContainer;
-    protected HintContainer destDeepIndexHintContainer;
+    protected String index;
+    protected HintContainer deepIndexHintContainer;
 
     // TODO Delete this class
     public AbstractPropertyDescriptor(final Class<?> clazz,
             final String fieldName,
             boolean isIndexed,
-            int index,
-            HintContainer srcDeepIndexHintContainer,
-            HintContainer destDeepIndexHintContainer) {
+            String index,
+            HintContainer deepIndexHintContainer) {
         this.clazz = clazz;
         this.fieldName = fieldName;
         this.isIndexed = isIndexed;
         this.index = index;
-        this.srcDeepIndexHintContainer = srcDeepIndexHintContainer;
-        this.destDeepIndexHintContainer = destDeepIndexHintContainer;
+        this.deepIndexHintContainer = deepIndexHintContainer;
     }
 
 }

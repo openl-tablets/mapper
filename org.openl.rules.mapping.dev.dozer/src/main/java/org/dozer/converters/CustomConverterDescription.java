@@ -15,17 +15,13 @@
  */
 package org.dozer.converters;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * Internal class that contains the custom converter definition information.
  * Only intended for internal use.
  * 
  * @author sullins.ben
  */
-public class CustomConverterDescription {
-    private Class<?> type;
+public abstract class CustomConverterDescription {
     private Class<?> classB;
     private Class<?> classA;
 
@@ -45,16 +41,4 @@ public class CustomConverterDescription {
         this.classB = classB;
     }
 
-    public Class<?> getType() {
-        return type;
-    }
-
-    public void setType(Class<?> type) {
-        this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
-    }
 }

@@ -15,9 +15,15 @@
  */
 package org.dozer.propertydescriptor;
 
+import java.util.List;
+
+import org.dozer.classmap.ClassMap;
+import org.dozer.fieldmap.DozerField;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.util.DozerConstants;
 import org.dozer.util.MappingUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Internal factory responsible for determining which property descriptor should
@@ -25,11 +31,85 @@ import org.dozer.util.MappingUtils;
  * 
  * @author garsombke.franz
  */
-public class PropertyDescriptorFactory {
+public final class PropertyDescriptorFactory {
+    private static Logger LOG = LoggerFactory.getLogger(PropertyDescriptorFactory.class);
 
     private PropertyDescriptorFactory() {
     }
 
+    public static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz,
+            ClassMap classMap,
+            List<DozerField> srcFields,
+            DozerField dest) {
+        DozerPropertyDescriptor[] propertyDescriptors = new DozerPropertyDescriptor[srcFields.size()];
+
+        for (int i = 0; i < srcFields.size(); i++) {
+            propertyDescriptors[i] = getPropertyDescriptor(clazz, classMap, srcFields.get(i), dest);
+        }
+
+        return new MultiFieldsPropertyDescriptor(propertyDescriptors);
+    }
+
+    public static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz,
+            ClassMap classMap,
+            DozerField src,
+            DozerField dest) {
+
+        if (MappingUtils.isBlankOrNull(src.getName())) {
+            return new EmptyFieldPropertyDescriptor();
+        }
+        LOG.info("clazz = " + clazz.getName());
+        LOG.info("src.getTheGetMethod() = " + src.getTheGetMethod());
+        LOG.info("src.getTheSetMethod() = " + src.getTheSetMethod());
+        LOG.info("src.getMapGetMethod() = " + src.getMapGetMethod());
+        LOG.info("src.getMapSetMethod() = " + src.getMapSetMethod());
+        LOG.info("src.isAccessible() = " + src.isAccessible());
+        LOG.info("src.isIndexed() = " + src.isIndexed());
+        LOG.info("src.getIndex() = " + src.getIndex());
+        LOG.info("src.getName() = " + src.getName());
+        LOG.info("src.getKey() = " + src.getKey());
+        LOG.info("src.isSelfReferenced() = " + src.isSelfReferenced());
+        LOG.info("src.getName() = " + src.getName());
+        LOG.info("src.getDeepIndexHintContainer() = " + src.getDeepIndexHintContainer());
+        LOG.info("classMap.getDestClassBeanFactory() = " + classMap.getDestClassBeanFactory());
+
+        return getPropertyDescriptor(clazz,
+            src.getTheGetMethod(),
+            src.getTheSetMethod(),
+            src.getMapGetMethod(),
+            src.getMapSetMethod(),
+            src.isAccessible(),
+            src.isIndexed(),
+            src.getIndex(),
+            src.getName(),
+            src.getKey(),
+            src.isSelfReferenced(),
+            src.getName(),
+            src.getDeepIndexHintContainer(),
+            classMap.getDestClassBeanFactory());
+    }
+
+    /**
+     * Creates appropriate property descriptor using given information.
+     * 
+     * @param clazz target class
+     * @param theGetMethod property get method name
+     * @param theSetMethod property set method name
+     * @param mapGetMethod property get method name in case of property is map
+     * @param mapSetMethod property set method name in case of property is map
+     * @param isAccessible indicates that property can be accessed through
+     *            reflection directly
+     * @param isIndexed indicates that property has index
+     * @param index index value
+     * @param name property name
+     * @param key key value in case of using mapping into map
+     * @param isSelfReferencing indicates that property should be copied by
+     *            reference
+     * @param oppositeFieldName alternative name of field
+     * @param deepIndexHintContainer deep index hint container
+     * @param beanFactory bean factory
+     * @return property descriptor instance
+     */
     public static DozerPropertyDescriptor getPropertyDescriptor(Class<?> clazz,
             String theGetMethod,
             String theSetMethod,
@@ -37,18 +117,19 @@ public class PropertyDescriptorFactory {
             String mapSetMethod,
             boolean isAccessible,
             boolean isIndexed,
-            int index,
+            String index,
             String name,
             String key,
             boolean isSelfReferencing,
             String oppositeFieldName,
-            HintContainer srcDeepIndexHintContainer,
-            HintContainer destDeepIndexHintContainer,
+            HintContainer deepIndexHintContainer,
             String beanFactory) {
+
         DozerPropertyDescriptor desc;
 
         // Raw Map types or custom map-get-method/set specified
         boolean isMapProperty = MappingUtils.isSupportedMap(clazz);
+
         if (name
             .equals(DozerConstants.SELF_KEYWORD) && (mapSetMethod != null || mapGetMethod != null || isMapProperty)) {
             String setMethod = isMapProperty ? "put" : mapSetMethod;
@@ -61,8 +142,7 @@ public class PropertyDescriptorFactory {
                 setMethod,
                 getMethod,
                 key != null ? key : oppositeFieldName,
-                srcDeepIndexHintContainer,
-                destDeepIndexHintContainer);
+                deepIndexHintContainer);
 
             // Copy by reference(Not mapped backed properties which also use
             // 'this'
@@ -72,12 +152,7 @@ public class PropertyDescriptorFactory {
 
             // Access field directly and bypass getter/setters
         } else if (isAccessible) {
-            desc = new FieldPropertyDescriptor(clazz,
-                name,
-                isIndexed,
-                index,
-                srcDeepIndexHintContainer,
-                destDeepIndexHintContainer);
+            desc = new FieldPropertyDescriptor(clazz, name, isIndexed, index, deepIndexHintContainer);
 
             // Custom get-method/set specified
         } else if (theSetMethod != null || theGetMethod != null) {
@@ -87,30 +162,20 @@ public class PropertyDescriptorFactory {
                 index,
                 theSetMethod,
                 theGetMethod,
-                srcDeepIndexHintContainer,
-                destDeepIndexHintContainer);
+                deepIndexHintContainer);
 
             // If this object is an XML Bean - then use the
             // XmlBeanPropertyDescriptor
         } else if (beanFactory != null && beanFactory.equals(DozerConstants.XML_BEAN_FACTORY)) {
-            desc = new XmlBeanPropertyDescriptor(clazz,
-                name,
-                isIndexed,
-                index,
-                srcDeepIndexHintContainer,
-                destDeepIndexHintContainer);
+            desc = new XmlBeanPropertyDescriptor(clazz, name, isIndexed, index, deepIndexHintContainer);
 
             // Everything else. It must be a normal bean with normal custom
             // get/set
             // methods
         } else {
-            desc = new JavaBeanPropertyDescriptor(clazz,
-                name,
-                isIndexed,
-                index,
-                srcDeepIndexHintContainer,
-                destDeepIndexHintContainer);
+            desc = new JavaBeanPropertyDescriptor(clazz, name, isIndexed, index, deepIndexHintContainer);
         }
         return desc;
     }
+
 }

@@ -31,7 +31,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openl.rules</groupId>
-			<artifactId>org.openl.rules.mapping.dev.modified</artifactId>
+			<artifactId>org.openl.rules.mapping.dev.dozer</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

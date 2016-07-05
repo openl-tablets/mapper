@@ -20,6 +20,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.dozer.BeanFactory;
 import org.dozer.MappingException;
+import org.openl.rules.mapping.MappingParameters;
+import org.dozer.MappingParamsAware;
 import org.dozer.config.BeanContainer;
 import org.dozer.util.DozerClassLoader;
 import org.dozer.util.MappingUtils;
@@ -75,7 +77,7 @@ public final class ConstructionStrategies {
             return !MappingUtils.isBlankOrNull(createMethod);
         }
 
-        public Object create(BeanCreationDirective directive) {
+        public Object create(MappingParameters params, BeanCreationDirective directive) {
             Class<?> actualClass = directive.getActualClass();
             String createMethod = directive.getCreateMethod();
 
@@ -84,7 +86,7 @@ public final class ConstructionStrategies {
                 String methodName = createMethod.substring(createMethod.lastIndexOf(".") + 1, createMethod.length());
                 String typeName = createMethod.substring(0, createMethod.lastIndexOf("."));
                 DozerClassLoader loader = BeanContainer.getInstance().getClassLoader();
-                Class type = loader.loadClass(typeName);
+                Class<?> type = loader.loadClass(typeName);
                 method = findMethod(type, methodName);
             } else {
                 method = findMethod(actualClass, createMethod);
@@ -114,9 +116,9 @@ public final class ConstructionStrategies {
             return Calendar.class.isAssignableFrom(actualClass) || DateFormat.class.isAssignableFrom(actualClass);
         }
 
-        public Object create(BeanCreationDirective directive) {
+        public Object create(MappingParameters params, BeanCreationDirective directive) {
             directive.setCreateMethod("getInstance");
-            return super.create(directive);
+            return super.create(params, directive);
         }
     }
 
@@ -131,7 +133,7 @@ public final class ConstructionStrategies {
             return !MappingUtils.isBlankOrNull(factoryName);
         }
 
-        public Object create(BeanCreationDirective directive) {
+        public Object create(MappingParameters params, BeanCreationDirective directive) {
             Class<?> classToCreate = directive.getActualClass();
             String factoryName = directive.getFactoryName();
             String factoryBeanId = directive.getFactoryId();
@@ -149,6 +151,10 @@ public final class ConstructionStrategies {
                 factory = (BeanFactory) ReflectionUtils.newInstance(factoryClass);
                 // put the created factory in our factory map
                 factoryCache.put(factoryName, factory);
+            }
+
+            if (factory instanceof MappingParamsAware) {
+                ((MappingParamsAware) factory).setMappingParams(params);
             }
 
             Object result = factory.createBean(directive.getSrcObject(), directive.getSrcClass(), beanId);
@@ -178,14 +184,14 @@ public final class ConstructionStrategies {
             return Map.class.equals(actualClass) || List.class.equals(actualClass) || Set.class.equals(actualClass);
         }
 
-        public Object create(BeanCreationDirective directive) {
+        public Object create(MappingParameters params, BeanCreationDirective directive) {
             Class<?> actualClass = directive.getActualClass();
             if (Map.class.equals(actualClass)) {
-                return new HashMap();
+                return new HashMap<Object, Object>();
             } else if (List.class.equals(actualClass)) {
-                return new ArrayList();
+                return new ArrayList<Object>();
             } else if (Set.class.equals(actualClass)) {
-                return new HashSet();
+                return new HashSet<Object>();
             }
             throw new IllegalStateException("Type not expected : " + actualClass);
         }
@@ -220,7 +226,7 @@ public final class ConstructionStrategies {
             return xmlObjectType.isAssignableFrom(actualClass);
         }
 
-        public Object create(BeanCreationDirective directive) {
+        public Object create(MappingParameters params, BeanCreationDirective directive) {
             Class<?> classToCreate = directive.getActualClass();
             String factoryBeanId = directive.getFactoryId();
             String beanId = !MappingUtils.isBlankOrNull(factoryBeanId) ? factoryBeanId : classToCreate.getName();
@@ -271,7 +277,7 @@ public final class ConstructionStrategies {
             return true;
         }
 
-        public Object create(BeanCreationDirective directive) {
+        public Object create(MappingParameters params, BeanCreationDirective directive) {
             Class<?> classToCreate = directive.getActualClass();
 
             try {
@@ -295,7 +301,7 @@ public final class ConstructionStrategies {
             return XMLGregorianCalendar.class.isAssignableFrom(actualClass);
         }
 
-        public Object create(BeanCreationDirective directive) {
+        public Object create(MappingParameters params, BeanCreationDirective directive) {
             DatatypeFactory dataTypeFactory;
             try {
                 dataTypeFactory = DatatypeFactory.newInstance();
@@ -304,7 +310,6 @@ public final class ConstructionStrategies {
             }
             return dataTypeFactory.newXMLGregorianCalendar();
         }
-
     }
 
 }

@@ -20,6 +20,7 @@ import java.util.Collection;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.dozer.fieldmap.FieldMap;
+import org.dozer.fieldmap.MultiSourceFieldMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,11 @@ public final class LogMsgFactory {
                 srcFieldValueString = "Unable to determine source field value";
             }
         } else {
-            srcValueType = fieldMapping.getSrcFieldType();
+            if (fieldMapping instanceof MultiSourceFieldMap) {
+                srcValueType = Object[].class.getName();
+            } else {
+                srcValueType = fieldMapping.getSrcFieldType();
+            }
         }
 
         String destClassName = null;
@@ -98,7 +103,7 @@ public final class LogMsgFactory {
                 destFieldValue) + "    MAPID: " + (classMapId != null ? classMapId : "");
     }
 
-    private static String getLogOutput(Object object) {
+    public static String getLogOutput(Object object) {
         String output = "NULL";
         if (object == null) {
             return output;

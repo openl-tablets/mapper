@@ -26,7 +26,7 @@ public interface Mapper {
     /**
      * Constructs new instance of destinationClass and performs mapping between
      * from source
-     *
+     * 
      * @param source
      * @param destinationClass
      * @param <T>
@@ -37,7 +37,7 @@ public interface Mapper {
 
     /**
      * Performs mapping between source and destination objects
-     *
+     * 
      * @param source
      * @param destination
      * @throws MappingException
@@ -47,24 +47,23 @@ public interface Mapper {
     /**
      * Constructs new instance of destinationClass and performs mapping between
      * from source
-     *
+     * 
      * @param source
      * @param destinationClass
-     * @param mapId
+     * @param context
      * @param <T>
      * @return
      * @throws MappingException
      */
-    <T> T map(Object source, Class<T> destinationClass, String mapId) throws MappingException;
+    <T> T map(Object source, Class<T> destinationClass, MappingContext context) throws MappingException;
 
     /**
      * Performs mapping between source and destination objects
-     *
+     * 
      * @param source
      * @param destination
-     * @param mapId
+     * @param context
      * @throws MappingException
      */
-    void map(Object source, Object destination, String mapId) throws MappingException;
-
+    void map(Object source, Object destination, MappingContext context) throws MappingException;
 }

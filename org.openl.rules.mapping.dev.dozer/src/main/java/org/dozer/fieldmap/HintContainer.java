@@ -17,7 +17,6 @@ package org.dozer.fieldmap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -53,15 +52,26 @@ public class HintContainer {
         return getHints().size() > 1;
     }
 
+    public boolean hasHintType(int index) {
+        return index < getHints().size() && getHint(index) != null;
+    }
+
     public List<Class<?>> getHints() {
         if (hints == null) {
             List<Class<?>> list = new ArrayList<Class<?>>();
-            StringTokenizer st = new StringTokenizer(this.hintName, ",");
-            while (st.hasMoreElements()) {
-                String theHintName = st.nextToken().trim();
 
-                Class<?> clazz = MappingUtils.loadClass(theHintName);
-                list.add(clazz);
+            if (!MappingUtils.isBlankOrNull(hintName)) {
+                String[] tokens = hintName.split(",");
+
+                for (int i = 0; i < tokens.length; i++) {
+                    String theHintName = tokens[i];
+                    Class<?> clazz = null;
+
+                    if (!MappingUtils.isBlankOrNull(theHintName)) {
+                        clazz = MappingUtils.loadClass(theHintName.trim());
+                    }
+                    list.add(clazz);
+                }
             }
             hints = list;
         }
@@ -70,8 +80,8 @@ public class HintContainer {
 
     // TODO: Refactor/Relocate. This method doesn't seem to belong in this class
     public Class<?> getHint(Class<?> clazz, List<Class<?>> clazzHints) {
-        List<Class<?>> hints = getHints();
-        int hintsSize = hints.size();
+        List<Class<?>> hintTypes = getHints();
+        int hintsSize = hintTypes.size();
         if (hintsSize == 1) {
             return getHint();
         }
@@ -86,7 +96,7 @@ public class HintContainer {
         for (int i = 0; i < size; i++) {
             Class<?> element = clazzHints.get(i);
             if (element.getName().equals(myClazName)) {
-                return hints.get(count);
+                return hintTypes.get(count);
             }
             count++;
         }

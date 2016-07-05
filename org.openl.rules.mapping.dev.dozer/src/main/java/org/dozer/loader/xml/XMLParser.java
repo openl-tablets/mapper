@@ -35,7 +35,7 @@ import org.w3c.dom.NodeList;
  * objects.
  * <p/>
  * Only intended for internal use.
- *
+ * 
  * @author garsombke.franz
  * @author johnsen.knut-erik
  * @author dmitry.buzdin
@@ -66,10 +66,8 @@ public class XMLParser implements MappingsSource {
     private static final String FIELD_EXCLUDE_ELEMENT = "field-exclude";
     private static final String A_ELEMENT = "a";
     private static final String B_ELEMENT = "b";
-    private static final String SRC_TYPE_HINT_ELEMENT = "a-hint";
-    private static final String DEST_TYPE_HINT_ELEMENT = "b-hint";
-    private static final String SRC_TYPE_DEEP_INDEX_HINT_ELEMENT = "a-deep-index-hint";
-    private static final String DEST_TYPE_DEEP_INDEX_HINT_ELEMENT = "b-deep-index-hint";
+    private static final String HINT_ELEMENT = "hint";
+    private static final String DEEP_INDEX_HINT_ELEMENT = "deep-index-hint";
     private static final String ALLOWED_EXCEPTIONS_ELEMENT = "allowed-exceptions";
     private static final String ALLOWED_EXCEPTION_ELEMENT = "exception";
     private static final String VARIABLES_ELEMENT = "variables";
@@ -94,6 +92,8 @@ public class XMLParser implements MappingsSource {
     private static final String CUSTOM_CONVERTER_ATTRIBUTE = "custom-converter";
     private static final String CUSTOM_CONVERTER_ID_ATTRIBUTE = "custom-converter-id";
     private static final String CUSTOM_CONVERTER_PARAM_ATTRIBUTE = "custom-converter-param";
+    private static final String REQUIRED_ATTRIBUTE = "required";
+    private static final String DEFAULT_VALUE_ATTRIBUTE = "default-value";
 
     private final Document document;
     private final ElementReader elementReader;
@@ -121,7 +121,7 @@ public class XMLParser implements MappingsSource {
 
     /**
      * Builds object representation of mappings based on content of Xml document
-     *
+     * 
      * @return mapping container
      */
     public MappingFileData load() {
@@ -229,9 +229,6 @@ public class XMLParser implements MappingsSource {
         if (StringUtils.isNotEmpty(getAttribute(element, MAP_EMPTY_STRING_ATTRIBUTE))) {
             classBuilder.mapEmptyString(Boolean.valueOf(getAttribute(element, MAP_EMPTY_STRING_ATTRIBUTE)));
         }
-        if (StringUtils.isNotEmpty(getAttribute(element, IS_ACCESSIBLE_ATTRIBUTE))) {
-            classBuilder.isAccessible(Boolean.valueOf(getAttribute(element, IS_ACCESSIBLE_ATTRIBUTE)));
-        }
     }
 
     private void parseFieldExcludeMap(Element ele, DozerBuilder.MappingBuilder definitionBuilder) {
@@ -298,26 +295,28 @@ public class XMLParser implements MappingsSource {
             Element ele) {
         DozerBuilder.FieldMappingBuilder fieldMapBuilder = definitionBuilder.field();
 
-        NodeList nl = ele.getChildNodes();
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node node = nl.item(i);
-            if (node instanceof Element) {
-                Element element = (Element) node;
-
-                if (A_ELEMENT.equals(element.getNodeName())) {
-                    String name = getNodeValue(element);
-                    String type = getAttribute(element, TYPE_ATTRIBUTE);
-                    DozerBuilder.FieldDefinitionBuilder builder = fieldMapBuilder.a(name, type);
-                    parseField(element, builder);
-                }
-                if (B_ELEMENT.equals(element.getNodeName())) {
-                    String name = getNodeValue(element);
-                    String type = getAttribute(element, TYPE_ATTRIBUTE);
-                    DozerBuilder.FieldDefinitionBuilder builder = fieldMapBuilder.b(name, type);
-                    parseField(element, builder);
-                }
-            }
-        }
+        // NodeList nl = ele.getChildNodes();
+        // for (int i = 0; i < nl.getLength(); i++) {
+        // Node node = nl.item(i);
+        // if (node instanceof Element) {
+        // Element element = (Element) node;
+        //
+        // if (A_ELEMENT.equals(element.getNodeName())) {
+        // String name = getNodeValue(element);
+        // String type = getAttribute(element, TYPE_ATTRIBUTE);
+        // DozerBuilder.FieldDefinitionBuilder builder = fieldMapBuilder.a(name,
+        // type);
+        // parseField(element, builder);
+        // }
+        // if (B_ELEMENT.equals(element.getNodeName())) {
+        // String name = getNodeValue(element);
+        // String type = getAttribute(element, TYPE_ATTRIBUTE);
+        // DozerBuilder.FieldDefinitionBuilder builder = fieldMapBuilder.b(name,
+        // type);
+        // parseField(element, builder);
+        // }
+        // }
+        // }
 
         return fieldMapBuilder;
     }
@@ -334,26 +333,8 @@ public class XMLParser implements MappingsSource {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element element = (Element) node;
-
                 debugElement(element);
-
                 parseFieldElements(element, fieldMapBuilder);
-                if (SRC_TYPE_HINT_ELEMENT.equals(element.getNodeName())) {
-                    String hint = getNodeValue(element);
-                    fieldMapBuilder.srcHintContainer(hint);
-                }
-                if (DEST_TYPE_HINT_ELEMENT.equals(element.getNodeName())) {
-                    String hint = getNodeValue(element);
-                    fieldMapBuilder.destHintContainer(hint);
-                }
-                if (SRC_TYPE_DEEP_INDEX_HINT_ELEMENT.equals(element.getNodeName())) {
-                    String hint = getNodeValue(element);
-                    fieldMapBuilder.srcDeepIndexHintContainer(hint);
-                }
-                if (DEST_TYPE_DEEP_INDEX_HINT_ELEMENT.equals(element.getNodeName())) {
-                    String hint = getNodeValue(element);
-                    fieldMapBuilder.destDeepIndexHintContainer(hint);
-                }
             }
         }
     }
@@ -391,6 +372,31 @@ public class XMLParser implements MappingsSource {
         }
         if (StringUtils.isNotEmpty(getAttribute(ele, IS_ACCESSIBLE_ATTRIBUTE))) {
             fieldBuilder.accessible(BooleanUtils.toBoolean(getAttribute(ele, IS_ACCESSIBLE_ATTRIBUTE)));
+        }
+        if (StringUtils.isNotEmpty(getAttribute(ele, REQUIRED_ATTRIBUTE))) {
+            fieldBuilder.required(BooleanUtils.toBoolean(getAttribute(ele, REQUIRED_ATTRIBUTE)));
+        }
+        if (StringUtils.isNotEmpty(getAttribute(ele, DEFAULT_VALUE_ATTRIBUTE))) {
+            fieldBuilder.defaultValue(getAttribute(ele, DEFAULT_VALUE_ATTRIBUTE));
+        }
+
+        NodeList nl = ele.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+                Element element = (Element) node;
+                debugElement(element);
+
+                if (HINT_ELEMENT.equals(element.getNodeName())) {
+                    String hint = getNodeValue(element);
+                    fieldBuilder.hint(hint);
+                }
+
+                if (DEEP_INDEX_HINT_ELEMENT.equals(element.getNodeName())) {
+                    String hint = getNodeValue(element);
+                    fieldBuilder.deepHint(hint);
+                }
+            }
         }
     }
 

@@ -28,13 +28,18 @@ import org.dozer.classmap.MappingDirection;
 import org.dozer.classmap.MappingFileData;
 import org.dozer.classmap.RelationshipType;
 import org.dozer.converters.CustomConverterDescription;
+import org.dozer.converters.InstanceCustomConverterDescription;
+import org.dozer.converters.JavaClassCustomConverterDescription;
 import org.dozer.fieldmap.CustomGetSetMethodFieldMap;
 import org.dozer.fieldmap.DozerField;
+import org.dozer.fieldmap.EmptySourceFieldMap;
 import org.dozer.fieldmap.ExcludeFieldMap;
 import org.dozer.fieldmap.FieldMap;
+import org.dozer.fieldmap.FieldMapUtils;
 import org.dozer.fieldmap.GenericFieldMap;
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.fieldmap.MapFieldMap;
+import org.dozer.fieldmap.MultiSourceFieldMap;
 import org.dozer.util.DozerConstants;
 import org.dozer.util.MappingUtils;
 
@@ -75,15 +80,20 @@ public class DozerBuilder {
     }
 
     private static boolean isIndexed(String fieldName) {
-        return (fieldName != null) && (fieldName.matches(".+\\[\\d+\\]"));
+        return (fieldName != null) && (fieldName.matches(".+\\[.+?\\]$"));
     }
 
     static String getFieldNameOfIndexedField(String fieldName) {
-        return fieldName == null ? null : fieldName.replaceAll("\\[\\d+\\]$", "");
+        if (fieldName == null) {
+            return null;
+        }
+
+        return fieldName.substring(0, fieldName.lastIndexOf('['));
     }
 
-    private static int getIndexOfIndexedField(String fieldName) {
-        return Integer.parseInt(fieldName.replaceAll(".*\\[", "").replaceAll("\\]", ""));
+    private static String getIndexOfIndexedField(String fieldName) {
+        return fieldName.substring(fieldName.lastIndexOf('[') + 1, fieldName.lastIndexOf(']'));
+        // return fieldName.replaceAll(".*\\[", "").replaceAll("\\]", "");
     }
 
     public MappingFileData build() {
@@ -161,6 +171,11 @@ public class DozerBuilder {
             return this;
         }
 
+        public MappingBuilder requiredFields(Boolean value) {
+            classMap.setRequiredFields(value);
+            return this;
+        }
+
         public MappingBuilder stopOnErrors(Boolean value) {
             classMap.setStopOnErrors(value);
             return this;
@@ -181,7 +196,7 @@ public class DozerBuilder {
             return classA(type);
         }
 
-        public ClassDefinitionBuilder classA(Class type) {
+        public ClassDefinitionBuilder classA(Class<?> type) {
             DozerClass classDefinition = new DozerClass();
             classDefinition.setName(type.getName());
             classMap.setSrcClass(classDefinition);
@@ -193,7 +208,7 @@ public class DozerBuilder {
             return classB(type);
         }
 
-        public ClassDefinitionBuilder classB(Class type) {
+        public ClassDefinitionBuilder classB(Class<?> type) {
             DozerClass classDefinition = new DozerClass();
             classDefinition.setName(type.getName());
             classMap.setDestClass(classDefinition);
@@ -249,27 +264,32 @@ public class DozerBuilder {
             ClassMap classMap = fieldMap.getClassMap();
             classMap.addFieldMapping(fieldMap);
         }
-
     }
 
     public static class FieldMappingBuilder implements FieldBuider {
 
         private ClassMap classMap;
-        private DozerField srcField;
+        private List<DozerField> src = new ArrayList<DozerField>();
         private DozerField destField;
         private MappingDirection type;
         private RelationshipType relationshipType;
         private boolean removeOrphans;
-        private HintContainer srcHintContainer;
-        private HintContainer destHintContainer;
-        private HintContainer srcDeepIndexHintContainer;
-        private HintContainer destDeepIndexHintContainer;
         private boolean copyByReference;
         private String mapId;
         private String customConverter;
         private String customConverterId;
         private String customConverterParam;
         private boolean copyByReferenceSet;
+        private String mappingCondition;
+        private String mappingConditionId;
+        private String collectionItemDiscriminator;
+        private String collectionItemDiscriminatorId;
+        private boolean mapNull;
+        private boolean mapNullSet;
+        private boolean mapEmptyString;
+        private boolean mapEmptyStringSet;
+        private boolean trimString;
+        private boolean trimStringSet;
 
         public FieldMappingBuilder(ClassMap classMap) {
             this.classMap = classMap;
@@ -281,7 +301,7 @@ public class DozerBuilder {
 
         public FieldDefinitionBuilder a(String name, String type) {
             DozerField field = DozerBuilder.prepareField(name, type);
-            this.srcField = field;
+            this.src.add(field);
             return new FieldDefinitionBuilder(field);
         }
 
@@ -305,30 +325,6 @@ public class DozerBuilder {
 
         public void removeOrphans(boolean value) {
             this.removeOrphans = value;
-        }
-
-        public void srcHintContainer(String hint) {
-            HintContainer hintContainer = new HintContainer();
-            hintContainer.setHintName(hint);
-            this.srcHintContainer = hintContainer;
-        }
-
-        public void destHintContainer(String hint) {
-            HintContainer hintContainer = new HintContainer();
-            hintContainer.setHintName(hint);
-            this.destHintContainer = hintContainer;
-        }
-
-        public void srcDeepIndexHintContainer(String hint) {
-            HintContainer hintContainer = new HintContainer();
-            hintContainer.setHintName(hint);
-            this.srcDeepIndexHintContainer = hintContainer;
-        }
-
-        public void destDeepIndexHintContainer(String hint) {
-            HintContainer hintContainer = new HintContainer();
-            hintContainer.setHintName(hint);
-            this.destDeepIndexHintContainer = hintContainer;
         }
 
         public void copyByReference(boolean value) {
@@ -356,28 +352,66 @@ public class DozerBuilder {
             this.customConverterParam = attribute;
         }
 
+        public void mappingCondition(String typeName) {
+            this.mappingCondition = typeName;
+        }
+
+        public void mappingConditionId(String attribute) {
+            this.mappingConditionId = attribute;
+        }
+
+        public void collectionItemDiscriminator(String discriminator) {
+            this.collectionItemDiscriminator = discriminator;
+        }
+
+        public void collectionItemDiscriminatorId(String id) {
+            this.collectionItemDiscriminatorId = id;
+        }
+
+        public void mapNull(boolean value) {
+            this.mapNullSet = true;
+            this.mapNull = value;
+        }
+
+        public void mapEmptyString(boolean value) {
+            this.mapEmptyStringSet = true;
+            this.mapEmptyString = value;
+        }
+
+        public void trimString(boolean value) {
+            this.trimStringSet = true;
+            this.trimString = value;
+        }
+
         public void build() {
             // TODO Check Map to Map mapping
             FieldMap result;
-            if (srcField.isMapTypeCustomGetterSetterField() || destField.isMapTypeCustomGetterSetterField() || classMap
-                .isSrcClassMapTypeCustomGetterSetter() || classMap.isDestClassMapTypeCustomGetterSetter()) {
-                result = new MapFieldMap(classMap);
-            } else if (srcField.isCustomGetterSetterField() || destField.isCustomGetterSetterField()) {
-                result = new CustomGetSetMethodFieldMap(classMap);
+
+            if (src.size() > 1) {
+                result = new MultiSourceFieldMap(classMap);
+                ((MultiSourceFieldMap) result).setSrc(src);
             } else {
-                result = new GenericFieldMap(classMap);
+                DozerField srcField = src.get(0);
+
+                if (srcField.isMapTypeCustomGetterSetterField() || destField
+                    .isMapTypeCustomGetterSetterField() || classMap
+                        .isSrcClassMapTypeCustomGetterSetter() || classMap.isDestClassMapTypeCustomGetterSetter()) {
+                    result = new MapFieldMap(classMap);
+                } else if (srcField.isCustomGetterSetterField() || destField.isCustomGetterSetterField()) {
+                    result = new CustomGetSetMethodFieldMap(classMap);
+                } else if (MappingUtils.isBlankOrNull(srcField.getName())) {
+                    result = new EmptySourceFieldMap(classMap);
+                } else {
+                    result = new GenericFieldMap(classMap);
+                }
+
+                result.setSrcField(srcField);
             }
 
-            result.setSrcField(srcField);
             result.setDestField(destField);
             result.setType(type);
             result.setRelationshipType(relationshipType);
             result.setRemoveOrphans(removeOrphans);
-
-            result.setSrcHintContainer(srcHintContainer);
-            result.setDestHintContainer(destHintContainer);
-            result.setSrcDeepIndexHintContainer(srcDeepIndexHintContainer);
-            result.setDestDeepIndexHintContainer(destDeepIndexHintContainer);
 
             if (copyByReferenceSet) {
                 result.setCopyByReference(copyByReference);
@@ -387,10 +421,25 @@ public class DozerBuilder {
             result.setCustomConverter(customConverter);
             result.setCustomConverterId(customConverterId);
             result.setCustomConverterParam(customConverterParam);
+            result.setMappingCondition(mappingCondition);
+            result.setMappingConditionId(mappingConditionId);
+            result.setCollectionItemDiscriminator(collectionItemDiscriminator);
+            result.setCollectionItemDiscriminatorId(collectionItemDiscriminatorId);
+
+            if (mapNullSet) {
+                result.setMapNull(mapNull);
+            }
+
+            if (mapEmptyStringSet) {
+                result.setMapEmptyString(mapEmptyString);
+            }
+
+            if (trimStringSet) {
+                result.setTrimString(trimString);
+            }
 
             classMap.addFieldMapping(result);
         }
-
     }
 
     public static class FieldDefinitionBuilder {
@@ -432,6 +481,34 @@ public class DozerBuilder {
             field.setAccessible(b);
         }
 
+        public void required(Boolean b) {
+            field.setRequired(b);
+        }
+
+        public void defaultValue(String attribute) {
+            field.setDefaultValue(attribute);
+        }
+
+        // public void hint(Class<?>... types) {
+        // HintContainer hintContainer = FieldMapUtils.hint(types);
+        // field.setHintContainer(hintContainer);
+        // }
+
+        public void hint(String types) {
+            HintContainer hintContainer = FieldMapUtils.hint(types);
+            field.setHintContainer(hintContainer);
+        }
+
+        // public void deepHint(Class<?>... types) {
+        // HintContainer hintContainer = FieldMapUtils.hint(types);
+        // field.setDeepIndexHintContainer(hintContainer);
+        // }
+
+        public void deepHint(String types) {
+            HintContainer hintContainer = FieldMapUtils.hint(types);
+            field.setDeepIndexHintContainer(hintContainer);
+        }
+
         public void iterate() {
             field.setType(DozerConstants.ITERATE);
         }
@@ -439,7 +516,6 @@ public class DozerBuilder {
         public DozerField build() {
             return field;
         }
-
     }
 
     public static class ClassDefinitionBuilder {
@@ -481,6 +557,7 @@ public class DozerBuilder {
         public void isAccessible(Boolean value) {
             definition.setAccessible(value);
         }
+
     }
 
     public static class ConfigurationBuilder {
@@ -509,6 +586,18 @@ public class DozerBuilder {
             configuration.setTrimStrings(value);
         }
 
+        public void mapNulls(Boolean value) {
+            configuration.setMapNulls(value);
+        }
+
+        public void mapEmptyStrings(Boolean value) {
+            configuration.setMapEmptyStrings(value);
+        }
+
+        public void requiredFields(Boolean value) {
+            configuration.setRequiredFields(value);
+        }
+
         public void relationshipType(RelationshipType value) {
             if (value == null) {
                 configuration.setRelationshipType(DozerConstants.DEFAULT_RELATIONSHIP_TYPE_POLICY);
@@ -522,14 +611,24 @@ public class DozerBuilder {
         }
 
         public CustomConverterBuilder customConverter(String type) {
-            Class<?> aClass = MappingUtils.loadClass(type);
+            Class<? extends CustomConverter> aClass = (Class<? extends CustomConverter>) MappingUtils.loadClass(type);
             return customConverter(aClass);
         }
 
         // TODO Constraint with Generic
-        public CustomConverterBuilder customConverter(Class type) {
-            converterDescription = new CustomConverterDescription();
-            converterDescription.setType(type);
+        public CustomConverterBuilder customConverter(Class<? extends CustomConverter> type) {
+            converterDescription = new JavaClassCustomConverterDescription();
+            ((JavaClassCustomConverterDescription) converterDescription).setType(type);
+            return customConverter(converterDescription);
+        }
+
+        public CustomConverterBuilder customConverter(CustomConverter customConverter) {
+            converterDescription = new InstanceCustomConverterDescription();
+            ((InstanceCustomConverterDescription) converterDescription).setInstance(customConverter);
+            return customConverter(converterDescription);
+        }
+
+        private CustomConverterBuilder customConverter(CustomConverterDescription converterDescription) {
             configuration.getCustomConverters().addConverter(converterDescription);
             return new CustomConverterBuilder(converterDescription);
         }
@@ -569,7 +668,7 @@ public class DozerBuilder {
             return classA(aClass);
         }
 
-        public CustomConverterBuilder classA(Class type) {
+        public CustomConverterBuilder classA(Class<?> type) {
             converterDescription.setClassA(type);
             return this;
         }
@@ -579,7 +678,7 @@ public class DozerBuilder {
             return classB(aClass);
         }
 
-        public CustomConverterBuilder classB(Class type) {
+        public CustomConverterBuilder classB(Class<?> type) {
             converterDescription.setClassB(type);
             return this;
         }

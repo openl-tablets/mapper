@@ -21,12 +21,9 @@ import org.dozer.loader.DozerBuilder;
 import org.dozer.util.DozerConstants;
 
 /**
- *
- * Programmatic Builder of Dozer mappings.
- *
  * @author Dmitry Buzdin
  */
-public abstract class BeanMappingBuilder {
+public abstract class BeanMappingBuilder extends MappingOptions {
 
     private DozerBuilder dozerBuilder;
 
@@ -42,6 +39,16 @@ public abstract class BeanMappingBuilder {
         dozerBuilder = new DozerBuilder();
         configure();
         return dozerBuilder.build();
+    }
+
+    public BeanMappingBuilder config(ConfigurationMappingOption... configMappingOption) {
+        DozerBuilder.ConfigurationBuilder configBuilder = dozerBuilder.configuration();
+
+        for (ConfigurationMappingOption option : configMappingOption) {
+            option.apply(configBuilder);
+        }
+
+        return this;
     }
 
     public TypeMappingBuilder mapping(String typeA, String typeB, TypeMappingOption... typeMappingOption) {
@@ -97,11 +104,21 @@ public abstract class BeanMappingBuilder {
         return new FieldDefinition(name);
     }
 
-    /**
-     * References current object in mapping process.
-     * 
-     * @return field definition
-     */
+    public FieldDefinition[] multi(String... names) {
+        if (names == null) {
+            return new FieldDefinition[0];
+        }
+
+        FieldDefinition[] definitions = new FieldDefinition[names.length];
+
+        for (int i = 0; i < names.length; i++) {
+            String name = names[i];
+            definitions[i] = new FieldDefinition(name);
+        }
+
+        return definitions;
+    }
+
     public FieldDefinition this_() {
         return new FieldDefinition(DozerConstants.SELF_KEYWORD);
     }

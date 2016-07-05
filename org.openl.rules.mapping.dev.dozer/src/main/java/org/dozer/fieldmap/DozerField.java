@@ -17,15 +17,15 @@ package org.dozer.fieldmap;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.dozer.util.DozerConstants;
 
 /**
  * Only intended for internal use.
- * 
+ *
  * @author garsombke.franz
  * @author sullins.ben
  * @author tierney.matt
  * @author dmitry.buzdin
- * 
  */
 public class DozerField implements Cloneable {
 
@@ -37,10 +37,14 @@ public class DozerField implements Cloneable {
     private String key;
     private String mapSetMethod;
     private String mapGetMethod;
-    private Boolean accessible;
+    private Boolean accessible = Boolean.FALSE;
     private String createMethod;
     private boolean indexed;
-    private int index = -1;
+    private String index;
+    private boolean required;
+    private String defaultValue;
+    private HintContainer hintContainer;
+    private HintContainer deepIndexHintContainer;
 
     public DozerField(String name, String type) {
         this.type = type;
@@ -112,7 +116,10 @@ public class DozerField implements Cloneable {
     }
 
     public Boolean isAccessible() {
-        return accessible;
+        if (accessible != null) {
+            return accessible;
+        }
+        return Boolean.FALSE;
     }
 
     public void setAccessible(Boolean isAccessible) {
@@ -127,11 +134,11 @@ public class DozerField implements Cloneable {
         this.createMethod = createMethod;
     }
 
-    public int getIndex() {
+    public String getIndex() {
         return index;
     }
 
-    public void setIndex(int index) {
+    public void setIndex(String index) {
         this.index = index;
     }
 
@@ -143,6 +150,38 @@ public class DozerField implements Cloneable {
         this.indexed = isIndexed;
     }
 
+    public boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public HintContainer getHintContainer() {
+        return hintContainer;
+    }
+
+    public void setHintContainer(HintContainer hintContainer) {
+        this.hintContainer = hintContainer;
+    }
+
+    public HintContainer getDeepIndexHintContainer() {
+        return deepIndexHintContainer;
+    }
+
+    public void setDeepIndexHintContainer(HintContainer deepIndexHintContainer) {
+        this.deepIndexHintContainer = deepIndexHintContainer;
+    }
+
     public boolean isCustomGetterSetterField() {
         return getTheGetMethod() != null || getTheSetMethod() != null;
     }
@@ -151,14 +190,32 @@ public class DozerField implements Cloneable {
         return getMapGetMethod() != null || getMapSetMethod() != null;
     }
 
+    public boolean isSelfReferenced() {
+        return getName().equals(DozerConstants.SELF_KEYWORD);
+    }
+
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
+    public DozerField copyOf() {
+        DozerField copy = new DozerField(name, type);
+        copy.setDateFormat(dateFormat);
+        copy.setTheGetMethod(theGetMethod);
+        copy.setTheSetMethod(theSetMethod);
+        copy.setKey(key);
+        copy.setMapSetMethod(mapSetMethod);
+        copy.setMapGetMethod(mapGetMethod);
+        copy.setAccessible(accessible);
+        copy.setCreateMethod(createMethod);
+        copy.setIndexed(indexed);
+        copy.setIndex(index);
+        return copy;
     }
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
-
 }

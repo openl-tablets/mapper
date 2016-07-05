@@ -18,12 +18,14 @@ package org.dozer.factory;
 import java.util.Map;
 
 import org.dozer.BeanFactory;
+import org.openl.rules.mapping.MappingParameters;
+import org.dozer.util.MappingUtils;
 
 /**
  * Internal class that contains the logic used to create a new instance of the
  * destination object being mapped. Performs various checks to determine how the
  * destination object instance is created. Only intended for internal use.
- *
+ * 
  * @author tierney.matt
  * @author garsombke.franz
  * @author dmitry.buzdin
@@ -43,15 +45,19 @@ public final class DestBeanCreator {
     private DestBeanCreator() {
     }
 
-    public static <T> T create(Class<T> targetClass) {
-        return (T) create(targetClass, null);
+    public static <T> T create(MappingParameters params, Class<T> targetClass) {
+        return (T) create(params, targetClass, null);
     }
 
-    public static Object create(Class<?> targetClass, Class<?> alternateClass) {
-        return create(new BeanCreationDirective(null, null, targetClass, alternateClass, null, null, null));
+    public static Object create(MappingParameters params, Class<?> targetClass, Class<?> alternateClass) {
+        if (targetClass == null) {
+            MappingUtils.throwMappingException("Destination bean class is not defined");
+        }
+
+        return create(params, new BeanCreationDirective(null, null, targetClass, alternateClass, null, null, null));
     }
 
-    public static Object create(BeanCreationDirective directive) {
+    public static Object create(MappingParameters params, BeanCreationDirective directive) {
 
         // TODO create method lookup by annotation/convention
         // TODO Cache ConstructionStrategy (reuse caching infrastructure)
@@ -62,7 +68,7 @@ public final class DestBeanCreator {
 
         for (BeanCreationStrategy strategy : availableStrategies) {
             if (strategy.isApplicable(directive)) {
-                return strategy.create(directive);
+                return strategy.create(params, directive);
             }
         }
 

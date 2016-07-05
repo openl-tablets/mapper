@@ -19,7 +19,6 @@
 
     <modules>
         <module>org.openl.rules.mapping.dev.dozer</module>
-        <module>org.openl.rules.mapping.dev.modified</module>
         <module>org.openl.rules.mapping.dev.modified.test</module>
         <module>org.openl.rules.mapping.dev</module>
         <module>org.openl.rules.mapping.dev.test</module>

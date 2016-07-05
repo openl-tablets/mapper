@@ -29,17 +29,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.lang.StringUtils;
+import org.dozer.CustomConverter;
 import org.dozer.MappingException;
 import org.dozer.cache.Cache;
+import org.dozer.cache.CacheKeyFactory;
 import org.dozer.classmap.ClassMap;
 import org.dozer.classmap.Configuration;
 import org.dozer.classmap.CopyByReferenceContainer;
 import org.dozer.classmap.DozerClass;
 import org.dozer.config.BeanContainer;
 import org.dozer.converters.CustomConverterContainer;
+import org.dozer.converters.CustomConverterDescription;
+import org.dozer.converters.InstanceCustomConverterDescription;
+import org.dozer.converters.JavaClassCustomConverterDescription;
 import org.dozer.fieldmap.DozerField;
 import org.dozer.fieldmap.FieldMap;
+import org.dozer.fieldmap.FieldMapUtils;
+import org.dozer.fieldmap.MultiFieldsExcludeFieldMap;
+import org.dozer.fieldmap.MultiSourceFieldMap;
+import org.dozer.propertydescriptor.DozerPropertyDescriptor;
 
 /**
  * Internal class that provides various mapping utilities used throughout the
@@ -56,10 +66,10 @@ public final class MappingUtils {
     }
 
     public static String getClassNameWithoutPackage(Class<?> clazz) { // TODO
-                                                                      // Replace
-                                                                      // with
-                                                                      // Apache
-                                                                      // implementation
+        // Replace
+        // with
+        // Apache
+        // implementation
         Package pckage = clazz.getPackage();
         int pckageIndex = 0;
         if (pckage != null) {
@@ -70,6 +80,29 @@ public final class MappingUtils {
 
     public static boolean isSupportedCollection(Class<?> aClass) {
         return CollectionUtils.isCollection(aClass) || CollectionUtils.isArray(aClass);
+    }
+
+    public static Class<?> getSupportedCollectionEntryType(Class<?> collectionClass) {
+        Class<?> entryType = null;
+        if (collectionClass.isArray()) {
+            entryType = collectionClass.getComponentType();
+        } else if (Collection.class.isAssignableFrom(collectionClass)) {
+            Class<?> genericType = ReflectionUtils.determineGenericsType(collectionClass);
+            if (genericType != null) {
+                entryType = genericType;
+            }
+        }
+
+        return entryType;
+    }
+
+    public static Class<?> getSupportedCollectionEntryType(DozerPropertyDescriptor pd) {
+        Class<?> entryType = pd.genericType();
+        if (entryType == null) {
+            entryType = getSupportedCollectionEntryType(pd.getPropertyType());
+        }
+
+        return entryType;
     }
 
     public static boolean isSupportedMap(Class<?> aClass) {
@@ -111,9 +144,10 @@ public final class MappingUtils {
     }
 
     public static String getMappedParentFieldKey(Object destObj, FieldMap destFieldMap) {
-        StringBuilder buf = new StringBuilder(100); // TODO Use IdentityHashMap
-                                                    // instead of String
-                                                    // concatenation
+        StringBuilder buf = new StringBuilder(100);
+        // TODO Use IdentityHashMap
+        // instead of String
+        // concatenation
         buf.append(System.identityHashCode(destObj));
         buf.append(destFieldMap.getDestFieldName());
         if (destFieldMap.getDestFieldKey() != null) {
@@ -122,25 +156,96 @@ public final class MappingUtils {
         return buf.toString();
     }
 
-    public static Class<?> findCustomConverter(Cache converterByDestTypeCache,
-            CustomConverterContainer customConverterContainer,
-            Class<?> srcClass,
-            Class<?> destClass) {
-        if (customConverterContainer == null) {
-            return null;
+    public static CustomConverter findCustomConverterByClass(Class<?> customConverterClass,
+            List<CustomConverter> externalConverters) {
+
+        CustomConverter converterInstance = null;
+        // search among injected customconverters for a match
+        if (externalConverters != null) {
+            for (CustomConverter customConverterObject : externalConverters) {
+                if (customConverterObject.getClass().isAssignableFrom(customConverterClass)) {
+                    // we have a match
+                    converterInstance = customConverterObject;
+                }
+            }
+        }
+        // if converter object instances were not injected, then create new
+        // instance
+        // of the converter for each conversion
+        // TODO : Should we really create it each time?
+        if (converterInstance == null) {
+            converterInstance = (CustomConverter) ReflectionUtils.newInstance(customConverterClass);
         }
 
-        return customConverterContainer.getCustomConverter(srcClass, destClass, converterByDestTypeCache);
+        return converterInstance;
     }
 
-    public static Class<?> determineCustomConverter(FieldMap fieldMap,
-            Cache converterByDestTypeCache,
+    /**
+     * Finds custom converter for specified classes. The implementation of this
+     * method finds converters in the following order:<br/>
+     * <ol>
+     * <li>looks up converter in cache;</li>
+     * <li>looks up converter in defined converters container</li>
+     * <li>looks up converter in defined converters container</li>
+     * <li>looks up converter among external converters</li>
+     * 
+     * If appropriate converter not found <code>null</code> will be returned.
+     * 
+     * @param cache
+     * @param externalConverters
+     * @param customConverterContainer
+     * @param srcClass
+     * @param destClass
+     * @return
+     */
+    public static CustomConverter findCustomConverter(Cache cache,
+            List<CustomConverter> externalConverters,
             CustomConverterContainer customConverterContainer,
             Class<?> srcClass,
             Class<?> destClass) {
+
+        // check that converters container is defined
         if (customConverterContainer == null) {
             return null;
         }
+
+        // Check cache first
+        Object cacheKey = CacheKeyFactory.createKey(destClass, srcClass);
+        if (cache.containsKey(cacheKey)) {
+            return (CustomConverter) cache.get(cacheKey);
+        }
+
+        // check converters container
+        CustomConverter converterInstance = null;
+        CustomConverterDescription description = customConverterContainer.getCustomConverter(srcClass, destClass);
+        if (description != null) {
+            if (description instanceof InstanceCustomConverterDescription) {
+                converterInstance = ((InstanceCustomConverterDescription) description).getInstance();
+            } else {
+                Class<?> customConverterClass = ((JavaClassCustomConverterDescription) description).getType();
+                converterInstance = findCustomConverterByClass(customConverterClass, externalConverters);
+            }
+        }
+
+        // put appropriate info into cache
+        cache.put(cacheKey, converterInstance);
+
+        return converterInstance;
+    }
+
+    public static CustomConverter determineCustomConverter(FieldMap fieldMap,
+            Cache converterByDestTypeCache,
+            List<CustomConverter> customConverterObjects,
+            CustomConverterContainer customConverterContainer,
+            Class<?> srcClass,
+            Class<?> destClass) {
+
+        // check that converters container is defined
+        if (customConverterContainer == null) {
+            return null;
+        }
+
+        Class<?> destType = destClass;
 
         // This method is messy. Just trying to isolate the junk into this one
         // method instead of spread across the mapping
@@ -149,38 +254,67 @@ public final class MappingUtils {
         // determine the custom converter.
         if (fieldMap != null && fieldMap.isDestFieldIndexed()) {
             if (destClass.isArray()) {
-                destClass = destClass.getComponentType();
+                destType = destClass.getComponentType();
             } else if (destClass
                 .isAssignableFrom(Collection.class) && fieldMap.getDestHintContainer() != null && !fieldMap
                     .getDestHintContainer().hasMoreThanOneHint()) {
                 // use hint when trying to find a custom converter
-                destClass = fieldMap.getDestHintContainer().getHint();
+                destType = fieldMap.getDestHintContainer().getHint();
             }
         }
 
-        return findCustomConverter(converterByDestTypeCache, customConverterContainer, srcClass, destClass);
+        return findCustomConverter(converterByDestTypeCache,
+            customConverterObjects,
+            customConverterContainer,
+            srcClass,
+            destType);
     }
 
     public static void reverseFields(FieldMap source, FieldMap reversed) {
-        DozerField destField = source.getSrcFieldCopy();
-        DozerField sourceField = source.getDestFieldCopy();
 
-        reversed.setDestField(destField);
-        reversed.setSrcField(sourceField);
+        // in case of multi-source field mapping we should use custom
+        // implementation of exclude field map
+        //
+        if (source instanceof MultiSourceFieldMap) {
+            ((MultiFieldsExcludeFieldMap) reversed)
+                .setDest(FieldMapUtils.getCopy(((MultiSourceFieldMap) source).getSrc()));
+            ((MultiFieldsExcludeFieldMap) reversed).setSrc(Arrays.asList(source.getDestFieldCopy()));
+        } else {
+            DozerField destField = source.getSrcFieldCopy();
+            DozerField sourceField = source.getDestFieldCopy();
+            reversed.setDestField(destField);
+            reversed.setSrcField(sourceField);
+            reversed.setSrcHintContainer(source.getDestHintContainer());
+            reversed.setDestHintContainer(source.getSrcHintContainer());
+            reversed.setSrcDeepIndexHintContainer(source.getDestDeepIndexHintContainer());
+            reversed.setDestDeepIndexHintContainer(source.getSrcDeepIndexHintContainer());
+        }
 
         reversed.setCustomConverter(source.getCustomConverter());
         reversed.setCustomConverterId(source.getCustomConverterId());
         reversed.setMapId(source.getMapId());
         reversed.setRelationshipType(source.getRelationshipType());
         reversed.setRemoveOrphans(source.isRemoveOrphans());
-        reversed.setSrcHintContainer(source.getDestHintContainer());
-        reversed.setDestHintContainer(source.getSrcHintContainer());
-        reversed.setSrcDeepIndexHintContainer(source.getDestDeepIndexHintContainer());
-        reversed.setDestDeepIndexHintContainer(source.getSrcDeepIndexHintContainer());
     }
 
     public static void reverseFields(ClassMap source, ClassMap destination) {
         // reverse the fields
+        // destination.setSrcClass(new DozerClass(source.getDestClassName(),
+        // source.getDestClassToMap(),
+        // source.getDestClassBeanFactory(),
+        // source.getDestClassBeanFactoryId(),
+        // source.getDestClassMapGetMethod(),
+        // source.getDestClassMapSetMethod(),
+        // source.isDestMapNull(),
+        // source.isDestMapEmptyString()));
+        // destination.setDestClass(new DozerClass(source.getSrcClassName(),
+        // source.getSrcClassToMap(),
+        // source.getSrcClassBeanFactory(),
+        // source.getSrcClassBeanFactoryId(),
+        // source.getSrcClassMapGetMethod(),
+        // source.getSrcClassMapSetMethod(),
+        // source.isSrcMapNull(),
+        // source.isSrcMapEmptyString()));
         destination.setSrcClass(new DozerClass(source.getDestClassName(),
             source.getDestClassToMap(),
             source.getDestClassBeanFactory(),
@@ -201,6 +335,7 @@ public final class MappingUtils {
             source.isSrcMapNull(),
             source.isSrcMapEmptyString(),
             source.getSrcClass().isAccesible()));
+
         destination.setType(source.getType());
         destination.setWildcard(source.isWildcard());
         destination.setTrimStrings(source.isTrimStrings());
@@ -213,26 +348,6 @@ public final class MappingUtils {
         if (StringUtils.isNotEmpty(source.getMapId())) {
             destination.setMapId(source.getMapId());
         }
-    }
-
-    public static Object getIndexedValue(Object collection, int index) {
-        Object result = null;
-        if (collection instanceof Object[]) {
-            Object[] x = (Object[]) collection;
-            if (index < x.length) {
-                return x[index];
-            }
-        } else if (collection instanceof Collection) {
-            Collection<?> x = (Collection<?>) collection;
-            if (index < x.size()) {
-                Iterator<?> iter = x.iterator();
-                for (int i = 0; i < index; i++) {
-                    iter.next();
-                }
-                result = iter.next();
-            }
-        }
-        return result;
     }
 
     public static void applyGlobalCopyByReference(Configuration globalConfig, FieldMap fieldMap, ClassMap classMap) {
@@ -272,6 +387,94 @@ public final class MappingUtils {
         String className = clazz.getName();
         return className.contains(DozerConstants.CGLIB_ID) || className
             .startsWith(DozerConstants.JAVASSIST_PACKAGE) || className.contains(DozerConstants.JAVASSIST_NAME);
+    }
+
+    /**
+     * Gets value of object using xpath expression.
+     * 
+     * @param object source object
+     * @param index xpath expression
+     * @return obtained value
+     */
+    public static Object getXPathIndexedValue(Object object, String index) {
+        JXPathContext context = JXPathContext.newContext(object);
+        context.setLenient(true);
+        return context.getValue(index);
+    }
+
+    /**
+     * Gets element from collection by index. If collection is <code>null</code>
+     * - <code>null</code> will be returned, if index value is <code>-1</code> -
+     * element with
+     * <code>CollectionUtils.getLengthOfCollection(collection)</code> index
+     * value will be returned.
+     * 
+     * @param collection collection object
+     * @param index index value
+     * @return collection element
+     */
+    public static Object getCollectionIndexedValue(Object collection, int index) {
+        if (collection == null) {
+            return null;
+        }
+
+        Object result = null;
+        int collectionIndex = index;
+
+        if (collectionIndex == -1) {
+            collectionIndex = CollectionUtils.getLengthOfCollection(collection);
+        }
+
+        if (collection instanceof Object[]) {
+            Object[] x = (Object[]) collection;
+            if (collectionIndex < x.length) {
+                return x[collectionIndex];
+            }
+        } else if (collection instanceof Collection) {
+            Collection<?> x = (Collection<?>) collection;
+            if (collectionIndex < x.size()) {
+                Iterator<?> iter = x.iterator();
+                for (int i = 0; i < collectionIndex; i++) {
+                    iter.next();
+                }
+                result = iter.next();
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Checks that input string is integer value.
+     * 
+     * @param index string value
+     * @return <code>true</code> if input string is integer value;
+     *         <code>false</code> - otherwise
+     */
+    public static boolean isSimpleCollectionIndex(String index) {
+        try {
+            Integer.parseInt(index);
+            return true;
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+
+        return false;
+    }
+
+    /**
+     * Parses index string into integer value.
+     * 
+     * @param index index string
+     * @return integer value
+     */
+    public static int getCollectionIndex(String index) {
+        int intValue = Integer.parseInt(index);
+
+        if (intValue < 1) {
+            return -1;
+        }
+
+        return intValue - 1;
     }
 
     public static Object prepareIndexedCollection(Class<?> collectionType,
@@ -442,6 +645,43 @@ public final class MappingUtils {
 
         return result;
 
+    }
+
+    public static String fieldMapKey(FieldMap fieldMap) {
+        StringBuilder builder = new StringBuilder();
+        if (isBlankOrNull(fieldMap.getSrcFieldName())) {
+            builder.append("<noname>");
+        } else {
+            builder.append(fieldMap.getSrcFieldName());
+        }
+        if (!(fieldMap instanceof MultiSourceFieldMap) && !(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(
+            fieldMap.getSrcFieldIndex())) {
+            builder.append("[" + fieldMap.getSrcFieldIndex() + "]");
+        }
+        if (!(fieldMap instanceof MultiSourceFieldMap) && !(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(
+            fieldMap.getSrcFieldKey())) {
+            builder.append("{" + fieldMap.getSrcFieldKey() + "}");
+        }
+        builder.append("-->");
+        builder.append(fieldMap.getDestFieldName());
+        if (!(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(fieldMap.getDestFieldIndex())) {
+            builder.append("[" + fieldMap.getDestFieldIndex() + "]");
+        }
+        if (!(fieldMap instanceof MultiFieldsExcludeFieldMap) && !isBlankOrNull(fieldMap.getDestFieldKey())) {
+            builder.append("{" + fieldMap.getDestFieldKey() + "}");
+        }
+
+        String mappingConditionId = fieldMap.getMappingConditionId();
+        if (!isBlankOrNull(mappingConditionId)) {
+            builder.append(" (conditionId: " + mappingConditionId + ")");
+        }
+
+        String mappingCondition = fieldMap.getMappingCondition();
+        if (!isBlankOrNull(mappingCondition)) {
+            builder.append(" (condition: " + mappingCondition + ")");
+        }
+
+        return builder.toString();
     }
 
     private static boolean isBaseClass(Class<?> clazz) {

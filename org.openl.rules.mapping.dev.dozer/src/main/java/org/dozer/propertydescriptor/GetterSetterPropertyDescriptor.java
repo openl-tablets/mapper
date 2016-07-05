@@ -16,7 +16,6 @@
 package org.dozer.propertydescriptor;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
@@ -34,16 +33,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * 
  * Internal class used to read and write values for fields that have a getter
  * and setter method. This class encapsulates underlying dozer specific logic
  * such as index mapping and deep mapping for reading and writing field values.
  * Only intended for internal use.
- *
+ * 
  * @author garsombke.franz
  * @author tierney.matt
  * @author dmitry.buzdin
- *
+ * 
  */
 public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDescriptor {
 
@@ -54,10 +53,9 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
     public GetterSetterPropertyDescriptor(Class<?> clazz,
             String fieldName,
             boolean isIndexed,
-            int index,
-            HintContainer srcDeepIndexHintContainer,
-            HintContainer destDeepIndexHintContainer) {
-        super(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
+            String index,
+            HintContainer deepIndexHintContainer) {
+        super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
     }
 
     public abstract Method getWriteMethod() throws NoSuchMethodException;
@@ -82,7 +80,13 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
         } else {
             result = invokeReadMethod(bean);
             if (isIndexed) {
-                result = MappingUtils.getIndexedValue(result, index);
+                if (MappingUtils.isSimpleCollectionIndex(index)) {
+                    int collectionIndex = MappingUtils.getCollectionIndex(index);
+                    result = MappingUtils.getCollectionIndexedValue(result, collectionIndex);
+                } else {
+                    String expression = String.format("%s[%s]", fieldName, index);
+                    result = MappingUtils.getXPathIndexedValue(bean, expression);
+                }
             }
         }
         return result;
@@ -96,6 +100,8 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                 // First check if value is indexed. If it's null, then the new
                 // array will be created
                 if (isIndexed) {
+                    // write value using index information
+                    //
                     writeIndexedValue(bean, value);
                 } else {
                     // Check if dest value is already set and is equal to src
@@ -115,32 +121,77 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
     }
 
     private Object getDeepSrcFieldValue(Object srcObj) {
+
         // follow deep field hierarchy. If any values are null along the way,
         // then return null
         Object parentObj = srcObj;
         Object hierarchyValue = parentObj;
-        DeepHierarchyElement[] hierarchy = getDeepFieldHierarchy(srcObj, srcDeepIndexHintContainer);
-        int size = hierarchy.length;
-        for (int i = 0; i < size; i++) {
+        // get deep hierarchy for current source object
+        //
+        DeepHierarchyElement[] hierarchy = getDeepFieldHierarchy(srcObj, deepIndexHintContainer);
+        int hierarchyLength = hierarchy.length;
+
+        // Iterate thru each deep element in the hierarchy to obtain field value
+        //
+        for (int i = 0; i < hierarchyLength; i++) {
             DeepHierarchyElement hierarchyElement = hierarchy[i];
             PropertyDescriptor pd = hierarchyElement.getPropDescriptor();
+
             // If any fields in the deep hierarchy are indexed, get actual value
             // within the collection at the specified index
-            if (hierarchyElement.getIndex() > -1) {
-                hierarchyValue = MappingUtils.getIndexedValue(
-                    ReflectionUtils.invoke(pd.getReadMethod(), hierarchyValue, null), hierarchyElement.getIndex());
+            //
+            if (!MappingUtils.isBlankOrNull(hierarchyElement.getIndex())) {
+                Object bean = ReflectionUtils.invoke(pd.getReadMethod(), hierarchyValue, null);
+                // Obtain field value with appropriate method
+                //
+                if (MappingUtils.isSimpleCollectionIndex(hierarchyElement.getIndex())) {
+                    int collectionIndex = MappingUtils.getCollectionIndex(hierarchyElement.getIndex());
+                    hierarchyValue = MappingUtils.getCollectionIndexedValue(bean, collectionIndex);
+                } else {
+                    // We should provide right xpath's context and expression to
+                    // obtain field
+                    // value. In current state the right context is parent
+                    // object of hierarchy element
+                    // and the expression is concatenation of current field name
+                    // and hierarchy element index value.
+                    //
+                    String expression = String.format("%s[%s]", pd.getName(), hierarchyElement.getIndex());
+                    hierarchyValue = MappingUtils.getXPathIndexedValue(parentObj, expression);
+                }
             } else {
                 hierarchyValue = ReflectionUtils.invoke(pd.getReadMethod(), parentObj, null);
             }
-            parentObj = hierarchyValue;
+
+            // if one of hierarchy element value is null we stop further
+            // field path processing.
+            //
             if (hierarchyValue == null) {
-                break;
+                return null;
             }
 
-            // If dest field is indexed, get actual value within the collection
-            // at the specified index
-            if (isIndexed) {
-                hierarchyValue = MappingUtils.getIndexedValue(hierarchyValue, index);
+            // For the last element in hierarchy we skip this step to obtain
+            // right
+            // parent object for further processing.
+            //
+            if (i != hierarchyLength - 1) {
+                parentObj = hierarchyValue;
+            }
+        }
+
+        // At current state we processed field path and have the last field
+        // value. We should check that field path is indexed ([] operator
+        // at the end of field path) or not. If it is true we should evaluate
+        // index expression and return value; otherwise - just return the last
+        // field value.
+        //
+        if (isIndexed) {
+            if (MappingUtils.isSimpleCollectionIndex(index)) {
+                int collectionIndex = MappingUtils.getCollectionIndex(index);
+                hierarchyValue = MappingUtils.getCollectionIndexedValue(hierarchyValue, collectionIndex);
+            } else {
+                String lastFieldName = hierarchy[hierarchyLength - 1].getPropDescriptor().getName();
+                String expression = String.format("%s[%s]", lastFieldName, index);
+                hierarchyValue = MappingUtils.getXPathIndexedValue(parentObj, expression);
             }
         }
 
@@ -155,13 +206,14 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
         // are null
         Object parentObj = destObj;
         int hierarchyLength = hierarchy.length - 1;
-        int hintIndex = 0;
+
         for (int i = 0; i < hierarchyLength; i++) {
             DeepHierarchyElement hierarchyElement = hierarchy[i];
             PropertyDescriptor pd = hierarchyElement.getPropDescriptor();
             Object value = ReflectionUtils.invoke(pd.getReadMethod(), parentObj, null);
             Class<?> clazz;
             Class<?> collectionEntryType;
+
             if (value == null) {
                 clazz = pd.getPropertyType();
                 if (clazz.isInterface() && (i + 1) == hierarchyLength && fieldMap.getDestHintContainer() != null) {
@@ -171,41 +223,63 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
                     // type
                     clazz = fieldMap.getDestHintContainer().getHint();
                 }
-                Object o = null;
-                if (clazz.isArray()) {
-                    o = MappingUtils.prepareIndexedCollection(clazz,
-                        null,
-                        DestBeanCreator.create(clazz.getComponentType()),
-                        hierarchyElement.getIndex());
-                } else if (Collection.class.isAssignableFrom(clazz)) {
 
-                    Class<?> genericType = ReflectionUtils.determineGenericsType(pd);
-                    if (genericType != null) {
-                        collectionEntryType = genericType;
-                    } else {
-                        collectionEntryType = fieldMap.getDestDeepIndexHintContainer().getHint(hintIndex);
-                        // hint index is used to handle multiple hints
-                        hintIndex += 1;
+                Object o = null;
+
+                if (clazz.isArray() || Collection.class.isAssignableFrom(clazz)) {
+                    // index value must be not null because hierarchy element is
+                    // not at the end.
+                    String index = hierarchyElement.getIndex();
+                    if (!MappingUtils.isSimpleCollectionIndex(index)) {
+                        MappingUtils.throwMappingException(String.format(
+                            "Destination field '%s' should be indexed or should not contain filter expressions",
+                            hierarchyElement.getPropDescriptor().getName()));
                     }
 
-                    o = MappingUtils.prepareIndexedCollection(clazz,
-                        null,
-                        DestBeanCreator.create(collectionEntryType),
-                        hierarchyElement.getIndex());
+                    int collectionIndex = MappingUtils.getCollectionIndex(index);
+
+                    if (clazz.isArray()) {
+                        o = MappingUtils.prepareIndexedCollection(clazz,
+                            null,
+                            DestBeanCreator.create(null, clazz.getComponentType()),
+                            collectionIndex);
+                    }
+
+                    if (Collection.class.isAssignableFrom(clazz)) {
+                        Class<?> hintType = null;
+
+                        if (fieldMap.getDestDeepIndexHintContainer() != null) {
+                            hintType = fieldMap.getDestDeepIndexHintContainer().getHint(i);
+                        }
+
+                        collectionEntryType = ReflectionUtils.getComponentType(clazz, pd, hintType);
+
+                        o = MappingUtils.prepareIndexedCollection(clazz,
+                            null,
+                            DestBeanCreator.create(null, collectionEntryType),
+                            collectionIndex);
+                    }
                 } else {
+                    // if user defined another type of property we should use it
+                    if (fieldMap.getDestDeepIndexHintContainer() != null && fieldMap.getDestDeepIndexHintContainer()
+                        .hasHintType(i)) {
+                        clazz = fieldMap.getDestDeepIndexHintContainer().getHint(i);
+                    }
+
                     try {
-                        o = DestBeanCreator.create(clazz);
+                        o = DestBeanCreator.create(null, clazz);
                     } catch (Exception e) {
                         // lets see if they have a factory we can try as a last
                         // ditch. If not...throw the exception:
                         if (fieldMap.getClassMap().getDestClassBeanFactory() != null) {
-                            o = DestBeanCreator.create(new BeanCreationDirective(null,
-                                fieldMap.getClassMap().getSrcClassToMap(),
-                                clazz,
-                                clazz,
-                                fieldMap.getClassMap().getDestClassBeanFactory(),
-                                fieldMap.getClassMap().getDestClassBeanFactoryId(),
-                                null));
+                            o = DestBeanCreator.create(null,
+                                new BeanCreationDirective(null,
+                                    fieldMap.getClassMap().getSrcClassToMap(),
+                                    clazz,
+                                    clazz,
+                                    fieldMap.getClassMap().getDestClassBeanFactory(),
+                                    fieldMap.getClassMap().getDestClassBeanFactoryId(),
+                                    null));
                         } else {
                             MappingUtils.throwMappingException(e);
                         }
@@ -219,29 +293,50 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
             // Check to see if collection needs to be resized
             if (MappingUtils.isSupportedCollection(value.getClass())) {
                 int currentSize = CollectionUtils.getLengthOfCollection(value);
-                if (currentSize < hierarchyElement.getIndex() + 1) {
-                    collectionEntryType = pd.getPropertyType().getComponentType();
+                String index = hierarchyElement.getIndex();
 
-                    if (collectionEntryType == null) {
-                        collectionEntryType = ReflectionUtils.determineGenericsType(pd);
+                // We cannot use another type of collection index for
+                // destination field path except simple one because, for
+                // example, xpath filtered index can return different elements
+                // during mapping process.
+                if (!MappingUtils.isSimpleCollectionIndex(index)) {
+                    MappingUtils.throwMappingException("Destination field path should not contain filter expressions");
+                }
+
+                int collectionIndex = MappingUtils.getCollectionIndex(index);
+
+                // Check that collection should be resized if it has
+                // inappropriate length or element at the collectionIndex is
+                // null.
+                if (currentSize < collectionIndex + 1 || MappingUtils.getCollectionIndexedValue(value,
+                    collectionIndex) == null) {
+                    Class<?> hintType = null;
+
+                    if (fieldMap.getDestDeepIndexHintContainer() != null) {
+                        hintType = fieldMap.getDestDeepIndexHintContainer().getHint(i);
                     }
 
+                    Class<?> componentType = ReflectionUtils.getComponentType(pd.getPropertyType(), pd, hintType);
+                    // Update collection with new one element.
                     value = MappingUtils.prepareIndexedCollection(pd.getPropertyType(),
                         value,
-                        DestBeanCreator.create(collectionEntryType),
-                        hierarchyElement.getIndex());
-                    // value =
-                    // MappingUtils.prepareIndexedCollection(pd.getPropertyType(),
-                    // value, DestBeanCreator.create(collectionEntryType),
-                    // hierarchyElement.getIndex());
+                        DestBeanCreator.create(null, componentType),
+                        collectionIndex);
+                    // At previous step collection instance was changed so we
+                    // have to update appropriate property of parent object.
                     ReflectionUtils.invoke(pd.getWriteMethod(), parentObj, new Object[] { value });
+                    // Re-read value object from parent object to avoid using
+                    // invalid instance of property value.
+                    value = ReflectionUtils.invoke(pd.getReadMethod(), parentObj, null);
                 }
             }
 
-            if (value != null && value.getClass().isArray()) {
-                parentObj = Array.get(value, hierarchyElement.getIndex());
-            } else if (value != null && Collection.class.isAssignableFrom(value.getClass())) {
-                parentObj = MappingUtils.getIndexedValue(value, hierarchyElement.getIndex());
+            if (value != null && (value.getClass().isArray() || Collection.class.isAssignableFrom(value.getClass()))) {
+                String index = hierarchyElement.getIndex();
+                if (!MappingUtils.isSimpleCollectionIndex(index)) {
+                    MappingUtils.throwMappingException("Destination field path should not contain filter expressions");
+                }
+                parentObj = MappingUtils.getCollectionIndexedValue(value, MappingUtils.getCollectionIndex(index));
             } else {
                 parentObj = value;
             }
@@ -300,11 +395,33 @@ public abstract class GetterSetterPropertyDescriptor extends AbstractPropertyDes
     }
 
     private void writeIndexedValue(Object destObj, Object destFieldValue) {
-        Object existingValue = invokeReadMethod(destObj);
+        if (!MappingUtils.isSimpleCollectionIndex(index)) {
+            MappingUtils.throwMappingException("Destinaiton field path should not contain filter expressions");
+        }
+
+        if (MappingUtils.isSimpleCollectionIndex(index)) {
+
+            int collectionIndex = MappingUtils.getCollectionIndex(index);
+            Object existingValue = invokeReadMethod(destObj);
+
+            if (collectionIndex == -1) {
+                if (existingValue != null) {
+                    collectionIndex = CollectionUtils.getLengthOfCollection(existingValue);
+                } else {
+                    collectionIndex = 0;
+                }
+            }
+
+            writeIndexedValue(destObj, collectionIndex, existingValue, destFieldValue);
+        }
+    }
+
+    private void writeIndexedValue(Object destObj, int collectionIndex, Object existingValue, Object destFieldValue) {
         Object indexedValue = MappingUtils.prepareIndexedCollection(getPropertyType(),
             existingValue,
             destFieldValue,
-            index);
+            collectionIndex);
+
         invokeWriteMethod(destObj, indexedValue);
     }
 

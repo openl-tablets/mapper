@@ -16,6 +16,7 @@
 package org.dozer.fieldmap;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -48,17 +49,12 @@ import org.slf4j.LoggerFactory;
 public abstract class FieldMap implements Cloneable {
 
     private static final Logger log = LoggerFactory.getLogger(FieldMap.class);
-    private final ConcurrentMap<Class<?>, DozerPropertyDescriptor> srcPropertyDescriptorMap = new ConcurrentHashMap<Class<?>, DozerPropertyDescriptor>(); // For
-                                                                                                                                                          // Caching
-                                                                                                                                                          // Purposes
+    // For Caching Purposes
+    private final ConcurrentMap<Class<?>, DozerPropertyDescriptor> srcPropertyDescriptorMap = new ConcurrentHashMap<Class<?>, DozerPropertyDescriptor>();
     private final ConcurrentMap<Class<?>, DozerPropertyDescriptor> destPropertyDescriptorMap = new ConcurrentHashMap<Class<?>, DozerPropertyDescriptor>();
     private ClassMap classMap;
     private DozerField srcField;
     private DozerField destField;
-    private HintContainer srcHintContainer;
-    private HintContainer destHintContainer;
-    private HintContainer srcDeepIndexHintContainer;
-    private HintContainer destDeepIndexHintContainer;
     private MappingDirection type;
     private boolean copyByReference;
     private boolean copyByReferenceOveridden;
@@ -68,6 +64,13 @@ public abstract class FieldMap implements Cloneable {
     private String customConverterParam;
     private RelationshipType relationshipType;
     private boolean removeOrphans;
+    private String mappingCondition;
+    private String mappingConditionId;
+    private String collectionItemDiscriminator;
+    private String collectionItemDiscriminatorId;
+    private Boolean mapNull;
+    private Boolean mapEmptyString;
+    private Boolean trimString;
 
     public FieldMap(ClassMap classMap) {
         this.classMap = classMap;
@@ -109,13 +112,22 @@ public abstract class FieldMap implements Cloneable {
     }
 
     public Class<?> getDestFieldType(Class<?> runtimeDestClass) {
-        Class<?> result = null;
+        Class<?> result = getDestPropertyDescriptor(runtimeDestClass).getPropertyType();
+
         if (isDestFieldIndexed()) {
-            result = destHintContainer != null ? destHintContainer.getHint() : null;
+            HintContainer hintContainer = destField.getHintContainer();
+
+            if (hintContainer != null) {
+                result = hintContainer.getHint();
+            } else if ((result.isArray() || (Collection.class.isAssignableFrom(result)) && MappingUtils
+                .getSupportedCollectionEntryType(getDestPropertyDescriptor(runtimeDestClass)) != null)) {
+
+                result = MappingUtils.getSupportedCollectionEntryType(getDestPropertyDescriptor(runtimeDestClass));
+            } else {
+                result = Object.class;
+            }
         }
-        if (result == null) {
-            result = getDestPropertyDescriptor(runtimeDestClass).getPropertyType();
-        }
+
         return result;
     }
 
@@ -155,19 +167,19 @@ public abstract class FieldMap implements Cloneable {
     }
 
     public HintContainer getDestHintContainer() {
-        return destHintContainer;
+        return destField.getHintContainer();
     }
 
     public void setDestHintContainer(HintContainer destHint) {
-        this.destHintContainer = destHint;
+        this.destField.setHintContainer(destHint);
     }
 
     public HintContainer getSrcHintContainer() {
-        return srcHintContainer;
+        return srcField.getHintContainer();
     }
 
     public void setSrcHintContainer(HintContainer sourceHint) {
-        this.srcHintContainer = sourceHint;
+        this.srcField.setHintContainer(sourceHint);
     }
 
     public String getSrcFieldMapGetMethod() {
@@ -232,11 +244,11 @@ public abstract class FieldMap implements Cloneable {
         return srcField.isIndexed();
     }
 
-    public int getSrcFieldIndex() {
+    public String getSrcFieldIndex() {
         return srcField.getIndex();
     }
 
-    public int getDestFieldIndex() {
+    public String getDestFieldIndex() {
         return destField.getIndex();
     }
 
@@ -285,20 +297,28 @@ public abstract class FieldMap implements Cloneable {
         }
     }
 
+    public boolean isDestFieldRequired() {
+        return destField.isRequired();
+    }
+
+    public String getDestFieldDefaultValue() {
+        return destField.getDefaultValue();
+    }
+
     public HintContainer getDestDeepIndexHintContainer() {
-        return destDeepIndexHintContainer;
+        return destField.getDeepIndexHintContainer();
     }
 
     public void setDestDeepIndexHintContainer(HintContainer destDeepIndexHintHint) {
-        this.destDeepIndexHintContainer = destDeepIndexHintHint;
+        this.destField.setDeepIndexHintContainer(destDeepIndexHintHint);
     }
 
     public HintContainer getSrcDeepIndexHintContainer() {
-        return srcDeepIndexHintContainer;
+        return srcField.getDeepIndexHintContainer();
     }
 
     public void setSrcDeepIndexHintContainer(HintContainer srcDeepIndexHint) {
-        this.srcDeepIndexHintContainer = srcDeepIndexHint;
+        this.srcField.setDeepIndexHintContainer(srcDeepIndexHint);
     }
 
     @Override
@@ -371,15 +391,15 @@ public abstract class FieldMap implements Cloneable {
     }
 
     public void validate() {
-        if (srcField == null) {
+        if (srcField == null || MappingUtils.isBlankOrNull(srcField.getName())) {
             MappingUtils.throwMappingException("src field must be specified");
         }
-        if (destField == null) {
+        if (destField == null || MappingUtils.isBlankOrNull(destField.getName())) {
             MappingUtils.throwMappingException("dest field must be specified");
         }
     }
 
-    protected DozerPropertyDescriptor getSrcPropertyDescriptor(Class<?> runtimeSrcClass) {
+    public DozerPropertyDescriptor getSrcPropertyDescriptor(Class<?> runtimeSrcClass) {
         DozerPropertyDescriptor result = this.srcPropertyDescriptorMap.get(runtimeSrcClass);
         if (result == null) {
             String srcFieldMapGetMethod = getSrcFieldMapGetMethod();
@@ -397,7 +417,6 @@ public abstract class FieldMap implements Cloneable {
                 isSrcSelfReferencing(),
                 getDestFieldName(),
                 getSrcDeepIndexHintContainer(),
-                getDestDeepIndexHintContainer(),
                 classMap.getSrcClassBeanFactory());
             this.srcPropertyDescriptorMap.putIfAbsent(runtimeSrcClass, descriptor);
             result = descriptor;
@@ -405,7 +424,7 @@ public abstract class FieldMap implements Cloneable {
         return result;
     }
 
-    protected DozerPropertyDescriptor getDestPropertyDescriptor(Class<?> runtimeDestClass) {
+    public DozerPropertyDescriptor getDestPropertyDescriptor(Class<?> runtimeDestClass) {
         DozerPropertyDescriptor result = this.destPropertyDescriptorMap.get(runtimeDestClass);
         if (result == null) {
             DozerPropertyDescriptor descriptor = PropertyDescriptorFactory.getPropertyDescriptor(runtimeDestClass,
@@ -420,7 +439,6 @@ public abstract class FieldMap implements Cloneable {
                 getDestFieldKey(),
                 isDestSelfReferencing(),
                 getSrcFieldName(),
-                getSrcDeepIndexHintContainer(),
                 getDestDeepIndexHintContainer(),
                 classMap.getDestClassBeanFactory());
 
@@ -479,15 +497,15 @@ public abstract class FieldMap implements Cloneable {
     }
 
     public boolean isDestMapNull() {
-        return classMap.isDestMapNull();
+        return mapNull != null ? mapNull : classMap.isDestMapNull();
     }
 
     public boolean isDestMapEmptyString() {
-        return classMap.isDestMapEmptyString();
+        return mapEmptyString != null ? mapEmptyString : classMap.isDestMapEmptyString();
     }
 
     public boolean isTrimStrings() {
-        return classMap.isTrimStrings();
+        return trimString != null ? trimString : classMap.isTrimStrings();
     }
 
     public boolean isStopOnErrors() {
@@ -496,6 +514,66 @@ public abstract class FieldMap implements Cloneable {
 
     public boolean isNonCumulativeRelationship() {
         return RelationshipType.NON_CUMULATIVE.equals(relationshipType);
+    }
+
+    public void setMapNull(boolean mapNull) {
+        this.mapNull = mapNull;
+    }
+
+    public void setMapEmptyString(boolean mapEmptyString) {
+        this.mapEmptyString = mapEmptyString;
+    }
+
+    public void setTrimString(boolean trimString) {
+        this.trimString = trimString;
+    }
+
+    public String getCustomConverterParam() {
+        return customConverterParam;
+    }
+
+    public void setCustomConverterParam(String customConverterParam) {
+        this.customConverterParam = customConverterParam;
+    }
+
+    public String getMappingCondition() {
+        return mappingCondition;
+    }
+
+    public void setMappingCondition(String mapCondition) {
+        this.mappingCondition = mapCondition;
+    }
+
+    public String getMappingConditionId() {
+        return mappingConditionId;
+    }
+
+    public void setMappingConditionId(String mapConditionId) {
+        this.mappingConditionId = mapConditionId;
+    }
+
+    public String getCollectionItemDiscriminator() {
+        return collectionItemDiscriminator;
+    }
+
+    public void setCollectionItemDiscriminator(String collectionItemDiscriminator) {
+        this.collectionItemDiscriminator = collectionItemDiscriminator;
+    }
+
+    public String getCollectionItemDiscriminatorId() {
+        return collectionItemDiscriminatorId;
+    }
+
+    public void setCollectionItemDiscriminatorId(String collectionItemDiscriminatorId) {
+        this.collectionItemDiscriminatorId = collectionItemDiscriminatorId;
+    }
+
+    protected ConcurrentMap<Class<?>, DozerPropertyDescriptor> getSrcPropertyDescriptorMap() {
+        return srcPropertyDescriptorMap;
+    }
+
+    protected ConcurrentMap<Class<?>, DozerPropertyDescriptor> getDestPropertyDescriptorMap() {
+        return destPropertyDescriptorMap;
     }
 
     @Override
@@ -508,18 +586,17 @@ public abstract class FieldMap implements Cloneable {
             .append("removeOrphans", removeOrphans)
             .append("mapId", mapId)
             .append("copyByReference", copyByReference)
+            .append("mapNull", mapNull)
+            .append("mapEmptyString", mapEmptyString)
+            .append("trimString", trimString)
             .append("copyByReferenceOveridden", copyByReferenceOveridden)
-            .append("srcTypeHint", srcHintContainer)
-            .append("destTypeHint", destHintContainer)
+            .append("srcTypeHint", getSrcHintContainer())
+            .append("destTypeHint", getDestHintContainer())
+            .append("mapCondition", mappingCondition)
+            .append("mapConditionId", mappingConditionId)
+            .append("collectionItemDiscriminator", collectionItemDiscriminator)
+            .append("collectionItemDiscriminatorId", collectionItemDiscriminatorId)
             .toString();
-    }
-
-    public String getCustomConverterParam() {
-        return customConverterParam;
-    }
-
-    public void setCustomConverterParam(String customConverterParam) {
-        this.customConverterParam = customConverterParam;
     }
 
 }

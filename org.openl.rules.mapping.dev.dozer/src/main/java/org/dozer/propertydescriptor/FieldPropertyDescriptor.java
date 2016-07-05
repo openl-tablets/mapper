@@ -29,22 +29,21 @@ import org.dozer.util.ReflectionUtils;
  * Internal class that directly accesses the field via reflection. The
  * getter/setter methods for the field are bypassed and will NOT be invoked.
  * Private fields are accessible by Dozer. Only intended for internal use.
- *
+ * 
  * @author garsombke.franz
  * @author tierney.matt
  * @author dmitry.buzdin
  */
-public class FieldPropertyDescriptor extends AbstractPropertyDescriptor implements DozerPropertyDescriptor {
+public class FieldPropertyDescriptor extends AbstractPropertyDescriptor {
 
     private final DozerPropertyDescriptor[] descriptorChain;
 
     public FieldPropertyDescriptor(Class<?> clazz,
             String fieldName,
             boolean isIndexed,
-            int index,
-            HintContainer srcDeepIndexHintContainer,
-            HintContainer destDeepIndexHintContainer) {
-        super(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
+            String index,
+            HintContainer deepIndexHintContainer) {
+        super(clazz, fieldName, isIndexed, index, deepIndexHintContainer);
 
         String[] tokens = fieldName.split(DozerConstants.DEEP_FIELD_DELIMITER_REGEXP);
         descriptorChain = new DozerPropertyDescriptor[tokens.length];
@@ -86,7 +85,7 @@ public class FieldPropertyDescriptor extends AbstractPropertyDescriptor implemen
             if (i != descriptorChain.length - 1) {
                 Object currentValue = descriptor.getPropertyValue(intermediateResult);
                 if (currentValue == null) {
-                    currentValue = DestBeanCreator.create(descriptor.getPropertyType());
+                    currentValue = DestBeanCreator.create(null, descriptor.getPropertyType());
                     descriptor.setPropertyValue(intermediateResult, currentValue, fieldMap);
                 }
                 intermediateResult = currentValue;
@@ -100,9 +99,9 @@ public class FieldPropertyDescriptor extends AbstractPropertyDescriptor implemen
 
         private Field field;
         private boolean indexed;
-        private int index;
+        private String index;
 
-        ChainedPropertyDescriptor(Class<?> clazz, String fieldName, boolean indexed, int index) {
+        ChainedPropertyDescriptor(Class<?> clazz, String fieldName, boolean indexed, String index) {
             this.indexed = indexed;
             this.index = index;
             field = ReflectionUtils.getFieldFromBean(clazz, fieldName);
@@ -122,7 +121,13 @@ public class FieldPropertyDescriptor extends AbstractPropertyDescriptor implemen
                 MappingUtils.throwMappingException(e);
             }
             if (indexed) {
-                result = MappingUtils.getIndexedValue(result, index);
+                if (MappingUtils.isSimpleCollectionIndex(index)) {
+                    int collectionIndex = MappingUtils.getCollectionIndex(index);
+                    result = MappingUtils.getCollectionIndexedValue(result, collectionIndex);
+                } else {
+                    String expression = String.format("%s[%s]", field.getName(), index);
+                    result = MappingUtils.getXPathIndexedValue(bean, expression);
+                }
             }
 
             return result;
@@ -142,10 +147,16 @@ public class FieldPropertyDescriptor extends AbstractPropertyDescriptor implemen
             try {
                 if (indexed) {
                     Object existingValue = field.get(bean);
+
+                    if (!MappingUtils.isSimpleCollectionIndex(index)) {
+                        MappingUtils
+                            .throwMappingException("Destinaiton field path should not contain filter expressions");
+                    }
+
                     Object collection = MappingUtils.prepareIndexedCollection(getPropertyType(),
                         existingValue,
                         value,
-                        index);
+                        MappingUtils.getCollectionIndex(index));
                     field.set(bean, collection);
                 } else {
                     field.set(bean, value);
