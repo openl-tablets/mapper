@@ -19,7 +19,7 @@ package org.dozer.cache;
  * @author Don Corleone
  */
 public enum DozerCacheType {
-  CONVERTER_BY_DEST_TYPE,
-  SUPER_TYPE_CHECK,
-  CLASS_MAPPINGS
+    CONVERTER_BY_DEST_TYPE,
+    SUPER_TYPE_CHECK,
+    CLASS_MAPPINGS
 }

@@ -28,80 +28,84 @@ import org.dozer.util.DozerConstants;
  */
 public abstract class BeanMappingBuilder {
 
-  private DozerBuilder dozerBuilder;
+    private DozerBuilder dozerBuilder;
 
-  public BeanMappingBuilder() {
-  }
-
-  /**
-   * For internal use
-   * @return mappings created with given builder
-   */
-  public MappingFileData build() {
-    dozerBuilder = new DozerBuilder();
-    configure();
-    return dozerBuilder.build();
-  }
-
-  public TypeMappingBuilder mapping(String typeA, String typeB, TypeMappingOption ... typeMappingOption) {
-    return mapping(new TypeDefinition(typeA), new TypeDefinition(typeB), typeMappingOption);
-  }
-
-  public TypeMappingBuilder mapping(TypeDefinition typeA, String typeB, TypeMappingOption ... typeMappingOption) {
-    return mapping(typeA, new TypeDefinition(typeB), typeMappingOption);
-  }
-
-  public TypeMappingBuilder mapping(String typeA, TypeDefinition typeB, TypeMappingOption ... typeMappingOption) {
-    return mapping(new TypeDefinition(typeA), typeB, typeMappingOption);
-  }
-
-  public TypeMappingBuilder mapping(Class<?> typeA, Class<?> typeB, TypeMappingOption ... typeMappingOption) {
-    return mapping(new TypeDefinition(typeA), new TypeDefinition(typeB), typeMappingOption);
-  }
-
-  public TypeMappingBuilder mapping(TypeDefinition typeA, Class<?> typeB, TypeMappingOption ... typeMappingOption) {
-    return mapping(typeA, new TypeDefinition(typeB), typeMappingOption);
-  }
-
-  public TypeMappingBuilder mapping(Class<?> typeA, TypeDefinition typeB, TypeMappingOption ... typeMappingOption) {
-    return mapping(new TypeDefinition(typeA), typeB, typeMappingOption);
-  }
-
-  public TypeMappingBuilder mapping(TypeDefinition typeA, TypeDefinition typeB, TypeMappingOption ... typeMappingOption) {
-    DozerBuilder.MappingBuilder mappingBuilder = dozerBuilder.mapping();
-    DozerBuilder.ClassDefinitionBuilder typeBuilderA = mappingBuilder.classA(typeA.getName());
-    DozerBuilder.ClassDefinitionBuilder typeBuilderB = mappingBuilder.classB(typeB.getName());
-
-    typeA.build(typeBuilderA);
-    typeB.build(typeBuilderB);
-
-    for (TypeMappingOption option : typeMappingOption) {
-      option.apply(mappingBuilder);
+    public BeanMappingBuilder() {
     }
 
-    return new TypeMappingBuilder(mappingBuilder);
-  }
+    /**
+     * For internal use
+     * 
+     * @return mappings created with given builder
+     */
+    public MappingFileData build() {
+        dozerBuilder = new DozerBuilder();
+        configure();
+        return dozerBuilder.build();
+    }
 
-  public TypeDefinition type(String name) {
-    return new TypeDefinition(name);
-  }
+    public TypeMappingBuilder mapping(String typeA, String typeB, TypeMappingOption... typeMappingOption) {
+        return mapping(new TypeDefinition(typeA), new TypeDefinition(typeB), typeMappingOption);
+    }
 
-  public TypeDefinition type(Class<?> type) {
-    return new TypeDefinition(type);
-  }
+    public TypeMappingBuilder mapping(TypeDefinition typeA, String typeB, TypeMappingOption... typeMappingOption) {
+        return mapping(typeA, new TypeDefinition(typeB), typeMappingOption);
+    }
 
-  public FieldDefinition field(String name) {
-    return new FieldDefinition(name);
-  }
+    public TypeMappingBuilder mapping(String typeA, TypeDefinition typeB, TypeMappingOption... typeMappingOption) {
+        return mapping(new TypeDefinition(typeA), typeB, typeMappingOption);
+    }
 
-  /**
-   * References current object in mapping process.
-   * @return field definition
-   */
-  public FieldDefinition this_() {
-    return new FieldDefinition(DozerConstants.SELF_KEYWORD);
-  }
+    public TypeMappingBuilder mapping(Class<?> typeA, Class<?> typeB, TypeMappingOption... typeMappingOption) {
+        return mapping(new TypeDefinition(typeA), new TypeDefinition(typeB), typeMappingOption);
+    }
 
-  protected abstract void configure();
+    public TypeMappingBuilder mapping(TypeDefinition typeA, Class<?> typeB, TypeMappingOption... typeMappingOption) {
+        return mapping(typeA, new TypeDefinition(typeB), typeMappingOption);
+    }
+
+    public TypeMappingBuilder mapping(Class<?> typeA, TypeDefinition typeB, TypeMappingOption... typeMappingOption) {
+        return mapping(new TypeDefinition(typeA), typeB, typeMappingOption);
+    }
+
+    public TypeMappingBuilder mapping(TypeDefinition typeA,
+            TypeDefinition typeB,
+            TypeMappingOption... typeMappingOption) {
+        DozerBuilder.MappingBuilder mappingBuilder = dozerBuilder.mapping();
+        DozerBuilder.ClassDefinitionBuilder typeBuilderA = mappingBuilder.classA(typeA.getName());
+        DozerBuilder.ClassDefinitionBuilder typeBuilderB = mappingBuilder.classB(typeB.getName());
+
+        typeA.build(typeBuilderA);
+        typeB.build(typeBuilderB);
+
+        for (TypeMappingOption option : typeMappingOption) {
+            option.apply(mappingBuilder);
+        }
+
+        return new TypeMappingBuilder(mappingBuilder);
+    }
+
+    public TypeDefinition type(String name) {
+        return new TypeDefinition(name);
+    }
+
+    public TypeDefinition type(Class<?> type) {
+        return new TypeDefinition(type);
+    }
+
+    public FieldDefinition field(String name) {
+        return new FieldDefinition(name);
+    }
+
+    /**
+     * References current object in mapping process.
+     * 
+     * @return field definition
+     */
+    public FieldDefinition this_() {
+        return new FieldDefinition(DozerConstants.SELF_KEYWORD);
+    }
+
+    protected abstract void configure();
 
 }

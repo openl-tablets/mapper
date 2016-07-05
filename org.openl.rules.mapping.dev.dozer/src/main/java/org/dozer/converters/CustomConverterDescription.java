@@ -19,41 +19,42 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * Internal class that contains the custom converter definition information. Only intended for internal use.
+ * Internal class that contains the custom converter definition information.
+ * Only intended for internal use.
  * 
  * @author sullins.ben
  */
 public class CustomConverterDescription {
-  private Class<?> type;
-  private Class<?> classB;
-  private Class<?> classA;
+    private Class<?> type;
+    private Class<?> classB;
+    private Class<?> classA;
 
-  public Class<?> getClassA() {
-    return classA;
-  }
+    public Class<?> getClassA() {
+        return classA;
+    }
 
-  public void setClassA(Class<?> classA) {
-    this.classA = classA;
-  }
+    public void setClassA(Class<?> classA) {
+        this.classA = classA;
+    }
 
-  public Class<?> getClassB() {
-    return classB;
-  }
+    public Class<?> getClassB() {
+        return classB;
+    }
 
-  public void setClassB(Class<?> classB) {
-    this.classB = classB;
-  }
+    public void setClassB(Class<?> classB) {
+        this.classB = classB;
+    }
 
-  public Class<?> getType() {
-    return type;
-  }
+    public Class<?> getType() {
+        return type;
+    }
 
-  public void setType(Class<?> type) {
-    this.type = type;
-  }
+    public void setType(Class<?> type) {
+        this.type = type;
+    }
 
-  @Override
-  public String toString() {
-    return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
-  }
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

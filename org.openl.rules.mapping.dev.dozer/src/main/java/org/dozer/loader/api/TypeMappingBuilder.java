@@ -23,49 +23,49 @@ import org.dozer.loader.DozerBuilder;
  */
 public final class TypeMappingBuilder {
 
-  private DozerBuilder.MappingBuilder beanMappingBuilder;
+    private DozerBuilder.MappingBuilder beanMappingBuilder;
 
-  public TypeMappingBuilder(DozerBuilder.MappingBuilder beanMappingBuilder) {
-    this.beanMappingBuilder = beanMappingBuilder;
-  }
-
-  public TypeMappingBuilder fields(String a, String b, FieldsMappingOption... options) {
-    return fields(new FieldDefinition(a), new FieldDefinition(b), options);
-  }
-
-  public TypeMappingBuilder fields(FieldDefinition a, String b, FieldsMappingOption... options) {
-    return fields(a, new FieldDefinition(b), options);
-  }
-
-  public TypeMappingBuilder fields(String a, FieldDefinition b, FieldsMappingOption... options) {
-    return fields(new FieldDefinition(a), b, options);
-  }  
-
-  public TypeMappingBuilder fields(FieldDefinition a, FieldDefinition b, FieldsMappingOption... options) {
-    DozerBuilder.FieldMappingBuilder builder = beanMappingBuilder.field();
-    
-    String aText = a.resolve();
-    String bText = b.resolve();
-
-    a.build(builder.a(aText));
-    b.build(builder.b(bText));
-
-    for (FieldsMappingOption option : options) {
-      option.apply(builder);
+    public TypeMappingBuilder(DozerBuilder.MappingBuilder beanMappingBuilder) {
+        this.beanMappingBuilder = beanMappingBuilder;
     }
 
-    return this;
-  }
+    public TypeMappingBuilder fields(String a, String b, FieldsMappingOption... options) {
+        return fields(new FieldDefinition(a), new FieldDefinition(b), options);
+    }
 
-  public TypeMappingBuilder exclude(String field) {
-    return exclude(new FieldDefinition(field));
-  }
+    public TypeMappingBuilder fields(FieldDefinition a, String b, FieldsMappingOption... options) {
+        return fields(a, new FieldDefinition(b), options);
+    }
 
-  public TypeMappingBuilder exclude(FieldDefinition field) {
-    DozerBuilder.FieldExclusionBuilder builder = beanMappingBuilder.fieldExclude();
-    builder.a(field.resolve(), null);
-    builder.b(field.resolve(), null);
-    return this;
-  }
+    public TypeMappingBuilder fields(String a, FieldDefinition b, FieldsMappingOption... options) {
+        return fields(new FieldDefinition(a), b, options);
+    }
+
+    public TypeMappingBuilder fields(FieldDefinition a, FieldDefinition b, FieldsMappingOption... options) {
+        DozerBuilder.FieldMappingBuilder builder = beanMappingBuilder.field();
+
+        String aText = a.resolve();
+        String bText = b.resolve();
+
+        a.build(builder.a(aText));
+        b.build(builder.b(bText));
+
+        for (FieldsMappingOption option : options) {
+            option.apply(builder);
+        }
+
+        return this;
+    }
+
+    public TypeMappingBuilder exclude(String field) {
+        return exclude(new FieldDefinition(field));
+    }
+
+    public TypeMappingBuilder exclude(FieldDefinition field) {
+        DozerBuilder.FieldExclusionBuilder builder = beanMappingBuilder.fieldExclude();
+        builder.a(field.resolve(), null);
+        builder.b(field.resolve(), null);
+        return this;
+    }
 
 }

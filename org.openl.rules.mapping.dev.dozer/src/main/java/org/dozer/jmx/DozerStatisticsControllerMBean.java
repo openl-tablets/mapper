@@ -23,25 +23,45 @@ import java.util.Set;
  * @author tierney.matt
  */
 public interface DozerStatisticsControllerMBean {
-  public double getMappingAverageTimeInMillis();
-  public long getMappingSuccessCount();
-  public long getMappingFailureCount();
-  public Set<String> getMappingFailureExceptionTypes();
-  public Set<String> getMappingFailureTypes();
-  public long getMappingOverallTimeInMillis();
-  public Set<String> getCacheHitCount();
-  public Set<String> getCacheMissCount();
-  public long getMapperInstancesCount();
-  public long getFieldMappingSuccessCount();
-  public long getFieldMappingFailureCount();
-  public long getFieldMappingFailureIgnoredCount();
-  public long getCustomConverterOverallTimeInMillis();
-  public long getCustomConverterSuccessCount();
-  public double getCustomConverterPercentageOfMappingTime();
-  public double getCustomConverterAverageTimeInMillis();
-  public String dumpStatistics();
-  public void clearAll();
-  public boolean isStatisticsEnabled();
-  public void setStatisticsEnabled(boolean statisticsEnabled);
-  public void logStatistics();
+    public double getMappingAverageTimeInMillis();
+
+    public long getMappingSuccessCount();
+
+    public long getMappingFailureCount();
+
+    public Set<String> getMappingFailureExceptionTypes();
+
+    public Set<String> getMappingFailureTypes();
+
+    public long getMappingOverallTimeInMillis();
+
+    public Set<String> getCacheHitCount();
+
+    public Set<String> getCacheMissCount();
+
+    public long getMapperInstancesCount();
+
+    public long getFieldMappingSuccessCount();
+
+    public long getFieldMappingFailureCount();
+
+    public long getFieldMappingFailureIgnoredCount();
+
+    public long getCustomConverterOverallTimeInMillis();
+
+    public long getCustomConverterSuccessCount();
+
+    public double getCustomConverterPercentageOfMappingTime();
+
+    public double getCustomConverterAverageTimeInMillis();
+
+    public String dumpStatistics();
+
+    public void clearAll();
+
+    public boolean isStatisticsEnabled();
+
+    public void setStatisticsEnabled(boolean statisticsEnabled);
+
+    public void logStatistics();
 }

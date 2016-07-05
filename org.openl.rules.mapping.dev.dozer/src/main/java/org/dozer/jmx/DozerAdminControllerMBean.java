@@ -21,7 +21,9 @@ package org.dozer.jmx;
  * @author tierney.matt
  */
 public interface DozerAdminControllerMBean {
-  public String getCurrentVersion();
-  public boolean isStatisticsEnabled();
-  public void setStatisticsEnabled(boolean statisticsEnabled);
+    public String getCurrentVersion();
+
+    public boolean isStatisticsEnabled();
+
+    public void setStatisticsEnabled(boolean statisticsEnabled);
 }

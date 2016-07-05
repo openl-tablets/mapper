@@ -15,11 +15,11 @@
  */
 package org.dozer.classmap;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * Only intended for internal use.
@@ -30,28 +30,28 @@ import java.util.List;
  */
 public class CopyByReferenceContainer {
 
-  private List<CopyByReference> copyByReferences = new ArrayList<CopyByReference>();
+    private List<CopyByReference> copyByReferences = new ArrayList<CopyByReference>();
 
-  public void add(CopyByReference copyByReference) {
-    copyByReferences.add(copyByReference);
-  }
-
-  public boolean contains(Class type) {
-    return contains(type.getName());
-  }
-
-  public boolean contains(String typeName) {
-    for (CopyByReference reference : copyByReferences) {
-      if (reference.matches(typeName)) {
-        return true;
-      }
+    public void add(CopyByReference copyByReference) {
+        copyByReferences.add(copyByReference);
     }
-    return false;
-  }
 
-  @Override
-  public String toString() {
-    return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
-  }
+    public boolean contains(Class type) {
+        return contains(type.getName());
+    }
+
+    public boolean contains(String typeName) {
+        for (CopyByReference reference : copyByReferences) {
+            if (reference.matches(typeName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 
 }

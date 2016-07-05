@@ -16,8 +16,9 @@
 package org.dozer;
 
 /**
- * Runtime exception thrown by Dozer. RuntimeExceptions thrown from custom code called by Dozer during mapping (eg.
- * custom converters) are not wrapped with MappingException.
+ * Runtime exception thrown by Dozer. RuntimeExceptions thrown from custom code
+ * called by Dozer during mapping (eg. custom converters) are not wrapped with
+ * MappingException.
  * 
  * @author garsombke.franz
  * @author sullins.ben
@@ -26,17 +27,16 @@ package org.dozer;
  */
 public class MappingException extends RuntimeException {
 
-  public MappingException(String message) {
-    super(message);
-  }
+    public MappingException(String message) {
+        super(message);
+    }
 
-  public MappingException(String message, Throwable cause) {
-    super(message, cause);
-  }
-  
-  public MappingException(Throwable message) {
-    super(message);
-  }
+    public MappingException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
+    public MappingException(Throwable message) {
+        super(message);
+    }
 
 }

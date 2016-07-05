@@ -22,26 +22,26 @@ import org.hibernate.proxy.LazyInitializer;
 
 /**
  *
- * Hibernate specific implementation. Checks for HibernateProxy interface and uses Hibernate internal API
- * to unwrap proxies. 
+ * Hibernate specific implementation. Checks for HibernateProxy interface and
+ * uses Hibernate internal API to unwrap proxies.
  *
  * @author Dmitry Buzdin
  */
 public class HibernateProxyResolver extends DefaultProxyResolver {
 
-  @Override
-  public <T> T unenhanceObject(T object) {
-    if (object instanceof HibernateProxy) {
-      HibernateProxy hibernateProxy = (HibernateProxy) object;
-      LazyInitializer lazyInitializer = hibernateProxy.getHibernateLazyInitializer();
+    @Override
+    public <T> T unenhanceObject(T object) {
+        if (object instanceof HibernateProxy) {
+            HibernateProxy hibernateProxy = (HibernateProxy) object;
+            LazyInitializer lazyInitializer = hibernateProxy.getHibernateLazyInitializer();
 
-      return (T) lazyInitializer.getImplementation();
+            return (T) lazyInitializer.getImplementation();
+        }
+        return object;
     }
-    return object;
-  }
 
-  public <T> Class<T> unenhanceClass(T object) {
-    return HibernateProxyHelper.getClassWithoutInitializingProxy(object);
-  }
+    public <T> Class<T> unenhanceClass(T object) {
+        return HibernateProxyHelper.getClassWithoutInitializingProxy(object);
+    }
 
 }

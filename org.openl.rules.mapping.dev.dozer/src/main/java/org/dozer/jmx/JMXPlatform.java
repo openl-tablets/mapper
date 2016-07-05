@@ -27,14 +27,17 @@ import javax.management.NotCompliantMBeanException;
  */
 public interface JMXPlatform {
 
-  /**
-   * Checks whether JMX management platform is available on the JVM
-   * @return true if KMX platform is available
-   */
-  boolean isAvailable();
+    /**
+     * Checks whether JMX management platform is available on the JVM
+     * 
+     * @return true if KMX platform is available
+     */
+    boolean isAvailable();
 
-  void registerMBean(String name, Object bean) throws MalformedObjectNameException, MBeanRegistrationException, NotCompliantMBeanException;
+    void registerMBean(String name, Object bean) throws MalformedObjectNameException,
+                                                 MBeanRegistrationException,
+                                                 NotCompliantMBeanException;
 
-  void unregisterMBean(String name) throws MBeanRegistrationException, MalformedObjectNameException;
+    void unregisterMBean(String name) throws MBeanRegistrationException, MalformedObjectNameException;
 
 }

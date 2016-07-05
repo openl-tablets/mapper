@@ -25,6 +25,6 @@ import org.dozer.classmap.MappingFileData;
  */
 public interface MappingsSource {
 
-  MappingFileData load();
+    MappingFileData load();
 
 }

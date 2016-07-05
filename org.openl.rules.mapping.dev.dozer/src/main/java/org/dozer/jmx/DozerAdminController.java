@@ -25,16 +25,16 @@ import org.dozer.util.DozerConstants;
  */
 public class DozerAdminController implements DozerAdminControllerMBean {
 
-  public String getCurrentVersion() {
-    return DozerConstants.CURRENT_VERSION;
-  }
+    public String getCurrentVersion() {
+        return DozerConstants.CURRENT_VERSION;
+    }
 
-  public boolean isStatisticsEnabled() {
-    return GlobalSettings.getInstance().isStatisticsEnabled();
-  }
+    public boolean isStatisticsEnabled() {
+        return GlobalSettings.getInstance().isStatisticsEnabled();
+    }
 
-  public void setStatisticsEnabled(boolean statisticsEnabled) {
-    GlobalSettings.getInstance().setStatisticsEnabled(statisticsEnabled);
-  }
+    public void setStatisticsEnabled(boolean statisticsEnabled) {
+        GlobalSettings.getInstance().setStatisticsEnabled(statisticsEnabled);
+    }
 
 }

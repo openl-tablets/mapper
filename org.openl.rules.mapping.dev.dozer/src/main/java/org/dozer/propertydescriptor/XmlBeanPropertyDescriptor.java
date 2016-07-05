@@ -23,68 +23,81 @@ import org.dozer.fieldmap.HintContainer;
 
 public class XmlBeanPropertyDescriptor implements DozerPropertyDescriptor {
 
-  private static final String IS_SET_PREFIX = "set";
+    private static final String IS_SET_PREFIX = "set";
 
-  private static final String DOT = ".";
+    private static final String DOT = ".";
 
-  private final JavaBeanPropertyDescriptor fieldPropertyDescriptor;
+    private final JavaBeanPropertyDescriptor fieldPropertyDescriptor;
 
-  private final JavaBeanPropertyDescriptor isSetFieldPropertyDescriptor;
+    private final JavaBeanPropertyDescriptor isSetFieldPropertyDescriptor;
 
-  public XmlBeanPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, int index,
-      HintContainer srcDeepIndexHintContainer, HintContainer destDeepIndexHintContainer) {
+    public XmlBeanPropertyDescriptor(Class<?> clazz,
+            String fieldName,
+            boolean isIndexed,
+            int index,
+            HintContainer srcDeepIndexHintContainer,
+            HintContainer destDeepIndexHintContainer) {
 
-    fieldPropertyDescriptor = new JavaBeanPropertyDescriptor(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer,
-        destDeepIndexHintContainer);
+        fieldPropertyDescriptor = new JavaBeanPropertyDescriptor(clazz,
+            fieldName,
+            isIndexed,
+            index,
+            srcDeepIndexHintContainer,
+            destDeepIndexHintContainer);
 
-    isSetFieldPropertyDescriptor = new JavaBeanPropertyDescriptor(clazz, getIsSetFieldName(fieldName), isIndexed, index,
-        srcDeepIndexHintContainer, destDeepIndexHintContainer);
-  }
-
-  public Class<?> getPropertyType() {
-    return fieldPropertyDescriptor.getPropertyType();
-  }
-
-  public Object getPropertyValue(Object bean) {
-    return isFieldSet(bean) ? fieldPropertyDescriptor.getPropertyValue(bean) : null;
-  }
-
-  public void setPropertyValue(Object bean, Object value, FieldMap fieldMap) {
-    fieldPropertyDescriptor.setPropertyValue(bean, value, fieldMap);
-  }
-
-  private boolean isFieldSet(Object bean) {
-
-    try {
-      final Boolean isSetField = (Boolean) isSetFieldPropertyDescriptor.getPropertyValue(bean);
-      return isSetField.booleanValue();
-
-    } catch (Throwable e) {
-      // The isSetField will not be present for all fields eg. Class.name -
-      // that's ok.
-      return true;
-    }
-  }
-
-  private String getIsSetFieldName(final String fieldName) {
-
-    if (fieldName == null) {
-      return null;
+        isSetFieldPropertyDescriptor = new JavaBeanPropertyDescriptor(clazz,
+            getIsSetFieldName(fieldName),
+            isIndexed,
+            index,
+            srcDeepIndexHintContainer,
+            destDeepIndexHintContainer);
     }
 
-    // Does the field use dot notation eg. parent.child.field
-    int lastDotIndex = fieldName.lastIndexOf(DOT);
-    if ((lastDotIndex < 0) || (lastDotIndex == (fieldName.length() - 1))) {
-      // No just return the setfield field name
-      return IS_SET_PREFIX + fieldName;
+    public Class<?> getPropertyType() {
+        return fieldPropertyDescriptor.getPropertyType();
     }
 
-    // yes - return the parent.child.setfield field name
-    return fieldName.substring(0, lastDotIndex + 1) + IS_SET_PREFIX + fieldName.substring(lastDotIndex + 1);
-  }
+    public Object getPropertyValue(Object bean) {
+        return isFieldSet(bean) ? fieldPropertyDescriptor.getPropertyValue(bean) : null;
+    }
 
-  public Class<?> genericType() {
-    return null;
-  }
-  
+    public void setPropertyValue(Object bean, Object value, FieldMap fieldMap) {
+        fieldPropertyDescriptor.setPropertyValue(bean, value, fieldMap);
+    }
+
+    private boolean isFieldSet(Object bean) {
+
+        try {
+            final Boolean isSetField = (Boolean) isSetFieldPropertyDescriptor.getPropertyValue(bean);
+            return isSetField.booleanValue();
+
+        } catch (Throwable e) {
+            // The isSetField will not be present for all fields eg. Class.name
+            // -
+            // that's ok.
+            return true;
+        }
+    }
+
+    private String getIsSetFieldName(final String fieldName) {
+
+        if (fieldName == null) {
+            return null;
+        }
+
+        // Does the field use dot notation eg. parent.child.field
+        int lastDotIndex = fieldName.lastIndexOf(DOT);
+        if ((lastDotIndex < 0) || (lastDotIndex == (fieldName.length() - 1))) {
+            // No just return the setfield field name
+            return IS_SET_PREFIX + fieldName;
+        }
+
+        // yes - return the parent.child.setfield field name
+        return fieldName.substring(0, lastDotIndex + 1) + IS_SET_PREFIX + fieldName.substring(lastDotIndex + 1);
+    }
+
+    public Class<?> genericType() {
+        return null;
+    }
+
 }

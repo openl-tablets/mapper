@@ -18,19 +18,20 @@ package org.dozer.util;
 
 /**
  *
- * No Proxy behavior strategy. In cases when there are no proxied objects (XmlBeans for example) this mode
- * should be configured in dozer.properties for maximum performance. Configured per Dozer Mapper instance.
+ * No Proxy behavior strategy. In cases when there are no proxied objects
+ * (XmlBeans for example) this mode should be configured in dozer.properties for
+ * maximum performance. Configured per Dozer Mapper instance.
  *
  * @author Dmitry Buzdin
  */
 public class NoProxyResolver implements DozerProxyResolver {
 
-  public <T> T unenhanceObject(T object) {
-    return object;
-  }
+    public <T> T unenhanceObject(T object) {
+        return object;
+    }
 
-  public Class<?> getRealClass(Class<?> clazz) {
-    return clazz;
-  }
+    public Class<?> getRealClass(Class<?> clazz) {
+        return clazz;
+    }
 
 }

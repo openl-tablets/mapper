@@ -15,51 +15,49 @@
  */
 package org.dozer.factory;
 
+import java.lang.reflect.Method;
+
 import org.dozer.BeanFactory;
 import org.dozer.util.MappingUtils;
 import org.dozer.util.ReflectionUtils;
 
-import java.lang.reflect.Method;
-
-
 /**
- * Public custom bean factory that can be used by applition code when mapping XMLBean data objects
+ * Public custom bean factory that can be used by applition code when mapping
+ * XMLBean data objects
  * 
  * @author garsombke.franz
  */
 public class XMLBeanFactory implements BeanFactory {
-  private static final Class<?>[] emptyArglist = new Class[0];
-  /**
-   * Creat a bean implementation of a xml bean interface.
-   * 
-   * @param srcObj
-   *          The source object
-   * @param srcObjClass
-   *          The source object class
-   * @param beanId
-   *          the name of the destination interface class
-   * @return A implementation of the destination interface
-   */
-  public Object createBean(Object srcObj, Class<?> srcObjClass, String beanId) {
-    Object result;
-    Class<?> destClass = MappingUtils.loadClass(beanId);
-    Class<?>[] innerClasses = destClass.getClasses();
-    Class<?> factory = null;
-    for (Class<?> innerClass : innerClasses) {
-      if (innerClass.getName().endsWith("Factory")) {
-        factory = innerClass;
-      }
+    private static final Class<?>[] emptyArglist = new Class[0];
+
+    /**
+     * Creat a bean implementation of a xml bean interface.
+     * 
+     * @param srcObj The source object
+     * @param srcObjClass The source object class
+     * @param beanId the name of the destination interface class
+     * @return A implementation of the destination interface
+     */
+    public Object createBean(Object srcObj, Class<?> srcObjClass, String beanId) {
+        Object result;
+        Class<?> destClass = MappingUtils.loadClass(beanId);
+        Class<?>[] innerClasses = destClass.getClasses();
+        Class<?> factory = null;
+        for (Class<?> innerClass : innerClasses) {
+            if (innerClass.getName().endsWith("Factory")) {
+                factory = innerClass;
+            }
+        }
+        if (factory == null) {
+            MappingUtils.throwMappingException("Factory class of Bean of type " + beanId + " not found.");
+        }
+        Method newInstanceMethod = null;
+        try {
+            newInstanceMethod = ReflectionUtils.getMethod(factory, "newInstance", emptyArglist);
+        } catch (NoSuchMethodException e) {
+            MappingUtils.throwMappingException(e);
+        }
+        result = ReflectionUtils.invoke(newInstanceMethod, null, emptyArglist);
+        return result;
     }
-    if (factory == null) {
-      MappingUtils.throwMappingException("Factory class of Bean of type " + beanId + " not found.");
-    }
-    Method newInstanceMethod = null;
-    try {
-      newInstanceMethod = ReflectionUtils.getMethod(factory, "newInstance", emptyArglist);
-    } catch (NoSuchMethodException e) {
-      MappingUtils.throwMappingException(e);
-    }
-    result = ReflectionUtils.invoke(newInstanceMethod, null, emptyArglist);
-    return result;
-  }
 }

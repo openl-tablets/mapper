@@ -24,28 +24,28 @@ import java.util.Set;
  */
 public interface StatisticsManager {
 
-  Set<Statistic> getStatistics();
+    Set<Statistic> getStatistics();
 
-  long getStatisticValue(StatisticType statisticType);
+    long getStatisticValue(StatisticType statisticType);
 
-  long getStatisticValue(StatisticType statisticType, Object entryKey);
+    long getStatisticValue(StatisticType statisticType, Object entryKey);
 
-  void clearAll();
+    void clearAll();
 
-  Set<StatisticEntry> getStatisticEntries(StatisticType statisticType);
+    Set<StatisticEntry> getStatisticEntries(StatisticType statisticType);
 
-  Set<StatisticType> getStatisticTypes();
+    Set<StatisticType> getStatisticTypes();
 
-  boolean isStatisticsEnabled();
+    boolean isStatisticsEnabled();
 
-  void setStatisticsEnabled(boolean statisticsEnabled);
+    void setStatisticsEnabled(boolean statisticsEnabled);
 
-  void logStatistics();
+    void logStatistics();
 
-  Statistic increment(StatisticType statisticType);
+    Statistic increment(StatisticType statisticType);
 
-  Statistic increment(StatisticType statisticType, long value);
+    Statistic increment(StatisticType statisticType, long value);
 
-  Statistic increment(StatisticType statisticType, Object statisticEntryKey);
+    Statistic increment(StatisticType statisticType, Object statisticEntryKey);
 
 }

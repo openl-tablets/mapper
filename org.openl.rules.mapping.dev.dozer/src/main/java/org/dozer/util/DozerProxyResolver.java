@@ -17,15 +17,16 @@ package org.dozer.util;
 
 /**
  *
- * Proxy resolution strategy for mappings. Check implementing classes for available options.
- * It is possible to provide custom resolution strategy by registering that in dozer.properties.
+ * Proxy resolution strategy for mappings. Check implementing classes for
+ * available options. It is possible to provide custom resolution strategy by
+ * registering that in dozer.properties.
  *
  * @author dmitry.buzdin
  */
-public interface DozerProxyResolver {     
+public interface DozerProxyResolver {
 
-  <T> T unenhanceObject(T object);
+    <T> T unenhanceObject(T object);
 
-  Class<?> getRealClass(Class<?> clazz);
-  
+    Class<?> getRealClass(Class<?> clazz);
+
 }

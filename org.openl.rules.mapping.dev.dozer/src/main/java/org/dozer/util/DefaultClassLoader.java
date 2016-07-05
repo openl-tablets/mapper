@@ -15,9 +15,9 @@
  */
 package org.dozer.util;
 
-import org.apache.commons.lang.ClassUtils;
-
 import java.net.URL;
+
+import org.apache.commons.lang.ClassUtils;
 
 /**
  *
@@ -27,21 +27,22 @@ import java.net.URL;
  */
 public class DefaultClassLoader implements DozerClassLoader {
 
-  private final ResourceLoader resourceLoader = new ResourceLoader();
+    private final ResourceLoader resourceLoader = new ResourceLoader();
 
-  public Class<?> loadClass(String className)  {
-    Class<?> result = null;
-    try {
-      //Class caller = Reflection.getCallerClass(3); TODO OSGi fix - Move to specific implementation
-    	result = ClassUtils.getClass(className);
-    } catch (ClassNotFoundException e) {
-      MappingUtils.throwMappingException(e);
+    public Class<?> loadClass(String className) {
+        Class<?> result = null;
+        try {
+            // Class caller = Reflection.getCallerClass(3); TODO OSGi fix - Move
+            // to specific implementation
+            result = ClassUtils.getClass(className);
+        } catch (ClassNotFoundException e) {
+            MappingUtils.throwMappingException(e);
+        }
+        return result;
     }
-    return result;
-  }
 
-  public URL loadResource(String uri) {
-    return resourceLoader.getResource(uri);
-  }
+    public URL loadResource(String uri) {
+        return resourceLoader.getResource(uri);
+    }
 
 }

@@ -15,60 +15,58 @@
  */
 package org.dozer.config;
 
+import org.dozer.loader.xml.ELEngine;
+import org.dozer.loader.xml.ElementReader;
+import org.dozer.loader.xml.SimpleElementReader;
 import org.dozer.util.DefaultClassLoader;
 import org.dozer.util.DefaultProxyResolver;
 import org.dozer.util.DozerClassLoader;
 import org.dozer.util.DozerProxyResolver;
-import org.dozer.loader.xml.ElementReader;
-import org.dozer.loader.xml.ExpressionElementReader;
-import org.dozer.loader.xml.SimpleElementReader;
-import org.dozer.loader.xml.ELEngine;
 
 /**
  * @author dmitry.buzdin
  */
 public class BeanContainer {
 
-  private static final BeanContainer instance = new BeanContainer();
+    private static final BeanContainer instance = new BeanContainer();
+    DozerClassLoader classLoader = new DefaultClassLoader();
+    DozerProxyResolver proxyResolver = new DefaultProxyResolver();
+    ElementReader elementReader = new SimpleElementReader();
+    ELEngine elEngine;
 
-  public static BeanContainer getInstance() {
-    return instance;
-  }
+    public static BeanContainer getInstance() {
+        return instance;
+    }
 
-  DozerClassLoader classLoader = new DefaultClassLoader();
-  DozerProxyResolver proxyResolver = new DefaultProxyResolver();
-  ElementReader elementReader = new SimpleElementReader();
-  ELEngine elEngine;
+    public DozerClassLoader getClassLoader() {
+        return classLoader;
+    }
 
-  public DozerClassLoader getClassLoader() {
-    return classLoader;
-  }
+    public void setClassLoader(DozerClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
 
-  public void setClassLoader(DozerClassLoader classLoader) {
-    this.classLoader = classLoader;
-  }
+    public DozerProxyResolver getProxyResolver() {
+        return proxyResolver;
+    }
 
-  public DozerProxyResolver getProxyResolver() {
-    return proxyResolver;
-  }
+    public void setProxyResolver(DozerProxyResolver proxyResolver) {
+        this.proxyResolver = proxyResolver;
+    }
 
-  public void setProxyResolver(DozerProxyResolver proxyResolver) {
-    this.proxyResolver = proxyResolver;
-  }
+    public ElementReader getElementReader() {
+        return elementReader;
+    }
 
-  public ElementReader getElementReader() {
-    return elementReader;
-  }
+    public void setElementReader(ElementReader elementReader) {
+        this.elementReader = elementReader;
+    }
 
-  public void setElementReader(ElementReader elementReader) {
-    this.elementReader = elementReader;
-  }
+    public ELEngine getElEngine() {
+        return elEngine;
+    }
 
-  public ELEngine getElEngine() {
-    return elEngine;
-  }
-
-  public void setElEngine(ELEngine elEngine) {
-    this.elEngine = elEngine;
-  }
+    public void setElEngine(ELEngine elEngine) {
+        this.elEngine = elEngine;
+    }
 }

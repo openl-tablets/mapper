@@ -15,15 +15,16 @@
  */
 package org.dozer.stats;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 /**
- * Internal class that represents one entry in the statistic. Holds the statistic value and unique key for lookup.
- * Entry counter is based on AtomicLong and is Thread Safe.
+ * Internal class that represents one entry in the statistic. Holds the
+ * statistic value and unique key for lookup. Entry counter is based on
+ * AtomicLong and is Thread Safe.
  *
  * Only intended for internal use.
  * 
@@ -32,45 +33,45 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class StatisticEntry {
 
-  private final Object key;
-  private final AtomicLong value = new AtomicLong();
+    private final Object key;
+    private final AtomicLong value = new AtomicLong();
 
-  public StatisticEntry(Object key) {
-    this.key = key;
-  }
-
-  public Object getKey() {
-    return key;
-  }
-
-  public long getValue() {
-    return value.get();
-  }
-
-  public void increment(long value) {
-    this.value.addAndGet(value);
-  }
-
-  @Override
-  public boolean equals(Object object) {
-    if ((this == object)) {
-      return true;
+    public StatisticEntry(Object key) {
+        this.key = key;
     }
-    if (!(object instanceof StatisticEntry)) {
-      return false;
+
+    public Object getKey() {
+        return key;
     }
-    StatisticEntry entry = (StatisticEntry) object;
-    return new EqualsBuilder().append(this.getKey(), entry.getKey()).isEquals();
-  }
 
-  @Override
-  public int hashCode() {
-    return key.hashCode();
-  }
+    public long getValue() {
+        return value.get();
+    }
 
-  @Override
-  public String toString() {
-    return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
-  }
-  
+    public void increment(long value) {
+        this.value.addAndGet(value);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if ((this == object)) {
+            return true;
+        }
+        if (!(object instanceof StatisticEntry)) {
+            return false;
+        }
+        StatisticEntry entry = (StatisticEntry) object;
+        return new EqualsBuilder().append(this.getKey(), entry.getKey()).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return key.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
 }

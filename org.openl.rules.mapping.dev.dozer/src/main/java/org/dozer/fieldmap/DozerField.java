@@ -29,136 +29,136 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class DozerField implements Cloneable {
 
-  private String type;
-  private String name;
-  private String dateFormat;
-  private String theGetMethod;
-  private String theSetMethod;
-  private String key;
-  private String mapSetMethod;
-  private String mapGetMethod;
-  private Boolean accessible;
-  private String createMethod;
-  private boolean indexed;
-  private int index = -1;
+    private String type;
+    private String name;
+    private String dateFormat;
+    private String theGetMethod;
+    private String theSetMethod;
+    private String key;
+    private String mapSetMethod;
+    private String mapGetMethod;
+    private Boolean accessible;
+    private String createMethod;
+    private boolean indexed;
+    private int index = -1;
 
-  public DozerField(String name, String type) {
-    this.type = type;
-    this.name = name;
-  }
+    public DozerField(String name, String type) {
+        this.type = type;
+        this.name = name;
+    }
 
-  public void setType(String type) {
-    this.type = type;
-  }
+    public String getType() {
+        return type;
+    }
 
-  public String getType() {
-    return type;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public String getDateFormat() {
-    return dateFormat;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public void setDateFormat(String dateFormat) {
-    this.dateFormat = dateFormat;
-  }
+    public String getDateFormat() {
+        return dateFormat;
+    }
 
-  public String getTheGetMethod() {
-    return theGetMethod;
-  }
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
 
-  public void setTheGetMethod(String theGetMethod) {
-    this.theGetMethod = theGetMethod;
-  }
+    public String getTheGetMethod() {
+        return theGetMethod;
+    }
 
-  public String getTheSetMethod() {
-    return theSetMethod;
-  }
+    public void setTheGetMethod(String theGetMethod) {
+        this.theGetMethod = theGetMethod;
+    }
 
-  public void setTheSetMethod(String theSetMethod) {
-    this.theSetMethod = theSetMethod;
-  }
+    public String getTheSetMethod() {
+        return theSetMethod;
+    }
 
-  public String getKey() {
-    return key;
-  }
+    public void setTheSetMethod(String theSetMethod) {
+        this.theSetMethod = theSetMethod;
+    }
 
-  public void setKey(String key) {
-    this.key = key;
-  }
+    public String getKey() {
+        return key;
+    }
 
-  public String getMapGetMethod() {
-    return mapGetMethod;
-  }
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-  public void setMapGetMethod(String mapGetMethod) {
-    this.mapGetMethod = mapGetMethod;
-  }
+    public String getMapGetMethod() {
+        return mapGetMethod;
+    }
 
-  public String getMapSetMethod() {
-    return mapSetMethod;
-  }
+    public void setMapGetMethod(String mapGetMethod) {
+        this.mapGetMethod = mapGetMethod;
+    }
 
-  public void setMapSetMethod(String mapSetMethod) {
-    this.mapSetMethod = mapSetMethod;
-  }
+    public String getMapSetMethod() {
+        return mapSetMethod;
+    }
 
-  public Boolean isAccessible() {
-    return accessible;
-  }
+    public void setMapSetMethod(String mapSetMethod) {
+        this.mapSetMethod = mapSetMethod;
+    }
 
-  public void setAccessible(Boolean isAccessible) {
-    this.accessible = isAccessible;
-  }
+    public Boolean isAccessible() {
+        return accessible;
+    }
 
-  public String getCreateMethod() {
-    return createMethod;
-  }
+    public void setAccessible(Boolean isAccessible) {
+        this.accessible = isAccessible;
+    }
 
-  public void setCreateMethod(String createMethod) {
-    this.createMethod = createMethod;
-  }
+    public String getCreateMethod() {
+        return createMethod;
+    }
 
-  public int getIndex() {
-    return index;
-  }
+    public void setCreateMethod(String createMethod) {
+        this.createMethod = createMethod;
+    }
 
-  public void setIndex(int index) {
-    this.index = index;
-  }
+    public int getIndex() {
+        return index;
+    }
 
-  public boolean isIndexed() {
-    return indexed;
-  }
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
-  public void setIndexed(boolean isIndexed) {
-    this.indexed = isIndexed;
-  }
+    public boolean isIndexed() {
+        return indexed;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setIndexed(boolean isIndexed) {
+        this.indexed = isIndexed;
+    }
 
-  public boolean isCustomGetterSetterField() {
-    return getTheGetMethod() != null || getTheSetMethod() != null;
-  }
+    public boolean isCustomGetterSetterField() {
+        return getTheGetMethod() != null || getTheSetMethod() != null;
+    }
 
-  public boolean isMapTypeCustomGetterSetterField() {
-    return getMapGetMethod() != null || getMapSetMethod() != null;
-  }
+    public boolean isMapTypeCustomGetterSetterField() {
+        return getMapGetMethod() != null || getMapSetMethod() != null;
+    }
 
-  @Override
-  public String toString() {
-    return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
-  }
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 
-  @Override
-  protected Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
 }

@@ -24,11 +24,11 @@ import org.dozer.MappingException;
  */
 public class ConversionException extends MappingException {
 
-  public ConversionException(String string, Throwable throwable) {
-    super(string, throwable);
-  }
+    public ConversionException(String string, Throwable throwable) {
+        super(string, throwable);
+    }
 
-  public ConversionException(Throwable throwable) {
-    super(throwable);
-  }
+    public ConversionException(Throwable throwable) {
+        super(throwable);
+    }
 }

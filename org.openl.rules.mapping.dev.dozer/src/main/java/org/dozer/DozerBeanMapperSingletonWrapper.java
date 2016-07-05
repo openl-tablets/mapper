@@ -15,33 +15,33 @@
  */
 package org.dozer;
 
-import org.dozer.util.DozerConstants;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dozer.util.DozerConstants;
 
 /**
- * Public Singleton wrapper for the DozerBeanMapper. Only supports a single mapping file named dozerBeanMapping.xml, so
- * configuration is very limited. Instead of using the DozerBeanMapperSingletonWrapper, it is recommended that the
- * DozerBeanMapper(MapperIF) instance is configured via an IOC framework, such as Spring, with singleton property set to
- * "true"
+ * Public Singleton wrapper for the DozerBeanMapper. Only supports a single
+ * mapping file named dozerBeanMapping.xml, so configuration is very limited.
+ * Instead of using the DozerBeanMapperSingletonWrapper, it is recommended that
+ * the DozerBeanMapper(MapperIF) instance is configured via an IOC framework,
+ * such as Spring, with singleton property set to "true"
  * 
  * @author garsombke.franz
  */
 public class DozerBeanMapperSingletonWrapper {
 
-  private static Mapper instance;
+    private static Mapper instance;
 
-  private DozerBeanMapperSingletonWrapper() {
-  }
-
-  public static synchronized Mapper getInstance() {
-    if (instance == null) {
-      List<String> mappingFiles = new ArrayList<String>();
-      mappingFiles.add(DozerConstants.DEFAULT_MAPPING_FILE);
-      instance = new DozerBeanMapper(mappingFiles);
+    private DozerBeanMapperSingletonWrapper() {
     }
-    return instance;
-  }
+
+    public static synchronized Mapper getInstance() {
+        if (instance == null) {
+            List<String> mappingFiles = new ArrayList<String>();
+            mappingFiles.add(DozerConstants.DEFAULT_MAPPING_FILE);
+            instance = new DozerBeanMapper(mappingFiles);
+        }
+        return instance;
+    }
 }

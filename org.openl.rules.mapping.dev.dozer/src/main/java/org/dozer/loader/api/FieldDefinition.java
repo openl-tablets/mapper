@@ -23,79 +23,79 @@ import org.dozer.loader.DozerBuilder;
  */
 public class FieldDefinition {
 
-  private String value;
+    private String value;
 
-  private Boolean accessible;
-  private String createMethod;
-  private String key;
-  private String mapGetMethod;
-  private String mapSetMethod;
-  private String getMethod;
-  private String setMethod;
-  private boolean iterate;
+    private Boolean accessible;
+    private String createMethod;
+    private String key;
+    private String mapGetMethod;
+    private String mapSetMethod;
+    private String getMethod;
+    private String setMethod;
+    private boolean iterate;
 
-  public FieldDefinition(String value) {
-    this.value = value;
-  }
-
-  public void build(DozerBuilder.FieldDefinitionBuilder builder) {
-    builder.accessible(this.accessible);
-    builder.createMethod(this.createMethod);
-
-    builder.key(this.key);
-    builder.mapGetMethod(this.mapGetMethod);
-    builder.mapSetMethod(this.mapSetMethod);
-
-    builder.theGetMethod(this.getMethod);
-    builder.theSetMethod(this.setMethod);
-
-    if (this.iterate) {
-      builder.iterate();
+    public FieldDefinition(String value) {
+        this.value = value;
     }
-  }
 
-  public FieldDefinition iterate() {
-    this.iterate = true;
-    return this;
-  }
+    public void build(DozerBuilder.FieldDefinitionBuilder builder) {
+        builder.accessible(this.accessible);
+        builder.createMethod(this.createMethod);
 
-  public FieldDefinition accessible() {
-    return accessible(true);
-  }
+        builder.key(this.key);
+        builder.mapGetMethod(this.mapGetMethod);
+        builder.mapSetMethod(this.mapSetMethod);
 
-  public FieldDefinition accessible(boolean value) {
-    this.accessible = value;
-    return this;
-  }
+        builder.theGetMethod(this.getMethod);
+        builder.theSetMethod(this.setMethod);
 
-  public FieldDefinition createMethod(String method) {
-    this.createMethod = method;
-    return this;
-  }
+        if (this.iterate) {
+            builder.iterate();
+        }
+    }
 
-  public FieldDefinition mapKey(String key) {
-    this.key = key;
-    return this;
-  }
+    public FieldDefinition iterate() {
+        this.iterate = true;
+        return this;
+    }
 
-  public FieldDefinition mapMethods(String getMethod, String setMethod) {
-    this.mapGetMethod = getMethod;
-    this.mapSetMethod = setMethod;
-    return this;
-  }
+    public FieldDefinition accessible() {
+        return accessible(true);
+    }
 
-  public FieldDefinition getMethod(String getMethod) {
-    this.getMethod = getMethod;
-    return this;
-  }
+    public FieldDefinition accessible(boolean value) {
+        this.accessible = value;
+        return this;
+    }
 
-  public FieldDefinition setMethod(String setMethod) {
-    this.setMethod = setMethod;
-    return this;
-  }  
+    public FieldDefinition createMethod(String method) {
+        this.createMethod = method;
+        return this;
+    }
 
-  String resolve() {
-    return value;
-  }
+    public FieldDefinition mapKey(String key) {
+        this.key = key;
+        return this;
+    }
+
+    public FieldDefinition mapMethods(String getMethod, String setMethod) {
+        this.mapGetMethod = getMethod;
+        this.mapSetMethod = setMethod;
+        return this;
+    }
+
+    public FieldDefinition getMethod(String getMethod) {
+        this.getMethod = getMethod;
+        return this;
+    }
+
+    public FieldDefinition setMethod(String setMethod) {
+        this.setMethod = setMethod;
+        return this;
+    }
+
+    String resolve() {
+        return value;
+    }
 
 }

@@ -18,19 +18,19 @@ package org.dozer.propertydescriptor;
 import java.beans.PropertyDescriptor;
 
 public class DeepHierarchyElement {
-  private PropertyDescriptor propDescriptor;
-  private int index;
+    private PropertyDescriptor propDescriptor;
+    private int index;
 
-  public DeepHierarchyElement(PropertyDescriptor propDescriptor, int index) {
-    this.propDescriptor = propDescriptor;
-    this.index = index;
-  }
+    public DeepHierarchyElement(PropertyDescriptor propDescriptor, int index) {
+        this.propDescriptor = propDescriptor;
+        this.index = index;
+    }
 
-  public int getIndex() {
-    return index;
-  }
+    public int getIndex() {
+        return index;
+    }
 
-  public PropertyDescriptor getPropDescriptor() {
-    return propDescriptor;
-  }
+    public PropertyDescriptor getPropDescriptor() {
+        return propDescriptor;
+    }
 }

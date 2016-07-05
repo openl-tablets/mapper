@@ -15,71 +15,76 @@
  */
 package org.dozer.propertydescriptor;
 
+import java.lang.ref.SoftReference;
+import java.lang.reflect.Method;
+
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.util.MappingUtils;
 import org.dozer.util.ReflectionUtils;
 
-import java.lang.ref.SoftReference;
-import java.lang.reflect.Method;
-
-
 /**
  * 
- * Internal class used to read and write values for fields that have an explicitly specified getter or setter method.
- * Only intended for internal use.
+ * Internal class used to read and write values for fields that have an
+ * explicitly specified getter or setter method. Only intended for internal use.
  * 
  * @author garsombke.franz
  * @author tierney.matt
  */
 public class CustomGetSetPropertyDescriptor extends JavaBeanPropertyDescriptor {
 
-  private final String customSetMethod;
-  private final String customGetMethod;
+    private final String customSetMethod;
+    private final String customGetMethod;
 
-  private SoftReference<Method> writeMethod;
-  private SoftReference<Method> readMethod;
+    private SoftReference<Method> writeMethod;
+    private SoftReference<Method> readMethod;
 
-  public CustomGetSetPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, int index, String customSetMethod,
-      String customGetMethod, HintContainer srcDeepIndexHintContainer, HintContainer destDeepIndexHintContainer) {
-    super(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
-    this.customSetMethod = customSetMethod;
-    this.customGetMethod = customGetMethod;
-  }
-
-  @Override
-  public Method getWriteMethod() throws NoSuchMethodException {
-    if (writeMethod == null || writeMethod.get() == null) {
-      if (customSetMethod != null && !MappingUtils.isDeepMapping(fieldName)) {
-        Method method = ReflectionUtils.findAMethod(clazz, customSetMethod);
-        writeMethod = new SoftReference<Method>(method);
-      } else {
-        return super.getWriteMethod();
-      }
+    public CustomGetSetPropertyDescriptor(Class<?> clazz,
+            String fieldName,
+            boolean isIndexed,
+            int index,
+            String customSetMethod,
+            String customGetMethod,
+            HintContainer srcDeepIndexHintContainer,
+            HintContainer destDeepIndexHintContainer) {
+        super(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
+        this.customSetMethod = customSetMethod;
+        this.customGetMethod = customGetMethod;
     }
-    return writeMethod.get();
-  }
 
-  @Override
-  protected Method getReadMethod() throws NoSuchMethodException {
-    if (readMethod == null || readMethod.get() == null) {
-      if (customGetMethod != null) {
-        Method method = ReflectionUtils.findAMethod(clazz, customGetMethod);
-        readMethod = new SoftReference<Method>(method);
-      } else {
-        return super.getReadMethod();
-      }
+    @Override
+    public Method getWriteMethod() throws NoSuchMethodException {
+        if (writeMethod == null || writeMethod.get() == null) {
+            if (customSetMethod != null && !MappingUtils.isDeepMapping(fieldName)) {
+                Method method = ReflectionUtils.findAMethod(clazz, customSetMethod);
+                writeMethod = new SoftReference<Method>(method);
+            } else {
+                return super.getWriteMethod();
+            }
+        }
+        return writeMethod.get();
     }
-    return readMethod.get();
-  }
 
-  @Override
-  protected String getSetMethodName() throws NoSuchMethodException {
-    return customSetMethod != null ? customSetMethod : super.getSetMethodName();
-  }
-  
-  @Override
-  protected boolean isCustomSetMethod() {
-    return customSetMethod != null;
-  }
+    @Override
+    protected Method getReadMethod() throws NoSuchMethodException {
+        if (readMethod == null || readMethod.get() == null) {
+            if (customGetMethod != null) {
+                Method method = ReflectionUtils.findAMethod(clazz, customGetMethod);
+                readMethod = new SoftReference<Method>(method);
+            } else {
+                return super.getReadMethod();
+            }
+        }
+        return readMethod.get();
+    }
+
+    @Override
+    protected String getSetMethodName() throws NoSuchMethodException {
+        return customSetMethod != null ? customSetMethod : super.getSetMethodName();
+    }
+
+    @Override
+    protected boolean isCustomSetMethod() {
+        return customSetMethod != null;
+    }
 
 }

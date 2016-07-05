@@ -19,32 +19,33 @@ import org.dozer.MappingException;
 import org.dozer.fieldmap.FieldMap;
 
 /**
- * Internal class used for copy by reference mappings. Only intended for internal use.
+ * Internal class used for copy by reference mappings. Only intended for
+ * internal use.
  * 
  * @author garsombke.franz
  */
 public class SelfPropertyDescriptor implements DozerPropertyDescriptor {
 
-  private final Class<?> self;
+    private final Class<?> self;
 
-  public SelfPropertyDescriptor(Class<?> self) {
-    this.self = self;
-  }
+    public SelfPropertyDescriptor(Class<?> self) {
+        this.self = self;
+    }
 
-  public Class<?> getPropertyType() throws MappingException {
-    return self;
-  }
+    public Class<?> getPropertyType() throws MappingException {
+        return self;
+    }
 
-  public void setPropertyValue(Object bean, Object value, FieldMap fieldMap) throws MappingException {
-    // do nothing
-  }
+    public void setPropertyValue(Object bean, Object value, FieldMap fieldMap) throws MappingException {
+        // do nothing
+    }
 
-  public Class<?> genericType() {
-    return null;
-  }
+    public Class<?> genericType() {
+        return null;
+    }
 
-  public Object getPropertyValue(Object bean) throws MappingException {
-    return bean;
-  }
+    public Object getPropertyValue(Object bean) throws MappingException {
+        return bean;
+    }
 
 }

@@ -24,93 +24,93 @@ import org.dozer.loader.DozerBuilder;
  */
 public class TypeDefinition {
 
-  private String name;
-  private String beanFactory;
-  private String createMethod;
-  private String factoryBeanId;
-  private boolean mapEmptyString;
-  private String mapGetMethod;
-  private String mapSetMethod;
-  private boolean mapNull;
-  private Boolean isAccessible;
+    private String name;
+    private String beanFactory;
+    private String createMethod;
+    private String factoryBeanId;
+    private boolean mapEmptyString;
+    private String mapGetMethod;
+    private String mapSetMethod;
+    private boolean mapNull;
+    private Boolean isAccessible;
 
-  public TypeDefinition(Class<?> type) {
-    this.name = type.getName();
-  }
+    public TypeDefinition(Class<?> type) {
+        this.name = type.getName();
+    }
 
-  public TypeDefinition(String name) {
-    this.name = name;
-  }
+    public TypeDefinition(String name) {
+        this.name = name;
+    }
 
-  public void build(DozerBuilder.ClassDefinitionBuilder typeBuilder) {
-    typeBuilder.beanFactory(this.beanFactory);
-    typeBuilder.createMethod(this.createMethod);
-    typeBuilder.factoryBeanId(this.factoryBeanId);
+    public void build(DozerBuilder.ClassDefinitionBuilder typeBuilder) {
+        typeBuilder.beanFactory(this.beanFactory);
+        typeBuilder.createMethod(this.createMethod);
+        typeBuilder.factoryBeanId(this.factoryBeanId);
 
-    typeBuilder.mapEmptyString(this.mapEmptyString);
-    typeBuilder.mapNull(this.mapNull);
+        typeBuilder.mapEmptyString(this.mapEmptyString);
+        typeBuilder.mapNull(this.mapNull);
 
-    typeBuilder.mapGetMethod(this.mapGetMethod);
-    typeBuilder.mapSetMethod(this.mapSetMethod);
+        typeBuilder.mapGetMethod(this.mapGetMethod);
+        typeBuilder.mapSetMethod(this.mapSetMethod);
 
-    typeBuilder.isAccessible(this.isAccessible);
-  }
+        typeBuilder.isAccessible(this.isAccessible);
+    }
 
-  public TypeDefinition mapMethods(String getMethod, String setMethod) {
-    this.mapGetMethod = getMethod;
-    this.mapSetMethod = setMethod;
-    return this;
-  }
+    public TypeDefinition mapMethods(String getMethod, String setMethod) {
+        this.mapGetMethod = getMethod;
+        this.mapSetMethod = setMethod;
+        return this;
+    }
 
-  public TypeDefinition beanFactory(Class<? extends BeanFactory> type) {
-    this.beanFactory = type.getName();
-    return this;
-  }
+    public TypeDefinition beanFactory(Class<? extends BeanFactory> type) {
+        this.beanFactory = type.getName();
+        return this;
+    }
 
-  public TypeDefinition beanFactory(String name) {
-    this.beanFactory = name;
-    return this;
-  }
+    public TypeDefinition beanFactory(String name) {
+        this.beanFactory = name;
+        return this;
+    }
 
-  public TypeDefinition createMethod(String method) {
-    this.createMethod = method;
-    return this;
-  }
+    public TypeDefinition createMethod(String method) {
+        this.createMethod = method;
+        return this;
+    }
 
-  public TypeDefinition mapMethods(String factoryBeanId) {
-    this.factoryBeanId = factoryBeanId;
-    return this;
-  }
+    public TypeDefinition mapMethods(String factoryBeanId) {
+        this.factoryBeanId = factoryBeanId;
+        return this;
+    }
 
-  public TypeDefinition mapEmptyString() {
-    return mapEmptyString(true);
-  }
+    public TypeDefinition mapEmptyString() {
+        return mapEmptyString(true);
+    }
 
-  public TypeDefinition mapEmptyString(boolean value) {
-    this.mapEmptyString = value;
-    return this;
-  }
+    public TypeDefinition mapEmptyString(boolean value) {
+        this.mapEmptyString = value;
+        return this;
+    }
 
-  public TypeDefinition mapNull() {
-    return mapNull(true);
-  }
+    public TypeDefinition mapNull() {
+        return mapNull(true);
+    }
 
-  public TypeDefinition mapNull(boolean value) {
-    this.mapNull = value;
-    return this;
-  }
+    public TypeDefinition mapNull(boolean value) {
+        this.mapNull = value;
+        return this;
+    }
 
-  public TypeDefinition accessible() {
-    return accessible(true);
-  }
+    public TypeDefinition accessible() {
+        return accessible(true);
+    }
 
-  public TypeDefinition accessible(boolean value) {
-    this.isAccessible = value;
-    return this;
-  }
+    public TypeDefinition accessible(boolean value) {
+        this.isAccessible = value;
+        return this;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
 }

@@ -27,8 +27,8 @@ import org.dozer.classmap.ClassMap;
  */
 public class ExcludeFieldMap extends FieldMap {
 
-  public ExcludeFieldMap(ClassMap classMap) {
-    super(classMap);
-  }
+    public ExcludeFieldMap(ClassMap classMap) {
+        super(classMap);
+    }
 
 }

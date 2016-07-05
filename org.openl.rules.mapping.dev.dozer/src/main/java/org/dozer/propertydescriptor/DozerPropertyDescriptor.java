@@ -18,23 +18,25 @@ package org.dozer.propertydescriptor;
 import org.dozer.fieldmap.FieldMap;
 
 /**
- * Internal property descriptor interface. Only intended for internal use.  Dozer property descriptors are used
- * to read and write the actual field mapping values on the target objects.
+ * Internal property descriptor interface. Only intended for internal use. Dozer
+ * property descriptors are used to read and write the actual field mapping
+ * values on the target objects.
  * 
  * @author garsombke.franz
  */
 public interface DozerPropertyDescriptor {
 
-  Class<?> getPropertyType();
+    Class<?> getPropertyType();
 
-  Object getPropertyValue(Object bean);
+    Object getPropertyValue(Object bean);
 
-  void setPropertyValue(Object bean, Object value, FieldMap fieldMap);
+    void setPropertyValue(Object bean, Object value, FieldMap fieldMap);
 
-  /**
-   * Determines generic parameter type
-   * @return For Type<Parameter> returns Parameter class.
-   */
-  Class<?> genericType();
+    /**
+     * Determines generic parameter type
+     * 
+     * @return For Type<Parameter> returns Parameter class.
+     */
+    Class<?> genericType();
 
 }

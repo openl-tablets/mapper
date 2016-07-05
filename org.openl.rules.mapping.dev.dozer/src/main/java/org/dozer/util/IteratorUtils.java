@@ -9,12 +9,12 @@ import java.util.List;
  */
 public final class IteratorUtils {
 
-  public static <T> List<T> toList(Iterator<T> iterator) {
-    List<T> list = new ArrayList<T>();    
-    while (iterator.hasNext()) {
-      list.add(iterator.next());
+    public static <T> List<T> toList(Iterator<T> iterator) {
+        List<T> list = new ArrayList<T>();
+        while (iterator.hasNext()) {
+            list.add(iterator.next());
+        }
+        return list;
     }
-    return list;
-  }
 
 }

@@ -15,68 +15,74 @@
  */
 package org.dozer.propertydescriptor;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+
 import org.dozer.fieldmap.HintContainer;
 import org.dozer.util.MappingUtils;
 import org.dozer.util.ReflectionUtils;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-
-
 /**
  * 
- * Internal class used to read and write values for fields that follow the java bean spec and have corresponding
- * getter/setter methods for the field that are name accordingly. If the field does not have the necessary
- * getter/setter, an exception will be thrown. Only intended for internal use.
+ * Internal class used to read and write values for fields that follow the java
+ * bean spec and have corresponding getter/setter methods for the field that are
+ * name accordingly. If the field does not have the necessary getter/setter, an
+ * exception will be thrown. Only intended for internal use.
  * 
  * @author garsombke.franz
  * @author tierney.matt
  */
 public class JavaBeanPropertyDescriptor extends GetterSetterPropertyDescriptor {
-  private PropertyDescriptor pd;
+    private PropertyDescriptor pd;
 
-  public JavaBeanPropertyDescriptor(Class<?> clazz, String fieldName, boolean isIndexed, int index,
-      HintContainer srcDeepIndexHintContainer, HintContainer destDeepIndexHintContainer) {
-    super(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
-  }
-
-  @Override
-  public Method getWriteMethod() throws NoSuchMethodException {
-    Method writeMethod = getPropertyDescriptor(destDeepIndexHintContainer).getWriteMethod();
-    if (writeMethod == null) {
-      throw new NoSuchMethodException("Unable to determine write method for Field: '" + fieldName + "' in Class: " + clazz);
+    public JavaBeanPropertyDescriptor(Class<?> clazz,
+            String fieldName,
+            boolean isIndexed,
+            int index,
+            HintContainer srcDeepIndexHintContainer,
+            HintContainer destDeepIndexHintContainer) {
+        super(clazz, fieldName, isIndexed, index, srcDeepIndexHintContainer, destDeepIndexHintContainer);
     }
 
-    return writeMethod;
-  }
+    @Override
+    public Method getWriteMethod() throws NoSuchMethodException {
+        Method writeMethod = getPropertyDescriptor(destDeepIndexHintContainer).getWriteMethod();
+        if (writeMethod == null) {
+            throw new NoSuchMethodException(
+                "Unable to determine write method for Field: '" + fieldName + "' in Class: " + clazz);
+        }
 
-  @Override
-  protected String getSetMethodName() throws NoSuchMethodException {
-    return getWriteMethod().getName();
-  }
-
-  @Override
-  protected Method getReadMethod() throws NoSuchMethodException {
-    Method result = getPropertyDescriptor(srcDeepIndexHintContainer).getReadMethod();
-    if (result == null) {
-      throw new NoSuchMethodException("Unable to determine read method for Field: '" + fieldName + "' in Class: " + clazz);
+        return writeMethod;
     }
-    return result;
-  }
-  
-  @Override
-  protected boolean isCustomSetMethod() {
-    return false;
-  }
 
-  private PropertyDescriptor getPropertyDescriptor(HintContainer deepIndexHintContainer) {
-    if (pd == null) {
-      pd = ReflectionUtils.findPropertyDescriptor(clazz, fieldName, deepIndexHintContainer);
-      if (pd == null) {
-        MappingUtils.throwMappingException("Property: '" + fieldName + "' not found in Class: " + clazz);
-      }
+    @Override
+    protected String getSetMethodName() throws NoSuchMethodException {
+        return getWriteMethod().getName();
     }
-    return pd;
-  }
+
+    @Override
+    protected Method getReadMethod() throws NoSuchMethodException {
+        Method result = getPropertyDescriptor(srcDeepIndexHintContainer).getReadMethod();
+        if (result == null) {
+            throw new NoSuchMethodException(
+                "Unable to determine read method for Field: '" + fieldName + "' in Class: " + clazz);
+        }
+        return result;
+    }
+
+    @Override
+    protected boolean isCustomSetMethod() {
+        return false;
+    }
+
+    private PropertyDescriptor getPropertyDescriptor(HintContainer deepIndexHintContainer) {
+        if (pd == null) {
+            pd = ReflectionUtils.findPropertyDescriptor(clazz, fieldName, deepIndexHintContainer);
+            if (pd == null) {
+                MappingUtils.throwMappingException("Property: '" + fieldName + "' not found in Class: " + clazz);
+            }
+        }
+        return pd;
+    }
 
 }

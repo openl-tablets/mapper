@@ -16,13 +16,14 @@
 package org.dozer;
 
 /**
- * Interface that gives an ability to receive mapper instance inside {@link org.dozer.CustomConverter}.
- * Dozer will inject mapper object before executing custom converter logic.
+ * Interface that gives an ability to receive mapper instance inside
+ * {@link org.dozer.CustomConverter}. Dozer will inject mapper object before
+ * executing custom converter logic.
  *
  * @author dmitry.buzdin
  */
 public interface MapperAware {
 
-  void setMapper(Mapper mapper);
+    void setMapper(Mapper mapper);
 
 }

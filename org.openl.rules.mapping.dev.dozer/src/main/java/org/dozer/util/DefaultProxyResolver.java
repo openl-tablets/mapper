@@ -17,27 +17,29 @@ package org.dozer.util;
 
 /**
  *
- * Default implementation. Supports only simple proxy cases of Cglib and Javassist.
- * For more complicated scenarious consider using framework specific ProxyResolver.
+ * Default implementation. Supports only simple proxy cases of Cglib and
+ * Javassist. For more complicated scenarious consider using framework specific
+ * ProxyResolver.
  *
  * @author dmitry.buzdin
  */
 public class DefaultProxyResolver implements DozerProxyResolver {
 
-  public <T> T unenhanceObject(T object) {
-    return object;
-  }
-
-  public Class<?> getRealClass(Class<?> clazz) {
-    if (MappingUtils.isProxy(clazz)) {
-      Class<?> superclass = clazz.getSuperclass();
-      // Proxy could be created based on set of interfaces. In this case we will rely on inheritance mappings.
-      if (DozerConstants.BASE_CLASS.equals(superclass.getName())) {
-        return clazz;
-      }
-      return superclass;
+    public <T> T unenhanceObject(T object) {
+        return object;
     }
-    return clazz;
-  }
+
+    public Class<?> getRealClass(Class<?> clazz) {
+        if (MappingUtils.isProxy(clazz)) {
+            Class<?> superclass = clazz.getSuperclass();
+            // Proxy could be created based on set of interfaces. In this case
+            // we will rely on inheritance mappings.
+            if (DozerConstants.BASE_CLASS.equals(superclass.getName())) {
+                return clazz;
+            }
+            return superclass;
+        }
+        return clazz;
+    }
 
 }

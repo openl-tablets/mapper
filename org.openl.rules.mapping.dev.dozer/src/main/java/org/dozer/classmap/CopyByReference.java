@@ -15,12 +15,12 @@
  */
 package org.dozer.classmap;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Only intended for internal use.
@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 public class CopyByReference {
 
     private static final String WILDCARD = "*";
-    
+
     private String mask;
     private Pattern pattern;
 

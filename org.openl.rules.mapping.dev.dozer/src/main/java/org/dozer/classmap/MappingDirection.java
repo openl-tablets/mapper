@@ -22,27 +22,26 @@ import org.apache.commons.lang.StringUtils;
  */
 public final class MappingDirection {
 
-  private static final String BI_DIRECTIONAL_VALUE = "bi-directional";
-  private static final String ONE_WAY_VALUE = "one-way";
+    /**
+     * Default mapping approach when a -> b -> a' then a == a'
+     */
+    public static final MappingDirection BI_DIRECTIONAL = new MappingDirection();
+    /**
+     * Unidirectional mapping when a -> b -> a' then a != a'
+     */
+    public static final MappingDirection ONE_WAY = new MappingDirection();
+    private static final String BI_DIRECTIONAL_VALUE = "bi-directional";
+    private static final String ONE_WAY_VALUE = "one-way";
 
-  /**
-   * Default mapping approach when a -> b -> a' then a == a'
-   */
-  public static final MappingDirection BI_DIRECTIONAL = new MappingDirection();
-  /**
-   * Unidirectional mapping when a -> b -> a' then a != a'
-   */
-  public static final MappingDirection ONE_WAY = new MappingDirection();
-
-  public static MappingDirection valueOf(String mappingDirection) {
-    if (BI_DIRECTIONAL_VALUE.equals(mappingDirection)) {
-      return BI_DIRECTIONAL;
-    } else if (ONE_WAY_VALUE.equals(mappingDirection)) {
-      return ONE_WAY;
-    } else if (StringUtils.isEmpty(mappingDirection)) {
-      return null;
+    public static MappingDirection valueOf(String mappingDirection) {
+        if (BI_DIRECTIONAL_VALUE.equals(mappingDirection)) {
+            return BI_DIRECTIONAL;
+        } else if (ONE_WAY_VALUE.equals(mappingDirection)) {
+            return ONE_WAY;
+        } else if (StringUtils.isEmpty(mappingDirection)) {
+            return null;
+        }
+        throw new IllegalStateException("type should be bi-directional or one-way. " + mappingDirection);
     }
-    throw new IllegalStateException("type should be bi-directional or one-way. " + mappingDirection);
-  }
-  
+
 }

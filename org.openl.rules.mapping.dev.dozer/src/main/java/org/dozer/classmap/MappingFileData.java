@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Internal class that contains all of the custom mapping definitions, along with the global configuration instance.
- * Only intended for internal use.
+ * Internal class that contains all of the custom mapping definitions, along
+ * with the global configuration instance. Only intended for internal use.
  * 
  * @author garsombke.franz
  * @author sullins.ben
@@ -28,22 +28,22 @@ import java.util.List;
  * 
  */
 public class MappingFileData {
-  private List<ClassMap> classMaps = new ArrayList<ClassMap>();
-  private Configuration configuration;
+    private List<ClassMap> classMaps = new ArrayList<ClassMap>();
+    private Configuration configuration;
 
-  public List<ClassMap> getClassMaps() {
-    return classMaps;
-  }
-  
-  public void addClassMap(ClassMap classMap) {
-    this.classMaps.add(classMap);
-  }
+    public List<ClassMap> getClassMaps() {
+        return classMaps;
+    }
 
-  public void setConfiguration(Configuration config) {
-    this.configuration = config;
-  }
+    public void addClassMap(ClassMap classMap) {
+        this.classMaps.add(classMap);
+    }
 
-  public Configuration getConfiguration() {
-    return this.configuration;
-  }
+    public Configuration getConfiguration() {
+        return this.configuration;
+    }
+
+    public void setConfiguration(Configuration config) {
+        this.configuration = config;
+    }
 }

@@ -26,69 +26,73 @@ import org.dozer.fieldmap.FieldMap;
  */
 public class DozerEvent {
 
-  private DozerEventType type;
-  private ClassMap classMap;
-  private FieldMap fieldMap;
-  private Object sourceObject;
-  private Object destinationObject;
-  private Object destinationValue;
+    private DozerEventType type;
+    private ClassMap classMap;
+    private FieldMap fieldMap;
+    private Object sourceObject;
+    private Object destinationObject;
+    private Object destinationValue;
 
-  // TODO Create Object instances only if Event Listeners are registered;
-  public DozerEvent(DozerEventType type, ClassMap classMap, FieldMap fieldMap, Object sourceObject, Object destinationObject,
-      Object destinationValue) {
-    this.type = type;
-    this.classMap = classMap;
-    this.fieldMap = fieldMap;
-    this.sourceObject = sourceObject;
-    this.destinationObject = destinationObject;
-    this.destinationValue = destinationValue;
-  }
-
-  public DozerEventType getType() {
-    return type;
-  }
-
-  public ClassMap getClassMap() {
-    return classMap;
-  }
-
-  public Object getDestinationObject() {
-    return destinationObject;
-  }
-
-  public Object getDestinationValue() {
-    return destinationValue;
-  }
-
-  public FieldMap getFieldMap() {
-    return fieldMap;
-  }
-
-  public Object getSourceObject() {
-    return sourceObject;
-  }
-
-  @Override
-  public String toString() {
-    StringBuffer sb = new StringBuffer();
-    if (getClassMap() != null) {
-      sb.append("Type:").append(type).append("\n");
+    // TODO Create Object instances only if Event Listeners are registered;
+    public DozerEvent(DozerEventType type,
+            ClassMap classMap,
+            FieldMap fieldMap,
+            Object sourceObject,
+            Object destinationObject,
+            Object destinationValue) {
+        this.type = type;
+        this.classMap = classMap;
+        this.fieldMap = fieldMap;
+        this.sourceObject = sourceObject;
+        this.destinationObject = destinationObject;
+        this.destinationValue = destinationValue;
     }
-    if (getClassMap() != null) {
-      sb.append("ClassMap:").append(getClassMap().toString()).append("\n");
+
+    public DozerEventType getType() {
+        return type;
     }
-    if (getFieldMap() != null) {
-      sb.append("FieldMap:").append(getFieldMap().toString()).append("\n");
+
+    public ClassMap getClassMap() {
+        return classMap;
     }
-    if (getSourceObject() != null) {
-      sb.append("SourceObject:").append(getSourceObject().toString()).append("\n");
+
+    public Object getDestinationObject() {
+        return destinationObject;
     }
-    if (getDestinationObject() != null) {
-      sb.append("DestinationObject:").append(getDestinationObject().toString()).append("\n");
+
+    public Object getDestinationValue() {
+        return destinationValue;
     }
-    if (getDestinationValue() != null) {
-      sb.append("DestinationValue:").append(getDestinationValue().toString()).append("\n");
+
+    public FieldMap getFieldMap() {
+        return fieldMap;
     }
-    return sb.toString();
-  }
+
+    public Object getSourceObject() {
+        return sourceObject;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        if (getClassMap() != null) {
+            sb.append("Type:").append(type).append("\n");
+        }
+        if (getClassMap() != null) {
+            sb.append("ClassMap:").append(getClassMap().toString()).append("\n");
+        }
+        if (getFieldMap() != null) {
+            sb.append("FieldMap:").append(getFieldMap().toString()).append("\n");
+        }
+        if (getSourceObject() != null) {
+            sb.append("SourceObject:").append(getSourceObject().toString()).append("\n");
+        }
+        if (getDestinationObject() != null) {
+            sb.append("DestinationObject:").append(getDestinationObject().toString()).append("\n");
+        }
+        if (getDestinationValue() != null) {
+            sb.append("DestinationValue:").append(getDestinationValue().toString()).append("\n");
+        }
+        return sb.toString();
+    }
 }

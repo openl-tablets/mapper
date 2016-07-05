@@ -26,7 +26,7 @@ import org.dozer.classmap.ClassMap;
  * 
  */
 public class CustomGetSetMethodFieldMap extends FieldMap {
-  public CustomGetSetMethodFieldMap(ClassMap classMap) {
-    super(classMap);
-  }
+    public CustomGetSetMethodFieldMap(ClassMap classMap) {
+        super(classMap);
+    }
 }

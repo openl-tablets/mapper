@@ -15,35 +15,39 @@
  */
 package org.dozer.converters;
 
-import org.apache.commons.beanutils.Converter;
-
 import java.lang.reflect.Constructor;
 
+import org.apache.commons.beanutils.Converter;
+
 /**
- * Internal class for converting String --> Complex Data Types with a String constructor. Only intended for internal
- * use.
+ * Internal class for converting String --> Complex Data Types with a String
+ * constructor. Only intended for internal use.
  * 
  * @author tierney.matt
  */
 public class StringConstructorConverter implements Converter {
 
-  private StringConverter stringConverter;
+    private StringConverter stringConverter;
 
-  public StringConstructorConverter(DateFormatContainer dateFormatContainer) {
-    this.stringConverter = new StringConverter(dateFormatContainer);
-  }
-
-  public Object convert(Class destClass, Object srcObj) {
-    String result = (String) stringConverter.convert(destClass, srcObj);
-    try {
-      Constructor constructor = destClass.getConstructor(String.class); // TODO Check, but not catch
-      return constructor.newInstance(result);
-    } catch (NoSuchMethodException e) {
-      // just return the string
-      return result;
-    } catch (Exception e) {
-      throw new ConversionException(e);
+    public StringConstructorConverter(DateFormatContainer dateFormatContainer) {
+        this.stringConverter = new StringConverter(dateFormatContainer);
     }
-  }
+
+    public Object convert(Class destClass, Object srcObj) {
+        String result = (String) stringConverter.convert(destClass, srcObj);
+        try {
+            Constructor constructor = destClass.getConstructor(String.class); // TODO
+                                                                              // Check,
+                                                                              // but
+                                                                              // not
+                                                                              // catch
+            return constructor.newInstance(result);
+        } catch (NoSuchMethodException e) {
+            // just return the string
+            return result;
+        } catch (Exception e) {
+            throw new ConversionException(e);
+        }
+    }
 
 }

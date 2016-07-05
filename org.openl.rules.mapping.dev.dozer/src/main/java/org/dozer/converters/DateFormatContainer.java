@@ -20,31 +20,31 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**
- * Internal class used as a container to determine the date format to use for a particular field mapping. Only intended
- * for internal use.  
+ * Internal class used as a container to determine the date format to use for a
+ * particular field mapping. Only intended for internal use.
  * 
  * @author tierney.matt
  */
 public class DateFormatContainer {
-  private String dfStr;
-  private DateFormat dateFormat;
+    private String dfStr;
+    private DateFormat dateFormat;
 
-  public DateFormatContainer(String dfStr) {
-    this.dfStr = dfStr;
-  }
-
-  public DateFormat getDateFormat() {
-    if (dateFormat == null) {
-      dateFormat = determineDateFormat();
+    public DateFormatContainer(String dfStr) {
+        this.dfStr = dfStr;
     }
-    return dateFormat;
-  }
 
-  public void setDateFormat(DateFormat dateFormat) {
-    this.dateFormat = dateFormat;
-  }
+    public DateFormat getDateFormat() {
+        if (dateFormat == null) {
+            dateFormat = determineDateFormat();
+        }
+        return dateFormat;
+    }
 
-  private DateFormat determineDateFormat() {
-    return dfStr == null ? null : new SimpleDateFormat(dfStr, Locale.getDefault());
-  }
+    public void setDateFormat(DateFormat dateFormat) {
+        this.dateFormat = dateFormat;
+    }
+
+    private DateFormat determineDateFormat() {
+        return dfStr == null ? null : new SimpleDateFormat(dfStr, Locale.getDefault());
+    }
 }

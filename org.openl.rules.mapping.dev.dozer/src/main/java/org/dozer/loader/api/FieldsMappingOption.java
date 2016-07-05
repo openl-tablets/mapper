@@ -23,6 +23,6 @@ import org.dozer.loader.DozerBuilder;
  */
 public interface FieldsMappingOption {
 
-  void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder);
+    void apply(DozerBuilder.FieldMappingBuilder fieldMappingBuilder);
 
 }

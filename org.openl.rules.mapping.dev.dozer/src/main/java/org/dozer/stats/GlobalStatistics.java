@@ -16,24 +16,25 @@
 package org.dozer.stats;
 
 /**
- * Internal singleton class that holds global statistics. Only intended for internal use.
+ * Internal singleton class that holds global statistics. Only intended for
+ * internal use.
  * 
  * @author tierney.matt
  */
 public final class GlobalStatistics {
-  private static GlobalStatistics singleton = new GlobalStatistics();
+    private static GlobalStatistics singleton = new GlobalStatistics();
 
-  private final StatisticsManager statsMgr;
+    private final StatisticsManager statsMgr;
 
-  private GlobalStatistics() {
-    statsMgr = new StatisticsManagerImpl();
-  }
+    private GlobalStatistics() {
+        statsMgr = new StatisticsManagerImpl();
+    }
 
-  public static GlobalStatistics getInstance() {
-    return singleton;
-  }
+    public static GlobalStatistics getInstance() {
+        return singleton;
+    }
 
-  public StatisticsManager getStatsMgr() {
-    return statsMgr;
-  }
+    public StatisticsManager getStatsMgr() {
+        return statsMgr;
+    }
 }

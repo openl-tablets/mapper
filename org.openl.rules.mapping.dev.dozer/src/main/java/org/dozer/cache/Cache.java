@@ -16,26 +16,26 @@
 package org.dozer.cache;
 
 /**
- * Internal interface to a single cache. Holds all of the cache entries for the cache. Only
- * intended for internal use.
+ * Internal interface to a single cache. Holds all of the cache entries for the
+ * cache. Only intended for internal use.
  *
  * @author tierney.matt
  * @author dmitry.buzdin
  */
-public interface Cache <KeyType, ValueType> {
+public interface Cache<KeyType, ValueType> {
 
-  void clear();
+    void clear();
 
-  void put(KeyType key, ValueType value);
+    void put(KeyType key, ValueType value);
 
-  ValueType get(KeyType key);
+    ValueType get(KeyType key);
 
-  String getName();
+    String getName();
 
-  long getSize();
+    long getSize();
 
-  long getMaxSize();
+    long getMaxSize();
 
-  boolean containsKey(KeyType key);
+    boolean containsKey(KeyType key);
 
 }

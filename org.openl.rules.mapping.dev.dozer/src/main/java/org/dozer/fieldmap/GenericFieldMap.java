@@ -26,7 +26,7 @@ import org.dozer.classmap.ClassMap;
  * 
  */
 public class GenericFieldMap extends FieldMap {
-  public GenericFieldMap(ClassMap classMap) {
-    super(classMap);
-  }
+    public GenericFieldMap(ClassMap classMap) {
+        super(classMap);
+    }
 }

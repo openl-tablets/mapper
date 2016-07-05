@@ -19,7 +19,8 @@ import org.dozer.classmap.ClassMappings;
 import org.dozer.classmap.Configuration;
 
 /**
- * Internal class that contains the results of the loadMappings operation. Only intended for internal use.
+ * Internal class that contains the results of the loadMappings operation. Only
+ * intended for internal use.
  * 
  * @author garsombke.franz
  * @author tierney.matt
@@ -27,20 +28,20 @@ import org.dozer.classmap.Configuration;
  */
 public class LoadMappingsResult {
 
-  private ClassMappings customMappings;
-  private Configuration globalConfiguration;
+    private ClassMappings customMappings;
+    private Configuration globalConfiguration;
 
-  public LoadMappingsResult(ClassMappings customMappings, Configuration globalConfiguration) {
-    this.customMappings = customMappings;
-    this.globalConfiguration = globalConfiguration;
-  }
+    public LoadMappingsResult(ClassMappings customMappings, Configuration globalConfiguration) {
+        this.customMappings = customMappings;
+        this.globalConfiguration = globalConfiguration;
+    }
 
-  public ClassMappings getCustomMappings() {
-    return customMappings;
-  }
+    public ClassMappings getCustomMappings() {
+        return customMappings;
+    }
 
-  public Configuration getGlobalConfiguration() {
-    return globalConfiguration;
-  }
+    public Configuration getGlobalConfiguration() {
+        return globalConfiguration;
+    }
 
 }

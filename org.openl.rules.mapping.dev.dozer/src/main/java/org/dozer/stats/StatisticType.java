@@ -16,24 +16,25 @@
 package org.dozer.stats;
 
 /**
- * Internal constants file that defines the types of supported statistic keys. Only intended for internal use.
+ * Internal constants file that defines the types of supported statistic keys.
+ * Only intended for internal use.
  * 
  * @author tierney.matt
  */
 public enum StatisticType {
-  
-  MAPPER_INSTANCES_COUNT,
-  MAPPING_SUCCESS_COUNT,
-  MAPPING_FAILURE_COUNT,
-  MAPPING_FAILURE_EX_TYPE_COUNT,
-  MAPPING_FAILURE_TYPE_COUNT,
-  MAPPING_TIME,
-  FIELD_MAPPING_SUCCESS_COUNT,
-  FIELD_MAPPING_FAILURE_COUNT,
-  FIELD_MAPPING_FAILURE_IGNORED_COUNT,
-  CUSTOM_CONVERTER_SUCCESS_COUNT,
-  CUSTOM_CONVERTER_TIME,
-  CACHE_HIT_COUNT,
-  CACHE_MISS_COUNT
-  
+
+    MAPPER_INSTANCES_COUNT,
+    MAPPING_SUCCESS_COUNT,
+    MAPPING_FAILURE_COUNT,
+    MAPPING_FAILURE_EX_TYPE_COUNT,
+    MAPPING_FAILURE_TYPE_COUNT,
+    MAPPING_TIME,
+    FIELD_MAPPING_SUCCESS_COUNT,
+    FIELD_MAPPING_FAILURE_COUNT,
+    FIELD_MAPPING_FAILURE_IGNORED_COUNT,
+    CUSTOM_CONVERTER_SUCCESS_COUNT,
+    CUSTOM_CONVERTER_TIME,
+    CACHE_HIT_COUNT,
+    CACHE_MISS_COUNT
+
 }

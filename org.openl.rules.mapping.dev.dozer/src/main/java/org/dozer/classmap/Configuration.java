@@ -15,15 +15,14 @@
  */
 package org.dozer.classmap;
 
-
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.dozer.converters.CustomConverterContainer;
 import org.dozer.util.DozerConstants;
 
 /**
- * Internal class that represents the configuration block specified in the mapping xml file(s). Only intended for
- * internal use.
+ * Internal class that represents the configuration block specified in the
+ * mapping xml file(s). Only intended for internal use.
  * 
  * @author garsombke.franz
  * @author sullins.ben
@@ -32,79 +31,78 @@ import org.dozer.util.DozerConstants;
  */
 public class Configuration {
 
-  private Boolean wildcard;
-  private Boolean stopOnErrors;
-  private Boolean trimStrings;
-  private String dateFormat;
-  private String beanFactory;
-  private RelationshipType relationshipType;
+    private final CustomConverterContainer customConverters = new CustomConverterContainer();
+    private final CopyByReferenceContainer copyByReferences = new CopyByReferenceContainer();
+    private final AllowedExceptionContainer allowedExceptions = new AllowedExceptionContainer();
+    private Boolean wildcard;
+    private Boolean stopOnErrors;
+    private Boolean trimStrings;
+    private String dateFormat;
+    private String beanFactory;
+    private RelationshipType relationshipType;
 
-  private final CustomConverterContainer customConverters = new CustomConverterContainer();
-  private final CopyByReferenceContainer copyByReferences = new CopyByReferenceContainer();
-  private final AllowedExceptionContainer allowedExceptions = new AllowedExceptionContainer();
+    public AllowedExceptionContainer getAllowedExceptions() {
+        return allowedExceptions;
+    }
 
-  public AllowedExceptionContainer getAllowedExceptions() {
-    return allowedExceptions;
-  }
+    public CustomConverterContainer getCustomConverters() {
+        return customConverters;
+    }
 
-  public CustomConverterContainer getCustomConverters() {
-    return customConverters;
-  }
+    public String getDateFormat() {
+        return dateFormat;
+    }
 
-  public String getDateFormat() {
-    return dateFormat;
-  }
+    public void setDateFormat(String format) {
+        dateFormat = format;
+    }
 
-  public void setDateFormat(String format) {
-    dateFormat = format;
-  }
+    public Boolean getWildcard() {
+        return wildcard != null ? wildcard : Boolean.valueOf(DozerConstants.DEFAULT_WILDCARD_POLICY);
+    }
 
-  public Boolean getWildcard() {
-    return wildcard != null ? wildcard : Boolean.valueOf(DozerConstants.DEFAULT_WILDCARD_POLICY);
-  }
+    public void setWildcard(Boolean globalWildcardPolicy) {
+        wildcard = globalWildcardPolicy;
+    }
 
-  public void setWildcard(Boolean globalWildcardPolicy) {
-    wildcard = globalWildcardPolicy;
-  }
+    public Boolean getStopOnErrors() {
+        return stopOnErrors != null ? stopOnErrors : Boolean.valueOf(DozerConstants.DEFAULT_ERROR_POLICY);
+    }
 
-  public Boolean getStopOnErrors() {
-    return stopOnErrors != null ? stopOnErrors : Boolean.valueOf(DozerConstants.DEFAULT_ERROR_POLICY);
-  }
+    public void setStopOnErrors(Boolean stopOnErrors) {
+        this.stopOnErrors = stopOnErrors;
+    }
 
-  public void setStopOnErrors(Boolean stopOnErrors) {
-    this.stopOnErrors = stopOnErrors;
-  }
+    public String getBeanFactory() {
+        return beanFactory;
+    }
 
-  public String getBeanFactory() {
-    return beanFactory;
-  }
+    public void setBeanFactory(String beanFactory) {
+        this.beanFactory = beanFactory;
+    }
 
-  public void setBeanFactory(String beanFactory) {
-    this.beanFactory = beanFactory;
-  }
+    public CopyByReferenceContainer getCopyByReferences() {
+        return copyByReferences;
+    }
 
-  public CopyByReferenceContainer getCopyByReferences() {
-    return copyByReferences;
-  }
+    public Boolean getTrimStrings() {
+        return trimStrings != null ? trimStrings : Boolean.valueOf(DozerConstants.DEFAULT_TRIM_STRINGS_POLICY);
+    }
 
-  public Boolean getTrimStrings() {
-    return trimStrings != null ? trimStrings : Boolean.valueOf(DozerConstants.DEFAULT_TRIM_STRINGS_POLICY);
-  }
+    public void setTrimStrings(Boolean trimStrings) {
+        this.trimStrings = trimStrings;
+    }
 
-  public void setTrimStrings(Boolean trimStrings) {
-    this.trimStrings = trimStrings;
-  }
+    public RelationshipType getRelationshipType() {
+        return relationshipType;
+    }
 
-  public RelationshipType getRelationshipType() {
-    return relationshipType;
-  }
+    public void setRelationshipType(RelationshipType relationshipType) {
+        this.relationshipType = relationshipType;
+    }
 
-  public void setRelationshipType(RelationshipType relationshipType) {
-    this.relationshipType = relationshipType;
-  }
-
-  @Override
-  public String toString() {
-    return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
-  }
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

@@ -15,13 +15,13 @@
  */
 package org.dozer.fieldmap;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-import org.dozer.util.MappingUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.dozer.util.MappingUtils;
 
 /**
  * Only intended for internal use.
@@ -32,73 +32,73 @@ import java.util.StringTokenizer;
  * 
  */
 public class HintContainer {
-  private String hintName;
-  private List<Class<?>> hints;
+    private String hintName;
+    private List<Class<?>> hints;
 
-  public Class<?> getHint() {
-    Class<?> result;
-    if (hasMoreThanOneHint()) {
-      return null;
-    } else {
-      result = getHints().get(0);
+    public Class<?> getHint() {
+        Class<?> result;
+        if (hasMoreThanOneHint()) {
+            return null;
+        } else {
+            result = getHints().get(0);
+        }
+        return result;
     }
-    return result;
-  }
 
-  public Class<?> getHint(int index) {
-    return getHints().get(index);
-  }
-
-  public boolean hasMoreThanOneHint() {
-    return getHints().size() > 1;
-  }
-
-  public List<Class<?>> getHints() {
-    if (hints == null) {
-      List<Class<?>> list = new ArrayList<Class<?>>();
-      StringTokenizer st = new StringTokenizer(this.hintName, ",");
-      while (st.hasMoreElements()) {
-        String theHintName = st.nextToken().trim();
-
-        Class<?> clazz = MappingUtils.loadClass(theHintName);
-        list.add(clazz);
-      }
-      hints = list;
+    public Class<?> getHint(int index) {
+        return getHints().get(index);
     }
-    return hints;
-  }
 
-  //TODO: Refactor/Relocate.  This method doesn't seem to belong in this class
-  public Class<?> getHint(Class<?> clazz, List<Class<?>> clazzHints) {
-    List<Class<?>> hints = getHints();
-    int hintsSize = hints.size();
-    if (hintsSize == 1) {
-      return getHint();
+    public boolean hasMoreThanOneHint() {
+        return getHints().size() > 1;
     }
-    // validate sizes
-    if (clazzHints.size() != hintsSize) {
-      MappingUtils
-          .throwMappingException("When using multiple source and destination hints there must be exactly the same number of hints on the source and the destination.");
-    }
-    int count = 0;
-    String myClazName = MappingUtils.getRealClass(clazz).getName();
-    int size = clazzHints.size();
-    for (int i = 0; i < size; i++) {
-      Class<?> element = clazzHints.get(i);
-      if (element.getName().equals(myClazName)) {
-        return hints.get(count);
-      }
-      count++;
-    }
-    return clazz;
-  }
 
-  public void setHintName(String hintName) {
-    this.hintName = hintName;
-  }
+    public List<Class<?>> getHints() {
+        if (hints == null) {
+            List<Class<?>> list = new ArrayList<Class<?>>();
+            StringTokenizer st = new StringTokenizer(this.hintName, ",");
+            while (st.hasMoreElements()) {
+                String theHintName = st.nextToken().trim();
 
-  @Override
-  public String toString() {
-    return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
-  }
+                Class<?> clazz = MappingUtils.loadClass(theHintName);
+                list.add(clazz);
+            }
+            hints = list;
+        }
+        return hints;
+    }
+
+    // TODO: Refactor/Relocate. This method doesn't seem to belong in this class
+    public Class<?> getHint(Class<?> clazz, List<Class<?>> clazzHints) {
+        List<Class<?>> hints = getHints();
+        int hintsSize = hints.size();
+        if (hintsSize == 1) {
+            return getHint();
+        }
+        // validate sizes
+        if (clazzHints.size() != hintsSize) {
+            MappingUtils.throwMappingException(
+                "When using multiple source and destination hints there must be exactly the same number of hints on the source and the destination.");
+        }
+        int count = 0;
+        String myClazName = MappingUtils.getRealClass(clazz).getName();
+        int size = clazzHints.size();
+        for (int i = 0; i < size; i++) {
+            Class<?> element = clazzHints.get(i);
+            if (element.getName().equals(myClazName)) {
+                return hints.get(count);
+            }
+            count++;
+        }
+        return clazz;
+    }
+
+    public void setHintName(String hintName) {
+        this.hintName = hintName;
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }

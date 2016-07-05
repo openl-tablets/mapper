@@ -15,13 +15,14 @@
  */
 package org.dozer.factory;
 
-import org.dozer.BeanFactory;
-
 import java.util.Map;
 
+import org.dozer.BeanFactory;
+
 /**
- * Internal class that contains the logic used to create a new instance of the destination object being mapped. Performs
- * various checks to determine how the destination object instance is created. Only intended for internal use.
+ * Internal class that contains the logic used to create a new instance of the
+ * destination object being mapped. Performs various checks to determine how the
+ * destination object instance is created. Only intended for internal use.
  *
  * @author tierney.matt
  * @author garsombke.franz
@@ -29,48 +30,47 @@ import java.util.Map;
  */
 public final class DestBeanCreator {
 
-  // order in this collection determines resolving priority
-  static final BeanCreationStrategy[] availableStrategies = new BeanCreationStrategy[]{
-          ConstructionStrategies.byCreateMethod(),
-          ConstructionStrategies.byGetInstance(),
-          ConstructionStrategies.xmlGregorianCalendar(),
-          ConstructionStrategies.byInterface(),
-          ConstructionStrategies.xmlBeansBased(),
-          ConstructionStrategies.byFactory(),
-          ConstructionStrategies.byConstructor()
-  };
+    // order in this collection determines resolving priority
+    static final BeanCreationStrategy[] availableStrategies = new BeanCreationStrategy[] {
+            ConstructionStrategies.byCreateMethod(),
+            ConstructionStrategies.byGetInstance(),
+            ConstructionStrategies.xmlGregorianCalendar(),
+            ConstructionStrategies.byInterface(),
+            ConstructionStrategies.xmlBeansBased(),
+            ConstructionStrategies.byFactory(),
+            ConstructionStrategies.byConstructor() };
 
-  private DestBeanCreator() {
-  }
-
-  public static <T> T create(Class<T> targetClass) {
-    return (T) create(targetClass, null);
-  }
-
-  public static Object create(Class<?> targetClass, Class<?> alternateClass) {
-    return create(new BeanCreationDirective(null, null, targetClass, alternateClass, null, null, null));
-  }
-
-  public static Object create(BeanCreationDirective directive) {
-
-    // TODO create method lookup by annotation/convention
-    // TODO Cache ConstructionStrategy (reuse caching infrastructure)
-    // TODO Resolve JAXB by XmlType Annotation
-    // TODO Check resulting type in each method
-    // TODO Directive toString()
-    // TODO review and document
-
-    for (BeanCreationStrategy strategy : availableStrategies) {
-      if (strategy.isApplicable(directive)) {
-        return strategy.create(directive);
-      }
+    private DestBeanCreator() {
     }
 
-    return null;
-  }
+    public static <T> T create(Class<T> targetClass) {
+        return (T) create(targetClass, null);
+    }
 
-  public static void setStoredFactories(Map<String, BeanFactory> factories) {
-    ConstructionStrategies.byFactory().setStoredFactories(factories);
-  }
+    public static Object create(Class<?> targetClass, Class<?> alternateClass) {
+        return create(new BeanCreationDirective(null, null, targetClass, alternateClass, null, null, null));
+    }
+
+    public static Object create(BeanCreationDirective directive) {
+
+        // TODO create method lookup by annotation/convention
+        // TODO Cache ConstructionStrategy (reuse caching infrastructure)
+        // TODO Resolve JAXB by XmlType Annotation
+        // TODO Check resulting type in each method
+        // TODO Directive toString()
+        // TODO review and document
+
+        for (BeanCreationStrategy strategy : availableStrategies) {
+            if (strategy.isApplicable(directive)) {
+                return strategy.create(directive);
+            }
+        }
+
+        return null;
+    }
+
+    public static void setStoredFactories(Map<String, BeanFactory> factories) {
+        ConstructionStrategies.byFactory().setStoredFactories(factories);
+    }
 
 }
