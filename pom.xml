@@ -18,6 +18,7 @@
     </licenses>
 
     <modules>
+        <module>org.openl.rules.mapping.dev.dozer</module>
         <module>org.openl.rules.mapping.dev.modified</module>
         <module>org.openl.rules.mapping.dev.modified.test</module>
         <module>org.openl.rules.mapping.dev</module>
@@ -299,6 +300,12 @@
 
             <dependency>
                 <groupId>org.openl.rules</groupId>
+                <artifactId>org.openl.rules.mapping.dev.dozer</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openl.rules</groupId>
                 <artifactId>org.openl.rules.mapping.dev.modified</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -313,12 +320,6 @@
                 <groupId>org.openl.rules</groupId>
                 <artifactId>org.openl.rules</artifactId>
                 <version>${org.openl.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>net.sf.dozer</groupId>
-                <artifactId>dozer</artifactId>
-                <version>5.3.2</version>
             </dependency>
 
             <dependency>
