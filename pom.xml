@@ -30,7 +30,7 @@
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.install.skip>${maven.deploy.skip}</maven.install.skip>
         <staging.hg.repo.url>https://vno-hg.exigengroup.com/hg/openl-mapper</staging.hg.repo.url>
-        <org.openl.version>5.17.2</org.openl.version>
+        <org.openl.version>5.18.0-SNAPSHOT</org.openl.version>
         <org.slf4j.version>1.7.7</org.slf4j.version>
         <org.springframework.version>4.1.5.RELEASE</org.springframework.version>
     </properties>
