@@ -747,9 +747,7 @@ public class MappingProcessor implements Mapper {
             Object destFieldValue,
             MappingContext context) {
 
-        if (conditionInstance instanceof MappingParamsAware) {
-            ((MappingParamsAware) conditionInstance).setMappingParams(context.getParams());
-        }
+        setParams(conditionInstance, context);
 
         return conditionInstance.mapField(srcFieldValue, destFieldValue, srcFieldClass, destFieldType);
     }
@@ -828,9 +826,7 @@ public class MappingProcessor implements Mapper {
             Object destCollection,
             MappingContext context) {
 
-        if (discriminatorInstance instanceof MappingParamsAware) {
-            ((MappingParamsAware) discriminatorInstance).setMappingParams(context.getParams());
-        }
+        setParams(discriminatorInstance, context);
 
         return discriminatorInstance.discriminate(srcFieldClass,
             srcFieldValue,
@@ -1579,10 +1575,7 @@ public class MappingProcessor implements Mapper {
             }
         }
 
-        if (converterInstance instanceof MappingParamsAware) {
-            MappingParamsAware theConverter = (MappingParamsAware) converterInstance;
-            theConverter.setMappingParams(context.getParams());
-        }
+        setParams(converterInstance, context);
         /*
          * // if this is a top level mapping the destObj is the highest level //
          * mapping...not a recursive mapping if (topLevel) { result =
@@ -1878,5 +1871,11 @@ public class MappingProcessor implements Mapper {
         Class destClass = dest != null ? dest.getClass() : null;
 
         return mapIdConverterAggregator.convert(context.getParams(), dest, source, destClass, srcClass);
+    }
+
+    private static void setParams(Object target, MappingContext context) {
+        if (target instanceof MappingParamsAware) {
+            ((MappingParamsAware) target).setMappingParams(context.getParams());
+        }
     }
 }
