@@ -83,7 +83,7 @@ public class MapCollectionIndexTest {
     }
     
     
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void mappingWithArrayAndLastElementIndexValueTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToArrayWithoutIndexTest2.xlsx");
@@ -118,7 +118,7 @@ public class MapCollectionIndexTest {
         ArrayOfTypeBContainer a = mapper.map(array, ArrayOfTypeBContainer.class);
     }
     
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void mappingWithTypedListAndLastElementIndexTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToTypedListWithoutIndexTest2.xlsx");
@@ -155,7 +155,7 @@ public class MapCollectionIndexTest {
 
     }
     
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void mappingWithUntypedListAndLastElementIndexTest() {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToUntypedListWithoutIndexTest2.xlsx");
