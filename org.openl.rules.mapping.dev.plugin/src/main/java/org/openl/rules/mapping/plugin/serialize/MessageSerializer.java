@@ -30,8 +30,8 @@ public class MessageSerializer {
             OpenLErrorMessage errorMessage = (OpenLErrorMessage) message;
             IOpenSourceCodeModule module = errorMessage.getError().getSourceModule();
 
-            if (module != null && StringUtils.isNotBlank(module.getUri(0))) {
-                Map<String, String> params = getURIParams(module.getUri(0));
+            if (module != null && StringUtils.isNotBlank(module.getUri())) {
+                Map<String, String> params = getURIParams(module.getUri());
                 entry.setFilename(params.get("path"));
                 entry.setSheet(params.get("sheet"));
                 entry.setCell(params.get("cell"));
@@ -42,8 +42,8 @@ public class MessageSerializer {
             OpenLWarnMessage warnMessage = (OpenLWarnMessage) message;
             IOpenSourceCodeModule module = warnMessage.getSource().getModule();
 
-            if (module != null && StringUtils.isNotBlank(module.getUri(0))) {
-                Map<String, String> params = getURIParams(module.getUri(0));
+            if (module != null && StringUtils.isNotBlank(module.getUri())) {
+                Map<String, String> params = getURIParams(module.getUri());
                 entry.setFilename(params.get("path"));
                 entry.setSheet(params.get("sheet"));
                 entry.setCell(params.get("cell"));

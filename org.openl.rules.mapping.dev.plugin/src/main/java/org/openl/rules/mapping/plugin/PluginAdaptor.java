@@ -1,6 +1,7 @@
 package org.openl.rules.mapping.plugin;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +74,7 @@ public class PluginAdaptor {
 
         if (!source.exists() || !source.canRead()) {
             throw new RuntimeException(String.format("Input source file '%s' is not exist or cannot be read",
-                source.getName()));
+                    inputFilename));
         }
 
         String[] foldersToScan = AdaptorUtils.getPaths(jarpath);
@@ -88,7 +89,7 @@ public class PluginAdaptor {
 
         try {
             // Compile OpenL project.
-            RulesEngineFactory engine = RulesBeanMapperFactory.initEngine(source, false);
+            RulesEngineFactory engine = RulesBeanMapperFactory.initEngine(source.toURI().toURL(), false);
             CompiledOpenClass compiledOpenClass = engine.getCompiledOpenClass();
 
             // Get info about types and compilation messages.
@@ -108,6 +109,9 @@ public class PluginAdaptor {
                 write(out, null, messages);
             }
 
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(String.format("Input source file '%s' is not exist or cannot be read",
+                    inputFilename));
         } finally {
             // Return back original class loader.
             Thread.currentThread().setContextClassLoader(originalClassLoader);

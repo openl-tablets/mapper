@@ -1,7 +1,7 @@
 package org.openl.rules.mapping;
 
 import java.io.File;
-import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -121,7 +121,7 @@ public final class RulesBeanMapperFactory {
             boolean executionMode) {
 
         try {
-			RulesEngineFactory factory = initEngine(source, executionMode);
+			RulesEngineFactory factory = initEngine(source.toURI().toURL(), executionMode);
 
             Class<?> instanceClass = factory.getInterfaceClass();
             Object instance = factory.newInstance();
@@ -161,7 +161,7 @@ public final class RulesBeanMapperFactory {
 	 * @param source input stream with mapping rule definitions
 	 * @return mapper instance
 	 */
-	public static Mapper createMapperInstance(InputStream source) {
+	public static Mapper createMapperInstance(URL source) {
 		return createMapperInstance(source, null, null);
 	}
 	
@@ -173,7 +173,7 @@ public final class RulesBeanMapperFactory {
      * @param conditionsWithId external conditions
      * @return mapper instance
      */
-    public static Mapper createMapperInstance(InputStream source,
+    public static Mapper createMapperInstance(URL source,
             Map<String, CustomConverter> customConvertersWithId,
             Map<String, FieldMappingCondition> conditionsWithId) {
         return createMapperInstance(source, customConvertersWithId, conditionsWithId, null, null, true);
@@ -188,7 +188,7 @@ public final class RulesBeanMapperFactory {
      * @param eventListeners dozer event listeners
      * @return mapper instance
      */
-    public static Mapper createMapperInstance(InputStream source,
+    public static Mapper createMapperInstance(URL source,
             Map<String, CustomConverter> customConvertersWithId,
             Map<String, FieldMappingCondition> conditionsWithId,
             List<DozerEventListener> eventListeners) {
@@ -205,7 +205,7 @@ public final class RulesBeanMapperFactory {
 	 * @param factories custom bean factories
 	 * @return mapper instance
 	 */
-	public static Mapper createMapperInstance(InputStream source,
+	public static Mapper createMapperInstance(URL source,
 	                                          Map<String, CustomConverter> customConvertersWithId,
 	                                          Map<String, FieldMappingCondition> conditionsWithId,
 	                                          Map<String, BeanFactory> factories) {
@@ -222,7 +222,7 @@ public final class RulesBeanMapperFactory {
 	 * @param eventListeners dozer event listeners
 	 * @return mapper instance
 	 */
-	public static Mapper createMapperInstance(InputStream source,
+	public static Mapper createMapperInstance(URL source,
 	                                          Map<String, CustomConverter> customConvertersWithId,
 	                                          Map<String, FieldMappingCondition> conditionsWithId,
 	                                          Map<String, BeanFactory> factories,
@@ -241,7 +241,7 @@ public final class RulesBeanMapperFactory {
 	 * @param executionMode execution mode flag
 	 * @return mapper instance
 	 */
-	public static Mapper createMapperInstance(InputStream source,
+	public static Mapper createMapperInstance(URL source,
 	                                          Map<String, CustomConverter> customConvertersWithId,
 	                                          Map<String, FieldMappingCondition> conditionsWithId,
 	                                          Map<String, BeanFactory> factories,
@@ -249,8 +249,7 @@ public final class RulesBeanMapperFactory {
 	                                          boolean executionMode) {
 
 		try {
-			File mappingConfiguration = FileExtractor.copyFileStream(source);
-			RulesEngineFactory factory = initEngine(mappingConfiguration, executionMode);
+			RulesEngineFactory factory = initEngine(source, executionMode);
 
 			Class<?> instanceClass = factory.getInterfaceClass();
 			Object instance = factory.makeInstance();
@@ -291,7 +290,7 @@ public final class RulesBeanMapperFactory {
      * @param executionMode execution mode flag
      * @return rules engine instance
      */
-    public static RulesEngineFactory initEngine(File source, boolean executionMode) {
+    public static RulesEngineFactory initEngine(URL source, boolean executionMode) {
 
 		RulesEngineFactory factory = new RulesEngineFactory(source);
         factory.setExecutionMode(executionMode);
@@ -319,6 +318,6 @@ public final class RulesBeanMapperFactory {
     }
 
     private static TypeResolver getTypeResolver(RulesEngineFactory factory) {
-        return OpenLReflectionUtils.getTypeResolver(factory.getSourceCode().getUri(0), factory.getUserContext());
+        return OpenLReflectionUtils.getTypeResolver(factory.getSourceCode().getUri(), factory.getUserContext());
     }
 }

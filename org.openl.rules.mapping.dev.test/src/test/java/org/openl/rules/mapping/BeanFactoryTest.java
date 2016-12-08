@@ -3,7 +3,7 @@ package org.openl.rules.mapping;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import java.io.InputStream;
+import java.net.URL;
 
 import org.dozer.MappingContext;
 import org.junit.Test;
@@ -82,7 +82,7 @@ public class BeanFactoryTest {
 	@Test
 	public void configurationFromInputStreamTest() {
 
-		InputStream is  = getClass().getResourceAsStream("/org/openl/rules/mapping/beanfactory/BeanFactoryTest.xlsx");
+		URL is  = getClass().getResource("/org/openl/rules/mapping/beanfactory/BeanFactoryTest.xlsx");
 		Mapper mapper = RulesBeanMapperFactory.createMapperInstance(is);
 
 		C c = new C();
