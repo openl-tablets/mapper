@@ -250,7 +250,7 @@ public class DozerBeanMapper implements Mapper {
 
         if (initializing.compareAndSet(false, true)) {
             try {
-                log.info("OpenL Mapper Framework v. 1.1.13-SNAPSHOT (Dozer 5.3.2)");
+                log.info("OpenL Mapper Framework (Dozer 5.3.2)");
                 loadCustomMappings();
                 eventManager = new DozerEventManager(eventListeners);
             } finally {
