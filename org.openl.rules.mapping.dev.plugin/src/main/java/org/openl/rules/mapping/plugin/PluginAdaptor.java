@@ -8,10 +8,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openl.CompiledOpenClass;
 import org.openl.binding.impl.module.ModuleOpenClass;
 import org.openl.message.OpenLMessage;
@@ -27,13 +23,17 @@ import org.openl.rules.mapping.plugin.util.ClassUtils;
 import org.openl.rules.runtime.RulesEngineFactory;
 import org.openl.types.IOpenClass;
 import org.openl.types.java.OpenClassHelper;
+import org.openl.util.IOUtils;
+import org.openl.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides methods to export OpenL specific information about mapping project.
  */
 public class PluginAdaptor {
 
-    private static final Log LOG = LogFactory.getLog(PluginAdaptor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PluginAdaptor.class);
 
     private String jarpath;
     private String outFilename;
@@ -115,14 +115,7 @@ public class PluginAdaptor {
         } finally {
             // Return back original class loader.
             Thread.currentThread().setContextClassLoader(originalClassLoader);
-            
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    LOG.error(e);
-                }
-            }
+            IOUtils.closeQuietly(out);
         }
     }
 
@@ -144,7 +137,7 @@ public class PluginAdaptor {
         try {
             new XmlWriter().write(types, messages, out);
         } catch (IOException e) {
-            LOG.error(e);
+            LOG.error("Error  ", e);
         }
     }
 
