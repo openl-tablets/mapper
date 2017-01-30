@@ -5,7 +5,7 @@
     <groupId>org.openl.rules</groupId>
     <artifactId>org.openl.rules.mapping.dev-pom</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.15-SNAPSHOT</version>
+    <version>1.1.15</version>
     <name>OpenL - Rules - Mapping - General POM</name>
     <description>Mapper Framework</description>
     <url>https://openl-tablets.org/mapper</url>
@@ -63,7 +63,7 @@
         <connection>scm:hg:${staging.hg.repo.url}</connection>
         <developerConnection>scm:hg:${staging.hg.repo.url}</developerConnection>
         <url>scm:git:git://github.com/openl-tablets/mapper.git</url>
-        <tag>HEAD</tag>
+        <tag>release-1.1.15</tag>
     </scm>
 
     <distributionManagement>
