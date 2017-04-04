@@ -1,6 +1,8 @@
 package org.openl.rules.mapping;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,7 +68,7 @@ public class OpenLReflectionUtils {
             if (m.getName().equals(methodName)) {
                 // compare parameters
                 IOpenClass[] openClasses = m.getSignature().getParameterTypes();
-                Class<?>[] methodParameterTypes = OpenClassHelper.getInstanceClasses(openClasses);
+                Class<?>[] methodParameterTypes = getInstanceClasses(openClasses);
 
                 if (ClassUtils.isAssignable(parameterTypes, methodParameterTypes, true)) {
                     if (bestMatch == null || MemberUtils.compareParameterTypes(methodParameterTypes,
@@ -79,6 +81,21 @@ public class OpenLReflectionUtils {
         }
 
         return bestMatch;
+    }
+
+    public static Class<?>[] getInstanceClasses(IOpenClass[] openClasses) {
+
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+
+        if (openClasses != null) {
+            for (IOpenClass openClass : openClasses) {
+
+                Class<?> clazz = openClass.getInstanceClass();
+                classes.add(clazz);
+            }
+        }
+
+        return classes.toArray(new Class<?>[classes.size()]);
     }
 
     public static boolean isAssignableFrom(Class<?> classToCheck, Class<?> fromClass) {

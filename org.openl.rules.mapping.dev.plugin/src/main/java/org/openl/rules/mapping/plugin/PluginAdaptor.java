@@ -6,11 +6,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.openl.CompiledOpenClass;
 import org.openl.binding.impl.module.ModuleOpenClass;
 import org.openl.message.OpenLMessage;
+import org.openl.rules.mapping.OpenLReflectionUtils;
 import org.openl.rules.mapping.RulesBeanMapperFactory;
 import org.openl.rules.mapping.plugin.classpath.AdaptorClassLoader;
 import org.openl.rules.mapping.plugin.serialize.BeanEntry;
@@ -169,12 +171,12 @@ public class PluginAdaptor {
      */
     private List<BeanEntry> exportTypes(ModuleOpenClass openClass, URL[] jarURLs, ClassLoader cl) {
         // Get types what are defined in project in declarative way.
-        Collection<IOpenClass> values = openClass.getTypes().values();
+        Collection<IOpenClass> values = Collections.emptyList();//openClass.getTypes(); uncomment to fix
         IOpenClass[] internalTypes = values.toArray(new IOpenClass[values.size()]);
 
         // Composite required types.
         List<Class<?>> classes = new ArrayList<Class<?>>();
-        classes.addAll(Arrays.asList(OpenClassHelper.getInstanceClasses(internalTypes)));
+        classes.addAll(Arrays.asList(OpenLReflectionUtils.getInstanceClasses(internalTypes)));
         classes.addAll(ClassUtils.loadClassesFromJars(jarURLs, cl, quietReflectionErrors));
 
         return ClassSerializer.serialize(classes, quietReflectionErrors);
