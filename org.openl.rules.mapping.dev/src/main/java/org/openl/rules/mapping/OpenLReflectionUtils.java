@@ -52,7 +52,7 @@ public class OpenLReflectionUtils {
     public static IOpenMethod findMatchingAccessibleMethod(IOpenClass clazz, String methodName, Class<?>[] parameterTypes) {
 
         IOpenClass[] openLParameterTypes = OpenClassHelper.getOpenClasses(clazz, parameterTypes);
-        IOpenMethod method = clazz.getMatchingMethod(methodName, openLParameterTypes);
+        IOpenMethod method = clazz.getMethod(methodName, openLParameterTypes);
 
         if (method != null) {
             return method;
