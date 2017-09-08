@@ -9,7 +9,6 @@ import org.dozer.BeanFactory;
 import org.dozer.CustomConverter;
 import org.dozer.DozerEventListener;
 import org.dozer.FieldMappingCondition;
-import org.openl.ICompileContext;
 import org.openl.message.OpenLMessage;
 import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.validation.MappingBeanValidator;
@@ -295,10 +294,7 @@ public final class RulesBeanMapperFactory {
 		RulesEngineFactory factory = new RulesEngineFactory(source);
         factory.setExecutionMode(executionMode);
 
-        ICompileContext compileContext = factory.getOpenL().getCompileContext();
-        boolean validationEnabled = compileContext != null && compileContext.isValidationEnabled();
-
-        if (!executionMode && validationEnabled) {
+        if (!executionMode) {
             registerTypeValidator(factory, new MappingBeanValidator());
         }
 
