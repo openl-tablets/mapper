@@ -10,7 +10,7 @@ import org.openl.rules.mapping.plugin.serialize.MessageEntry;
 import org.openl.rules.mapping.plugin.serialize.XmlDocument;
 
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.extended.JavaClassConverter;
+import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
@@ -54,16 +54,26 @@ public class XmlWriter {
         out.write(xStream.toXML(document).getBytes());
     }
 
-    private class ClassConverter extends JavaClassConverter {
+    private class ClassConverter extends AbstractSingleValueConverter {
+
+        @Override
+        public boolean canConvert(Class clazz) {
+            return Class.class.equals(clazz);
+        }
+
+        @Override
+        public Object fromString(String str) {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
         public String toString(Object obj) {
             Class<?> clazz = (Class<?>) obj;
             if (clazz.isArray()) {
                 return clazz.getCanonicalName();
+            } else {
+                return ((Class)obj).getName();
             }
-
-            return super.toString(obj);
         }
     }
 }
