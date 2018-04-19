@@ -1,6 +1,11 @@
 package org.openl.rules.mapping.plugin;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,7 +29,6 @@ import org.openl.rules.mapping.plugin.util.AdaptorUtils;
 import org.openl.rules.mapping.plugin.util.ClassUtils;
 import org.openl.rules.runtime.RulesEngineFactory;
 import org.openl.types.IOpenClass;
-import org.openl.types.java.OpenClassHelper;
 import org.openl.util.IOUtils;
 import org.openl.util.StringUtils;
 import org.slf4j.Logger;
@@ -188,7 +192,7 @@ public class PluginAdaptor {
      * @param messages messages
      * @return message entries
      */
-    private List<MessageEntry> exportMessages(List<OpenLMessage> messages) {
+    private List<MessageEntry> exportMessages(Collection<OpenLMessage> messages) {
         return MessageSerializer.serialize(messages);
     }
 

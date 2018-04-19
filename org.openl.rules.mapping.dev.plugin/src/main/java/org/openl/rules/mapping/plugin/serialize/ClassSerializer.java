@@ -2,6 +2,7 @@ package org.openl.rules.mapping.plugin.serialize;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -78,7 +79,7 @@ public class ClassSerializer {
         return bean;
     }
 
-    public static List<BeanEntry> serialize(List<Class<?>> classes, boolean quietReflectionErrors) {
+    public static List<BeanEntry> serialize(Collection<Class<?>> classes, boolean quietReflectionErrors) {
         List<BeanEntry> beans = new ArrayList<BeanEntry>(classes.size());
 
         for (Class<?> clazz : classes) {

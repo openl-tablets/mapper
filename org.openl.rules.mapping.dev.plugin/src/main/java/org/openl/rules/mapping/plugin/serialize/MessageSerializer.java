@@ -3,6 +3,7 @@ package org.openl.rules.mapping.plugin.serialize;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,7 @@ public class MessageSerializer {
         return entry;
     }
 
-    public static List<MessageEntry> serialize(List<OpenLMessage> messages) {
+    public static List<MessageEntry> serialize(Collection<OpenLMessage> messages) {
         List<MessageEntry> msgs = new ArrayList<MessageEntry>(messages.size());
 
         for (OpenLMessage msg : messages) {

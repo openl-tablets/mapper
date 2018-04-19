@@ -2,6 +2,7 @@ package org.openl.rules.mapping;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -128,7 +129,7 @@ public final class RulesBeanMapperFactory {
             // Check that compilation process completed successfully.
             if (factory.getCompiledOpenClass().hasErrors()) {
                 // TODO: remove OpenL specific exception
-                List<OpenLMessage> messages = factory.getCompiledOpenClass().getMessages();
+                Collection<OpenLMessage> messages = factory.getCompiledOpenClass().getMessages();
                 throw new CompositeOpenlException("Compilation failed", new SyntaxNodeException[0], messages);
             }
 
@@ -256,7 +257,7 @@ public final class RulesBeanMapperFactory {
 			// Check that compilation process completed successfully.
 			if (factory.getCompiledOpenClass().hasErrors()) {
 				// TODO: remove OpenL specific exception
-				List<OpenLMessage> messages = factory.getCompiledOpenClass().getMessages();
+				Collection<OpenLMessage> messages = factory.getCompiledOpenClass().getMessages();
 				throw new CompositeOpenlException("Compilation failed", new SyntaxNodeException[0], messages);
 			}
 
