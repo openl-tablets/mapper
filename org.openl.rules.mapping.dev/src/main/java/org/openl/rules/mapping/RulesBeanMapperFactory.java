@@ -2,7 +2,6 @@ package org.openl.rules.mapping;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -10,14 +9,11 @@ import org.dozer.BeanFactory;
 import org.dozer.CustomConverter;
 import org.dozer.DozerEventListener;
 import org.dozer.FieldMappingCondition;
-import org.openl.message.OpenLMessage;
 import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.validation.MappingBeanValidator;
 import org.openl.rules.mapping.validation.OpenLDataBeanValidator;
 import org.openl.rules.runtime.RulesEngineFactory;
 import org.openl.runtime.AOpenLEngineFactory;
-import org.openl.syntax.exception.CompositeOpenlException;
-import org.openl.syntax.exception.SyntaxNodeException;
 import org.openl.validation.IOpenLValidator;
 
 /**
@@ -141,11 +137,7 @@ public final class RulesBeanMapperFactory {
             Object instance = factory.newInstance();
 
             // Check that compilation process completed successfully.
-            if (factory.getCompiledOpenClass().hasErrors()) {
-                // TODO: remove OpenL specific exception
-                Collection<OpenLMessage> messages = factory.getCompiledOpenClass().getMessages();
-                throw new CompositeOpenlException("Compilation failed", new SyntaxNodeException[0], messages);
-            }
+            factory.getCompiledOpenClass().throwErrorExceptionsIfAny();
 
             // Get OpenL configuration object. The OpenL configuration object is
             // created by OpenL engine during compilation process and contains
@@ -155,7 +147,7 @@ public final class RulesBeanMapperFactory {
             // name (e.g. MyClass.myConvertMethod) we will not have enough
             // information to get convert method.
             //
-            TypeResolver typeResolver = null;
+            TypeResolver typeResolver;
             if (executionMode) {
                 typeResolver = getTypeResolver(factory);
             } else {
@@ -272,14 +264,10 @@ public final class RulesBeanMapperFactory {
             RulesEngineFactory factory = initEngine(source, executionMode);
 
             Class<?> instanceClass = factory.getInterfaceClass();
-            Object instance = factory.makeInstance();
+            Object instance = factory.newInstance();
 
             // Check that compilation process completed successfully.
-            if (factory.getCompiledOpenClass().hasErrors()) {
-                // TODO: remove OpenL specific exception
-                Collection<OpenLMessage> messages = factory.getCompiledOpenClass().getMessages();
-                throw new CompositeOpenlException("Compilation failed", new SyntaxNodeException[0], messages);
-            }
+            factory.getCompiledOpenClass().throwErrorExceptionsIfAny();
 
             // Get OpenL configuration object. The OpenL configuration object is
             // created by OpenL engine during compilation process and contains
@@ -289,7 +277,7 @@ public final class RulesBeanMapperFactory {
             // name (e.g. MyClass.myConvertMethod) we will not have enough
             // information to get convert method.
             //
-            TypeResolver typeResolver = null;
+            TypeResolver typeResolver;
             if (executionMode) {
                 typeResolver = getTypeResolver(factory);
             } else {
