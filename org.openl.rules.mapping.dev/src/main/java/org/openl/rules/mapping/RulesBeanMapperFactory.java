@@ -120,7 +120,7 @@ public final class RulesBeanMapperFactory {
      * @param executionMode execution mode flag
      * @return mapper instance
      *
-     * @deprecated Use {@link #createMapperInstance(URL, Map, Map, Map, List, boolean)}
+     * @deprecated Use {@link #createMapperInstance(URL, Map, Map, Map, List)}
      */
     @Deprecated
     public static Mapper createMapperInstance(File source,
@@ -130,42 +130,13 @@ public final class RulesBeanMapperFactory {
             List<DozerEventListener> eventListeners,
             boolean executionMode) {
 
+        URL url;
         try {
-            RulesEngineFactory factory = initEngine(source.toURI().toURL(), executionMode);
-
-            Class<?> instanceClass = factory.getInterfaceClass();
-            Object instance = factory.newInstance();
-
-            // Check that compilation process completed successfully.
-            factory.getCompiledOpenClass().throwErrorExceptionsIfAny();
-
-            // Get OpenL configuration object. The OpenL configuration object is
-            // created by OpenL engine during compilation process and contains
-            // information about imported types. We should use it to obtain
-            // required types because if user defined, for example, convert
-            // method as an external java static method and didn't use package
-            // name (e.g. MyClass.myConvertMethod) we will not have enough
-            // information to get convert method.
-            //
-            TypeResolver typeResolver;
-            if (executionMode) {
-                typeResolver = getTypeResolver(factory);
-            } else {
-                typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getCompiledOpenClass().getOpenClass());
-            }
-
-            return new RulesBeanMapper(instanceClass,
-                instance,
-                typeResolver,
-                customConvertersWithId,
-                conditionsWithId,
-                factories,
-                eventListeners);
+            url = source.toURI().toURL();
         } catch (Exception e) {
-            throw new RulesMappingException(
-                String.format("Cannot load mapping definitions from file: %s", source.getAbsolutePath()),
-                e);
+            throw new RulesMappingException("Cannot get the URL for file: " + source.getAbsolutePath(), e);
         }
+        return createMapperInstance(url, customConvertersWithId, conditionsWithId, factories, eventListeners, executionMode);
     }
 
     /**
@@ -279,7 +250,7 @@ public final class RulesBeanMapperFactory {
             //
             TypeResolver typeResolver;
             if (executionMode) {
-                typeResolver = getTypeResolver(factory);
+                typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getSourceCode().getUri(), factory.getUserContext());
             } else {
                 typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getCompiledOpenClass().getOpenClass());
             }
@@ -292,7 +263,7 @@ public final class RulesBeanMapperFactory {
                 factories,
                 eventListeners);
         } catch (Exception e) {
-            throw new RulesMappingException("Cannot load mapping definitions from input stream", e);
+            throw new RulesMappingException("Cannot load mapping definitions from the URL: " + source, e);
         }
     }
 
@@ -323,11 +294,6 @@ public final class RulesBeanMapperFactory {
                 return;
             }
         }
-
         factory.getOpenL().getCompileContext().addValidator(validator);
-    }
-
-    private static TypeResolver getTypeResolver(RulesEngineFactory factory) {
-        return OpenLReflectionUtils.getTypeResolver(factory.getSourceCode().getUri(), factory.getUserContext());
     }
 }
