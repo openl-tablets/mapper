@@ -2,9 +2,7 @@ package org.openl.rules.mapping.validation;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -27,149 +25,140 @@ import org.openl.validation.ValidationResult;
 import org.openl.validation.ValidationStatus;
 
 /**
- * The base implementation of {@link IOpenLValidator} which can be used to
- * validate data tables.
+ * The base implementation of {@link IOpenLValidator} which can be used to validate data tables.
  * 
- * @param <T>
- *            bean type
+ * @param <T> bean type
  */
 public abstract class OpenLDataBeanValidator<T> implements IOpenLValidator {
 
-	private Class<?> genericType;
+    private Class<?> genericType;
 
-	/**
-	 * Validates data bean.
-	 * 
-	 * @param bean
-	 *            bean to validate
-	 * @param openClass
-	 *            OpenL's class
-	 * @return validation result
-	 */
-	public abstract BeanValidationResult validateBean(T bean, IOpenClass openClass);
+    /**
+     * Validates data bean.
+     * 
+     * @param bean bean to validate
+     * @param openClass OpenL's class
+     * @return validation result
+     */
+    public abstract BeanValidationResult validateBean(T bean, IOpenClass openClass);
 
-	public ValidationResult validate(OpenL openl, IOpenClass openClass) {
+    public ValidationResult validate(OpenL openl, IOpenClass openClass) {
 
-		if (openClass instanceof XlsModuleOpenClass) {
-			// Get all table syntax nodes of xls module.
-			XlsMetaInfo xlsMetaInfo = ((XlsModuleOpenClass) openClass).getXlsMetaInfo();
-			TableSyntaxNode[] tableSyntaxNodes = xlsMetaInfo.getXlsModuleNode().getXlsTableSyntaxNodes();
+        if (openClass instanceof XlsModuleOpenClass) {
+            // Get all table syntax nodes of xls module.
+            XlsMetaInfo xlsMetaInfo = ((XlsModuleOpenClass) openClass).getXlsMetaInfo();
+            TableSyntaxNode[] tableSyntaxNodes = xlsMetaInfo.getXlsModuleNode().getXlsTableSyntaxNodes();
 
-			// Find data tables with specified component type.
-			TableSyntaxNode[] fields = findFieldMembers(tableSyntaxNodes, getGenericType());
+            // Find data tables with specified component type.
+            TableSyntaxNode[] fields = findFieldMembers(tableSyntaxNodes, getGenericType());
 
-			List<OpenLMessage> validationMessages = new ArrayList<OpenLMessage>();
+            List<OpenLMessage> validationMessages = new ArrayList<>();
 
-			for (TableSyntaxNode node : fields) {
-				ValidationResult result = validateDataNode(node, openClass);
+            for (TableSyntaxNode node : fields) {
+                @SuppressWarnings("unchecked")
+                T[] data = ((T[]) ((DataOpenField) node.getMember()).getData());
 
-				if (!ValidationStatus.SUCCESS.equals(result.getStatus())) {
-					validationMessages.addAll(result.getMessages());
-				}
-			}
+                for (int i = 0; i < data.length; i++) {
+                    T bean = data[i];
+                    BeanValidationResult result = validateBean(bean, openClass);
 
-			return ValidationUtils.withMessages(validationMessages);
-		}
+                    if (!ValidationStatus.SUCCESS.equals(result.getStatus())) {
+                        // Link bean error with source.
+                        List<SyntaxNodeException> errors = prepareErrorsList(result, i, node);
 
-		// Skip validation if passed open class is not instance of
-		// XlsModuleOpenClass.
-		//
-		return ValidationUtils.validationSuccess();
-	}
+                        for (SyntaxNodeException error : errors) {
+                            // Add error to syntax node.
+                            node.addError(error);
+                            // Update list of error messages.
+                            validationMessages.add(new OpenLErrorMessage(error));
+                        }
+                    }
+                }
+            }
 
-	private ValidationResult validateDataNode(TableSyntaxNode node, IOpenClass openClass) {
-		@SuppressWarnings("unchecked")
-		T[] data = ((T[]) ((DataOpenField) node.getMember()).getData());
+            if (validationMessages.isEmpty()) {
+                return new ValidationResult(ValidationStatus.SUCCESS, validationMessages);
+            } else {
+                return new ValidationResult(ValidationStatus.FAIL, validationMessages);
+            }
+        }
 
-		Collection<OpenLMessage> validationMessages = new LinkedHashSet<>();
+        // Skip validation if passed open class is not instance of
+        // XlsModuleOpenClass.
+        //
+        return ValidationUtils.validationSuccess();
+    }
 
-		for (int i = 0; i < data.length; i++) {
-			T bean = data[i];
-			BeanValidationResult result = validateBean(bean, openClass);
+    private List<SyntaxNodeException> prepareErrorsList(BeanValidationResult result,
+            int beanIndex,
+            TableSyntaxNode syntaxNode) {
+        // Create field name - column index pairs to search column index by
+        // field name.
+        Map<String, Integer> descriptorsMap = createDescriptorsMap(
+            ((DataOpenField) syntaxNode.getMember()).getTable().getDataModel().getDescriptor());
 
-			if (!ValidationStatus.SUCCESS.equals(result.getStatus())) {
-				// Link bean error with source.
-				List<SyntaxNodeException> errors = prepareErrorsList(result, i, node);
+        List<SyntaxNodeException> errors = new ArrayList<SyntaxNodeException>();
 
-				for (SyntaxNodeException error : errors) {
-					// Add error to syntax node.
-					node.addError(error);
-					// Update list of error messages.
-					validationMessages.add(new OpenLErrorMessage(error));
-				}
-			}
-		}
+        for (ConstraintViolation violation : result.getConstraintViolations()) {
 
-		return ValidationUtils.withMessages(validationMessages);
-	}
+            // Check that violation is PropertyConstraintViolation
+            if (violation instanceof PropertyConstraintViolation) {
+                // Link validation error with source code of bean to inform
+                // location of error in source code.
+                PropertyConstraintViolation propConstraintViolation = (PropertyConstraintViolation) violation;
+                String invalidPropName = propConstraintViolation.getPropertyName();
+                // Get invalid cell.
+                ILogicalTable cell = syntaxNode.getTableBody()
+                    .getRows(2)
+                    .getSubtable(descriptorsMap.get(invalidPropName), beanIndex, 1, 1);
+                // Create syntax node error instance.
+                SyntaxNodeException ex = SyntaxNodeExceptionUtils.createError(violation.getMessage(),
+                    new GridCellSourceCodeModule(cell.getSource()));
 
-	private List<SyntaxNodeException> prepareErrorsList(BeanValidationResult result, int beanIndex,
-			TableSyntaxNode syntaxNode) {
-		// Create field name - column index pairs to search column index by
-		// field name.
-		Map<String, Integer> descriptorsMap = createDescriptorsMap(
-				((DataOpenField) syntaxNode.getMember()).getTable().getDataModel().getDescriptor());
+                errors.add(ex);
+            }
+        }
 
-		List<SyntaxNodeException> errors = new ArrayList<SyntaxNodeException>();
+        return errors;
+    }
 
-		for (ConstraintViolation violation : result.getConstraintViolations()) {
+    private Map<String, Integer> createDescriptorsMap(ColumnDescriptor[] descriptors) {
+        Map<String, Integer> map = new HashMap<>();
 
-			// Check that violation is PropertyConstraintViolation
-			if (violation instanceof PropertyConstraintViolation) {
-				// Link validation error with source code of bean to inform
-				// location of error in source code.
-				PropertyConstraintViolation propConstraintViolation = (PropertyConstraintViolation) violation;
-				String invalidPropName = propConstraintViolation.getPropertyName();
-				// Get invalid cell.
-				ILogicalTable cell = syntaxNode.getTableBody().getRows(2)
-						.getSubtable(descriptorsMap.get(invalidPropName), beanIndex, 1, 1);
-				// Create syntax node error instance.
-				SyntaxNodeException ex = SyntaxNodeExceptionUtils.createError(violation.getMessage(),
-						new GridCellSourceCodeModule(cell.getSource()));
+        for (int i = 0; i < descriptors.length; i++) {
+            map.put(descriptors[i].getName(), i);
+        }
 
-				errors.add(ex);
-			}
-		}
+        return map;
+    }
 
-		return errors;
-	}
+    private TableSyntaxNode[] findFieldMembers(TableSyntaxNode[] tableSyntaxNodes, Class<?> fieldComponentType) {
+        List<TableSyntaxNode> fields = new ArrayList<>();
 
-	private Map<String, Integer> createDescriptorsMap(ColumnDescriptor[] descriptors) {
-		Map<String, Integer> map = new HashMap<String, Integer>();
+        for (TableSyntaxNode node : tableSyntaxNodes) {
+            if (node.getMember() instanceof DataOpenField) {
+                if (node.getMember().getType().getInstanceClass().getComponentType() == fieldComponentType) {
+                    fields.add(node);
+                }
+            }
+        }
 
-		for (int i = 0; i < descriptors.length; i++) {
-			map.put(descriptors[i].getName(), i);
-		}
+        return fields.toArray(new TableSyntaxNode[fields.size()]);
+    }
 
-		return map;
-	}
+    /**
+     * Gets type of generic parameter.
+     * 
+     * @return class object
+     */
+    private Class<?> getGenericType() {
 
-	private TableSyntaxNode[] findFieldMembers(TableSyntaxNode[] tableSyntaxNodes, Class<?> fieldComponentType) {
-		List<TableSyntaxNode> fields = new ArrayList<TableSyntaxNode>();
+        if (this.genericType == null) {
+            ParameterizedType superclass = (ParameterizedType) getClass().getGenericSuperclass();
+            this.genericType = (Class<?>) superclass.getActualTypeArguments()[0];
+        }
 
-		for (TableSyntaxNode node : tableSyntaxNodes) {
-			if (node.getMember() instanceof DataOpenField) {
-				if (node.getMember().getType().getInstanceClass().getComponentType() == fieldComponentType) {
-					fields.add(node);
-				}
-			}
-		}
+        return this.genericType;
+    }
 
-		return fields.toArray(new TableSyntaxNode[fields.size()]);
-	}
-
-	/**
-	 * Gets type of generic parameter.
-	 * 
-	 * @return class object
-	 */
-	private Class<?> getGenericType() {
-
-		if (this.genericType == null) {
-			ParameterizedType superclass = (ParameterizedType) getClass().getGenericSuperclass();
-			this.genericType = (Class<?>) ((ParameterizedType) superclass).getActualTypeArguments()[0];
-		}
-
-		return this.genericType;
-	}
 }
