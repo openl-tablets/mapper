@@ -16,10 +16,10 @@ import org.openl.rules.mapping.to.inheritance.ChildA;
 public class MultiSourceFieldTest {
 
     @Test
-    public void indexedListsWithoutGenericTypeTest() {
+    public void indexedListsWithoutGenericTypeTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/multisource/MultiSourceFieldTest1.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c = new C();
         c.setAString("root");
@@ -66,10 +66,10 @@ public class MultiSourceFieldTest {
     
     
     @Test
-    public void singleDestinationElementTest() {
+    public void singleDestinationElementTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/multisource/MultiSourceFieldTest2.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c = new C();
         c.setAString("root");

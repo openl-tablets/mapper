@@ -22,10 +22,10 @@ import org.openl.rules.mapping.to.inheritance.ChildE;
 public class FieldHintSupportTest {
 
     @Test
-    public void indexedListsWithoutGenericTypeTest() {
+    public void indexedListsWithoutGenericTypeTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/hints/FieldHintsSupportTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c = new C();
         c.setAString("root");
@@ -86,10 +86,10 @@ public class FieldHintSupportTest {
     }
     
     @Test
-    public void typeCastTest() {
+    public void typeCastTest() throws Exception {
          
         File source = new File("src/test/resources/org/openl/rules/mapping/hints/TypeCastTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         ChildA childA = new ChildA();
         childA.setAString("child-a-string");
@@ -124,10 +124,10 @@ public class FieldHintSupportTest {
     }
     
     @Test
-    public void simplifiedHintTest() {
+    public void simplifiedHintTest() throws Exception {
          
         File source = new File("src/test/resources/org/openl/rules/mapping/hints/SimplifiedHintsChainTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         ChildA childA = new ChildA();
         childA.setAString("child-a-string");
@@ -159,10 +159,10 @@ public class FieldHintSupportTest {
     }
 
     @Test
-    public void mappingWithTypedListTest() {
+    public void mappingWithTypedListTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/hints/DeepMappingWithHintsTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c1 = new C();
         c1.setAString("c1");

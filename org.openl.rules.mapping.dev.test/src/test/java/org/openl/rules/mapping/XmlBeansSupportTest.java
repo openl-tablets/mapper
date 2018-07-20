@@ -15,9 +15,9 @@ import org.openuri.easypo.PurchaseOrderDocument.PurchaseOrder;
 public class XmlBeansSupportTest {
 
     @Test
-    public void testBeanFactory() {
+    public void testBeanFactory() throws Exception {
         File source = new File("src/test/resources/org/openl/rules/mapping/xmlbeans/XmlBeansSupportTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         

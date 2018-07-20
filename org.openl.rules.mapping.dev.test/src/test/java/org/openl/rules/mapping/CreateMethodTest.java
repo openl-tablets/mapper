@@ -12,10 +12,10 @@ import org.openl.rules.mapping.to.inheritance.ChildE;
 public class CreateMethodTest {
 
     @Test
-    public void createMethodTest() {
+    public void createMethodTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/createmethod/CreateMethodTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c = new C();
         c.setAString("c-string");

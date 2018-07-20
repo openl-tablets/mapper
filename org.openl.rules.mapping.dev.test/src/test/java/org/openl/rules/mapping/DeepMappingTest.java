@@ -17,10 +17,10 @@ import org.openl.rules.mapping.to.containers.ListOfTypeCContainer;
 public class DeepMappingTest {
 
     @Test
-    public void mappingWithArrayTest() {
+    public void mappingWithArrayTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/DeepMappingWithArrayTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c1 = new C();
         c1.setAString("c1");
@@ -65,10 +65,10 @@ public class DeepMappingTest {
     }
 
     @Test
-    public void usingIndexedArrayInCustomConvertersTest() {
+    public void usingIndexedArrayInCustomConvertersTest() throws Exception {
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/index/UsingIndexedArrayInCustomConvertersTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c1 = new C();
         c1.setAString("c1");
@@ -107,10 +107,10 @@ public class DeepMappingTest {
     }
 
     @Test
-    public void mappingWithTypedListTest() {
+    public void mappingWithTypedListTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/DeepMappingWithTypedListTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c1 = new C();
         c1.setAString("c1");

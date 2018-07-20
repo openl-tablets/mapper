@@ -15,10 +15,10 @@ import org.openl.rules.mapping.to.inheritance.ChildE;
 public class BeanFactoryTest {
 
     @Test
-    public void beanFactoryTest() {
+    public void beanFactoryTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/beanfactory/BeanFactoryTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c = new C();
         c.setAString("c-string");
@@ -43,10 +43,10 @@ public class BeanFactoryTest {
     }
     
     @Test
-    public void mappingParamsAwareBeanFactoryTest() {
+    public void mappingParamsAwareBeanFactoryTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/beanfactory/MappingParamsAwareBeanFactoryTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         E e = mapper.map(new C(), E.class);
 

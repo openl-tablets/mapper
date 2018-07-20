@@ -11,10 +11,10 @@ import org.openl.rules.mapping.to.B;
 public class EmptySourceFieldTest {
 
     @Test
-    public void emptySourceTest() {
+    public void emptySourceTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/emptysource/EmptySourceTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         B b = new B();

@@ -11,10 +11,10 @@ import org.openl.rules.mapping.to.C;
 
 public class MapEmptyStringsTest {
     @Test
-    public void mapEmptyStringValueTest() {
+    public void mapEmptyStringValueTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/mapemptystrings/MapEmptyStringlValueTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         B b = new B();

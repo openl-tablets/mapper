@@ -11,72 +11,72 @@ import org.openl.syntax.exception.CompositeOpenlException;
 public class ValidationTest {
 
     @Test
-    public void fieldPathHierarchyValidationTest() {
+    public void fieldPathHierarchyValidationTest() throws Exception {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/validation/fieldpath/FieldPathValidationTest.xlsx");
         try {
-            RulesBeanMapperFactory.createMapperInstance(source, null, null, null, null, false);
+            RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), null, null, null, null, false);
         } catch (RulesMappingException ex) {
             assertEquals(6, ((CompositeOpenlException) ex.getCause()).getErrorMessages().length);
         }
     }
 
     @Test
-    public void convertMethodValidationTest() {
+    public void convertMethodValidationTest() throws Exception {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/validation/customconverter/ConvertMethodValidationTest.xlsx");
         try {
-            RulesBeanMapperFactory.createMapperInstance(source, null, null, null, null, false);
+            RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), null, null, null, null, false);
         } catch (RulesMappingException ex) {
             assertEquals(2, ((CompositeOpenlException) ex.getCause()).getErrorMessages().length);
         }
     }
 
     @Test
-    public void conditionMethodValidationTest() {
+    public void conditionMethodValidationTest() throws Exception {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/validation/condition/ConditionMethodValidationTest.xlsx");
         try {
-            RulesBeanMapperFactory.createMapperInstance(source, null, null, null, null, false);
+            RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), null, null, null, null, false);
         } catch (RulesMappingException ex) {
             assertEquals(2, ((CompositeOpenlException) ex.getCause()).getErrorMessages().length);
         }
     }
 
     @Test
-    public void discriminatorMethodValidationTest() {
+    public void discriminatorMethodValidationTest() throws Exception {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/validation/discriminator/DiscriminatorMethodValidationTest.xlsx");
         try {
-            RulesBeanMapperFactory.createMapperInstance(source, null, null, null, null, false);
+            RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), null, null, null, null, false);
         } catch (RulesMappingException ex) {
             assertEquals(0, ((CompositeOpenlException) ex.getCause()).getErrorMessages().length);
         }
     }
 
     @Test
-    public void discriminatorMethodNotFoundValidationTest() {
+    public void discriminatorMethodNotFoundValidationTest() throws Exception {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/validation/discriminator/DiscriminatorMethodNotFoundValidationTest.xlsx");
         try {
-            RulesBeanMapperFactory.createMapperInstance(source, null, null, null, null, false);
+            RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), null, null, null, null, false);
         } catch (RulesMappingException ex) {
             assertEquals(1, ((CompositeOpenlException) ex.getCause()).getErrorMessages().length);
         }
     }
 
     @Test
-    public void discriminatorMethodTargetFieldValidationTest() {
+    public void discriminatorMethodTargetFieldValidationTest() throws Exception {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/validation/discriminator/DiscriminatorMethodTargetFieldValidationTest.xlsx");
         try {
-            RulesBeanMapperFactory.createMapperInstance(source, null, null, null, null, false);
+            RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), null, null, null, null, false);
         } catch (RulesMappingException ex) {
             assertEquals(1, ((CompositeOpenlException) ex.getCause()).getErrorMessages().length);
         }

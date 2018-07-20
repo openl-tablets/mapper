@@ -14,10 +14,10 @@ import org.openl.rules.mapping.to.inheritance.ChildE;
 public class MapIdSupportTest {
 
     @Test
-    public void mappingIdTest() {
+    public void mappingIdTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/mapid/MapIdTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a");
@@ -37,10 +37,10 @@ public class MapIdSupportTest {
     }
     
     @Test
-    public void customConverterReusageTest() {
+    public void customConverterReusageTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/mapid/UsingCustomConvertersWithMapIdTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c = new C();
         B b = new B ();
@@ -61,10 +61,10 @@ public class MapIdSupportTest {
     }
     
     @Test
-    public void supperMappingTest() {
+    public void supperMappingTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/mapid/SupperMappingWithMapIdTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a");
@@ -85,10 +85,10 @@ public class MapIdSupportTest {
     }
     
     @Test
-    public void supperMappingOverridingTest1() {
+    public void supperMappingOverridingTest1() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/mapid/MappingOverridingWithMapIdTest1.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a");
@@ -109,10 +109,10 @@ public class MapIdSupportTest {
     }
 
     @Test
-    public void supperMappingOverridingTest2() {
+    public void supperMappingOverridingTest2() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/mapid/MappingOverridingWithMapIdTest2.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a");

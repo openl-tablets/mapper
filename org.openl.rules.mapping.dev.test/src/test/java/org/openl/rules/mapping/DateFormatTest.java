@@ -12,10 +12,10 @@ import org.openl.rules.mapping.to.containers.DateHolder;
 public class DateFormatTest {
 
     @Test
-    public void fieldDateFormatSupportTest() {
+    public void fieldDateFormatSupportTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/dateformat/FieldDateFormatSupportTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("2010-07-12");
@@ -35,10 +35,10 @@ public class DateFormatTest {
     }
     
     @Test
-    public void globalDateFormatSupportTest() {
+    public void globalDateFormatSupportTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/dateformat/GlobalDateFormatOptionTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("2010-07-12");

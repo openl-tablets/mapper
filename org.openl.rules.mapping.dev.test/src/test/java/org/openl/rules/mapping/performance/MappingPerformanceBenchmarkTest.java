@@ -27,7 +27,7 @@ public class MappingPerformanceBenchmarkTest {
         File source = new File("src/test/resources/org/openl/rules/mapping/performance/mapping.xlsx");
         
         long time1 = System.currentTimeMillis();
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
         long time2 = System.currentTimeMillis();
 
         mapper.map(policyEntity, Policy.class);

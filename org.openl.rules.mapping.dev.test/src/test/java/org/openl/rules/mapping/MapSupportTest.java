@@ -16,10 +16,10 @@ import org.openl.rules.mapping.to.containers.MapContainer;
 public class MapSupportTest {
 
     @Test
-    public void mapSupportTest() {
+    public void mapSupportTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/map/MapSupportTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a-string");
@@ -72,10 +72,10 @@ public class MapSupportTest {
     }
 
     @Test
-    public void mapTypeFieldSupportTest() {
+    public void mapTypeFieldSupportTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/map/MapTypeFieldSupportTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a-string");

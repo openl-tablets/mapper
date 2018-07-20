@@ -12,10 +12,10 @@ import org.openl.rules.mapping.to.B;
 public class RequiredFieldTest {
 
     @Test
-    public void requiredClauseIsPassedTest() {
+    public void requiredClauseIsPassedTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/required/RequiredFieldTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a-string");
@@ -26,10 +26,10 @@ public class RequiredFieldTest {
     }
 
     @Test(expected = RulesMappingException.class)
-    public void requiredClauseIsNotPassedTest() {
+    public void requiredClauseIsNotPassedTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/required/RequiredFieldTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         mapper.map(a, B.class);

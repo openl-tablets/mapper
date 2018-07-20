@@ -17,10 +17,10 @@ import org.openl.rules.mapping.to.containers.ListOfTypeCContainer;
 public class MapCollectionIndexTest {
 
     @Test
-    public void mappingWithArrayTest() {
+    public void mappingWithArrayTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToArrayWithoutIndexTest1.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         B b1 = new B();
         b1.setAString("b1");
@@ -39,10 +39,10 @@ public class MapCollectionIndexTest {
     }
     
     @Test
-    public void mappingWithTypedListTest() {
+    public void mappingWithTypedListTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToTypedListWithoutIndexTest1.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         B b1 = new B();
         b1.setAString("b1");
@@ -61,10 +61,10 @@ public class MapCollectionIndexTest {
     }
     
     @Test
-    public void mappingWithUntypedListTest() {
+    public void mappingWithUntypedListTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToUntypedListWithoutIndexTest1.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         B b1 = new B();
         b1.setAString("b1");
@@ -84,10 +84,10 @@ public class MapCollectionIndexTest {
     
     
     @Test(expected = IndexOutOfBoundsException.class)
-    public void mappingWithArrayAndLastElementIndexValueTest() {
+    public void mappingWithArrayAndLastElementIndexValueTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToArrayWithoutIndexTest2.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
         C c1 = new C();
         c1.setAString("c1");
 
@@ -119,10 +119,10 @@ public class MapCollectionIndexTest {
     }
     
     @Test(expected = IndexOutOfBoundsException.class)
-    public void mappingWithTypedListAndLastElementIndexTest() {
+    public void mappingWithTypedListAndLastElementIndexTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToTypedListWithoutIndexTest2.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c1 = new C();
         c1.setAString("c1");
@@ -156,10 +156,10 @@ public class MapCollectionIndexTest {
     }
     
     @Test(expected = IndexOutOfBoundsException.class)
-    public void mappingWithUntypedListAndLastElementIndexTest() {
+    public void mappingWithUntypedListAndLastElementIndexTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MapToUntypedListWithoutIndexTest2.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         B b1 = new B();
         b1.setAString("b1");
@@ -174,10 +174,10 @@ public class MapCollectionIndexTest {
     }
     
     @Test
-    public void mappingIntoLastElementTest1() {
+    public void mappingIntoLastElementTest1() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MappingIntoLastElementTest1.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c1 = new C();
         c1.setAString("c1");
@@ -215,10 +215,10 @@ public class MapCollectionIndexTest {
     }
 
     @Test
-    public void mappingIntoLastElementTest2() {
+    public void mappingIntoLastElementTest2() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MappingIntoLastElementTest2.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c1 = new C();
         c1.setAString("c1");
@@ -256,10 +256,10 @@ public class MapCollectionIndexTest {
     }
 
     @Test
-    public void mappingIntoLastElementTest3() {
+    public void mappingIntoLastElementTest3() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/index/MappingIntoLastElementTest1.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         B b1 = new B();
         b1.setAString("b1");

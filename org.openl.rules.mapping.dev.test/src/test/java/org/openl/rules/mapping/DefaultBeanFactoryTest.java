@@ -13,10 +13,10 @@ import static org.junit.Assert.assertEquals;
 public class DefaultBeanFactoryTest {
 
     @Test
-    public void testDefaultBeanFactory() {
+    public void testDefaultBeanFactory() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/beanfactory/DefaultBeanFactoryTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c = new C();
         c.setAString("c-string");
@@ -41,10 +41,10 @@ public class DefaultBeanFactoryTest {
     }
 
 	@Test
-	public void testMappigParamsAwareDefaultBeanFactory() {
+	public void testMappigParamsAwareDefaultBeanFactory() throws Exception {
 
 		File source = new File("src/test/resources/org/openl/rules/mapping/beanfactory/MappingParamsAwareDefaultBeanFactoryTest.xlsx");
-		Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
 		C c = new C();
 		c.setAString("c-string");

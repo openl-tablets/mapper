@@ -15,7 +15,7 @@ public class FieldMappingAccessToParentTest {
 
 
     @Test
-    public void fieldMapConditionSupportTest() {
+    public void fieldMapConditionSupportTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/FieldMappingAccessToParentTest.xlsx");
 
@@ -23,7 +23,7 @@ public class FieldMappingAccessToParentTest {
 	    converters.put("ExtConverter", new ParentAccessCustomConverter());
 
 
-	    Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, converters, null);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), converters, null);
 
 		D d = new D();
 	    d.setAnInt(100);

@@ -24,13 +24,13 @@ import org.openl.rules.mapping.to.E;
 public class ThreadSafetyTest {
 
     @Test
-    public void threadSafetyTest() {
+    public void threadSafetyTest() throws Exception {
 
         int threadsCount = 50;
         final ExecutionStatus status = new ExecutionStatus();
 
         File source = new File("src/test/resources/org/openl/rules/mapping/thread/ThreadSafetyTest.xlsx");
-        final Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        final Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         for (int i = 0; i < threadsCount; i++) {
 
@@ -65,7 +65,7 @@ public class ThreadSafetyTest {
     }
     
     @Test
-    public void fieldMapConditionWithIdSupportTest() {
+    public void fieldMapConditionWithIdSupportTest() throws Exception {
 
         Map<String, FieldMappingCondition> conditions = new HashMap<String, FieldMappingCondition>();
         conditions.put("mapField", new BaseMappingParamsAwareFieldMappingCondition() {
@@ -89,7 +89,7 @@ public class ThreadSafetyTest {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/thread/MappingParamsAwareFieldMappingConditionThreadSafetyTest.xlsx");
-        final Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, null, conditions);
+        final Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), null, conditions);
 
         final ExecutionStatus status = new ExecutionStatus();
         
@@ -143,7 +143,7 @@ public class ThreadSafetyTest {
     }
 
     @Test
-    public void convertersWithIdSupportTest() {
+    public void convertersWithIdSupportTest() throws Exception {
 
         Map<String, CustomConverter> convertersMap = new HashMap<String, CustomConverter>();
         convertersMap.put("convert", new BaseMappingParamsAwareCustomConverter() {
@@ -167,7 +167,7 @@ public class ThreadSafetyTest {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/thread/MappingParamsAwareCustomConverterThreadSafetyTest.xlsx");
-        final Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, convertersMap, null);
+        final Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), convertersMap, null);
 
         final ExecutionStatus status = new ExecutionStatus();
         
@@ -221,11 +221,11 @@ public class ThreadSafetyTest {
     }
     
     @Test
-    public void beanFactoryTest() {
+    public void beanFactoryTest() throws Exception {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/thread/MappingParamsAwareBeanFactoryThreadSafetyTest.xlsx");
-        final Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        final Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         final ExecutionStatus status = new ExecutionStatus();
         

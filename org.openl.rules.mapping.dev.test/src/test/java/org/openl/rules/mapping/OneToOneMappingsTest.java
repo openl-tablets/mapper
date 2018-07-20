@@ -14,10 +14,10 @@ import org.openl.rules.mapping.to.F;
 public class OneToOneMappingsTest {
 
     @Test
-    public void fieldToFieldTest1() {
+    public void fieldToFieldTest1() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/OneToOneMappingsTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("string");

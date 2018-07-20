@@ -12,10 +12,10 @@ import org.openl.rules.mapping.to.C;
 public class MapNullsTest {
 
     @Test
-    public void mapNullValueTest() {
+    public void mapNullValueTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/mapnulls/MapNullValueTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         B b = new B();

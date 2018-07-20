@@ -16,10 +16,10 @@ import org.openl.rules.mapping.to.C;
 public class FieldMappingConditionsTest {
 
     @Test
-    public void fieldMapConditionSupportTest() {
+    public void fieldMapConditionSupportTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/conditions/FieldMappingConditionsTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a-string");
@@ -37,10 +37,10 @@ public class FieldMappingConditionsTest {
     }
 
     @Test
-    public void mappingParamsAwareFieldMapConditionSupportTest() {
+    public void mappingParamsAwareFieldMapConditionSupportTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/conditions/MappingParamsAwareFieldMappingConditionsTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         MappingContext context = new MappingContext();
         MappingParameters params = new MappingParameters();
@@ -74,11 +74,11 @@ public class FieldMappingConditionsTest {
     }
     
     @Test
-    public void externalFieldMapConditionSupportTest() {
+    public void externalFieldMapConditionSupportTest() throws Exception {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/conditions/ExternalFieldMappingConditionTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a-string");
@@ -96,11 +96,11 @@ public class FieldMappingConditionsTest {
     }
     
     @Test
-    public void mappingParamsAwareExternalFieldMapConditionSupportTest() {
+    public void mappingParamsAwareExternalFieldMapConditionSupportTest() throws Exception {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/conditions/ExternalFieldMappingConditionTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         MappingContext context = new MappingContext();
         MappingParameters params = new MappingParameters();
@@ -136,7 +136,7 @@ public class FieldMappingConditionsTest {
 
 
     @Test
-    public void fieldMapConditionWithIdSupportTest() {
+    public void fieldMapConditionWithIdSupportTest() throws Exception {
 
         Map<String, FieldMappingCondition> conditions = new HashMap<String, FieldMappingCondition>();
         conditions.put("map", new BaseMappingParamsAwareFieldMappingCondition() {
@@ -167,7 +167,7 @@ public class FieldMappingConditionsTest {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/conditions/FieldMappingConditionsWithIdTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, null, conditions);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), null, conditions);
 
         MappingContext context = new MappingContext();
         MappingParameters params = new MappingParameters();
@@ -201,7 +201,7 @@ public class FieldMappingConditionsTest {
     }
 
     @Test
-    public void fieldMapConditionOrderTest() {
+    public void fieldMapConditionOrderTest() throws Exception {
 
         Map<String, FieldMappingCondition> conditions = new HashMap<String, FieldMappingCondition>();
         conditions.put("map", new FieldMappingCondition() {
@@ -222,7 +222,7 @@ public class FieldMappingConditionsTest {
 
         File source = new File(
             "src/test/resources/org/openl/rules/mapping/conditions/FieldMappingConditionsOrderTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, null, conditions);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), null, conditions);
 
         A a = new A();
         a.setAString("a-string");
@@ -240,10 +240,10 @@ public class FieldMappingConditionsTest {
     }
 
     @Test
-    public void conditionMethodUsageOrderTest() {
+    public void conditionMethodUsageOrderTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/conditions/FieldMappingConditionsUsageOrderTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         MappingContext context = new MappingContext();
         MappingParameters params = new MappingParameters();

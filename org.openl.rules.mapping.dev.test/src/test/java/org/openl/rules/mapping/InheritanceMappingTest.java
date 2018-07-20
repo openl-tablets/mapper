@@ -14,10 +14,10 @@ import org.openl.rules.mapping.to.inheritance.ChildE;
 public class InheritanceMappingTest {
 
     @Test
-    public void superClassMappingTest() {
+    public void superClassMappingTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/inheritance/SuperClassMappingTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAnInteger(100);
@@ -34,10 +34,10 @@ public class InheritanceMappingTest {
     }
     
     @Test
-    public void superMappingsOrderTest() {
+    public void superMappingsOrderTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/inheritance/SuperMappingsOrderTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         ChildE childE = new ChildE();
         // ChildE's specific field
@@ -57,10 +57,10 @@ public class InheritanceMappingTest {
     }
 
     @Test
-    public void superMappingOverrideTest1() {
+    public void superMappingOverrideTest1() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/inheritance/SuperClassMappingOverrideTest1.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a");
@@ -72,10 +72,10 @@ public class InheritanceMappingTest {
     }
     
     @Test
-    public void superMappingOverrideTest2() {
+    public void superMappingOverrideTest2() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/inheritance/SuperClassMappingOverrideTest2.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a");

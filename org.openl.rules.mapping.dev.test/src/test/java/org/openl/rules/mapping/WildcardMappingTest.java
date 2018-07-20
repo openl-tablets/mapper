@@ -12,10 +12,10 @@ import org.openl.rules.mapping.to.inheritance.ChildE;
 public class WildcardMappingTest {
 
     @Test
-    public void wildcardSupportTest() {
+    public void wildcardSupportTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/wildcard/WildcardMappingTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         C c = new C();
         c.setAString("c-string");

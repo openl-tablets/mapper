@@ -37,14 +37,14 @@ public class ConditionsSameTest {
     }
 
     @Test
-    public void sameConditionsTest() {
+    public void sameConditionsTest() throws Exception {
 
         Map<String, FieldMappingCondition> conditions = new HashMap<String, FieldMappingCondition>();
         conditions.put("condition1", condition1);
         conditions.put("condition2", condition2);
 
         File source = new File("src/test/resources/org/openl/rules/mapping/conditions/SameConditionsTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, null, conditions);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), null, conditions);
 
         A a = new A();
         a.setAString("a-string");

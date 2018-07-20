@@ -11,10 +11,10 @@ import org.openl.rules.mapping.to.C;
 public class MappingOrderTest {
 
     @Test
-    public void mappingOrderTest() {
+    public void mappingOrderTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/order/MappingOrderTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAStringArray(new String[] {"a", "b"});

@@ -23,9 +23,9 @@ import org.openuri.easypo.PurchaseOrderDocument.PurchaseOrder;
 public class CustomConvertersSupportTest {
 
     @Test
-    public void defaultConverterTest1() {
+    public void defaultConverterTest1() throws Exception {
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/DefaultCustomConvertersTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         
@@ -58,9 +58,9 @@ public class CustomConvertersSupportTest {
     }
     
     @Test
-    public void customConverterTest1() {
+    public void customConverterTest1() throws Exception {
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConvertersTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         
@@ -94,10 +94,10 @@ public class CustomConvertersSupportTest {
     
 
     @Test
-    public void converterReusageTest() {
+    public void converterReusageTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConverterReuseTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("100");
@@ -115,10 +115,10 @@ public class CustomConvertersSupportTest {
     
 
     @Test
-    public void externalMapperTest() {
+    public void externalMapperTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/ExternalMapperTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("a-string");
@@ -139,9 +139,9 @@ public class CustomConvertersSupportTest {
     }
 
     @Test
-    public void externalCustomConverterTest() {
+    public void externalCustomConverterTest() throws Exception {
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/ExternalStaticMethodCustomConverterTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         
@@ -174,7 +174,7 @@ public class CustomConvertersSupportTest {
     }
 
     @Test
-    public void customConverterWithIdTest1() {
+    public void customConverterWithIdTest1() throws Exception {
         
         Map<String, CustomConverter> converters = new HashMap<String, CustomConverter>();
         converters.put("isExists", new CustomConverter(){
@@ -186,7 +186,7 @@ public class CustomConvertersSupportTest {
         });
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConvertersWithIdTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, converters, null);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), converters, null);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         
@@ -219,7 +219,7 @@ public class CustomConvertersSupportTest {
     }
 
     @Test
-    public void customConverterWithIdTest2() {
+    public void customConverterWithIdTest2() throws Exception {
         
         Map<String, CustomConverter> converters = new HashMap<String, CustomConverter>();
         converters.put("isExists", new CustomConverter(){
@@ -231,7 +231,7 @@ public class CustomConvertersSupportTest {
         });
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConvertersOrderTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, converters, null);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), converters, null);
 
         PurchaseOrder purchaseOrder = PurchaseOrder.Factory.newInstance();
         
@@ -264,10 +264,10 @@ public class CustomConvertersSupportTest {
     }
 
     @Test
-    public void converterRroxyReusageTest() {
+    public void converterRroxyReusageTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/CustomConverterProxyCacheTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString("100");
@@ -293,10 +293,10 @@ public class CustomConvertersSupportTest {
     }
 
     @Test
-    public void mappingParamsAwareConverterTest() {
+    public void mappingParamsAwareConverterTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/MappingParamsAwareCustomConverterTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a_original = new A();
         a_original.setAString("100");
@@ -328,10 +328,10 @@ public class CustomConvertersSupportTest {
     }
 
     @Test
-    public void convertMethodUsageOrderTest() {
+    public void convertMethodUsageOrderTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/customconverters/ConvertMethodUsageOrderTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a_original = new A();
         a_original.setAString("100");

@@ -12,10 +12,10 @@ import org.openl.rules.mapping.to.C;
 public class TrimStringsTest {
 
     @Test
-    public void trimStringsTest() {
+    public void trimStringsTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/trimstrings/TrimStringsTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAString(" a-string ");

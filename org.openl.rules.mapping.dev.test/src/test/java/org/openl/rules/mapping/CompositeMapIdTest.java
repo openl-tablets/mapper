@@ -6,10 +6,6 @@ import org.openl.rules.mapping.composite.mapid.destination.DestPolicy;
 import org.openl.rules.mapping.composite.mapid.source.SrcAddress;
 import org.openl.rules.mapping.composite.mapid.source.SrcLocation;
 import org.openl.rules.mapping.composite.mapid.source.SrcPolicy;
-import org.openl.rules.mapping.to.A;
-import org.openl.rules.mapping.to.B;
-import org.openl.rules.mapping.to.E;
-import org.openl.rules.mapping.to.inheritance.ChildE;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,10 +17,10 @@ import static org.junit.Assert.assertNull;
 public class CompositeMapIdTest {
 
     @Test
-    public void simpleCompositeMapIdTest() {
+    public void simpleCompositeMapIdTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/composite/mapid/LocationMapping.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         SrcAddress srcAddress = new SrcAddress();
         srcAddress.setZipCode("60001");

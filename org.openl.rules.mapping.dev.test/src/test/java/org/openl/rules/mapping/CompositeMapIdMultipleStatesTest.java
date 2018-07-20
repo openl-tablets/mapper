@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 public class CompositeMapIdMultipleStatesTest {
 
     @Test
-    public void simpleCompositeMapIdTest() {
+    public void simpleCompositeMapIdTest() throws Exception {
 
         MappingContext context = new MappingContext();
         context.setMapId("");
@@ -58,7 +58,7 @@ public class CompositeMapIdMultipleStatesTest {
 
 
         File source = new File("src/test/resources/org/openl/rules/mapping/composite/mapid/BasePolicyMS.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source, converters, conditions);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL(), converters, conditions);
         MappingParameters parameters = new MappingParameters();
         parameters.put("context", context);
 

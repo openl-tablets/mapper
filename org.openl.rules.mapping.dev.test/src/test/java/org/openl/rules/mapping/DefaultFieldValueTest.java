@@ -14,10 +14,10 @@ import org.openl.rules.mapping.to.G;
 public class DefaultFieldValueTest {
 
     @Test
-    public void defaultStringValueTest() {
+    public void defaultStringValueTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/defaultvalue/DefaultFieldValueTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         B b = new B();
@@ -29,10 +29,10 @@ public class DefaultFieldValueTest {
     }
     
     @Test
-    public void defaultFieldInitializationTest() {
+    public void defaultFieldInitializationTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/defaultvalue/DefaultFieldValueTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
 
@@ -42,10 +42,10 @@ public class DefaultFieldValueTest {
     }
 
     @Test
-    public void defaultFieldInitializationThruConstructorTest() {
+    public void defaultFieldInitializationThruConstructorTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/defaultvalue/DefaultFieldValueTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
 

@@ -4,7 +4,6 @@ import org.dozer.MappingContext;
 import org.junit.Test;
 import org.openl.rules.mapping.to.A;
 import org.openl.rules.mapping.to.B;
-import org.openl.rules.mapping.to.D;
 import org.openl.rules.mapping.to.E;
 import org.openl.rules.mapping.to.inheritance.ChildE;
 
@@ -17,10 +16,10 @@ import static org.junit.Assert.assertNull;
 public class IncludeMappingConfigTest {
 
     @Test
-    public void superClassMappingTest() {
+    public void superClassMappingTest() throws Exception {
 
         File source = new File("src/test/resources/org/openl/rules/mapping/include/ChildMappingConfig.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a = new A();
         a.setAnInteger(100);

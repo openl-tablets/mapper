@@ -24,9 +24,9 @@ import org.openl.rules.mapping.to.containers.SetContainer;
 public class CollectionDiscriminatorTest {
     
     @Test
-    public void arrayToListDiscriminatorSupportTest() {
+    public void arrayToListDiscriminatorSupportTest() throws Exception {
         File source = new File("src/test/resources/org/openl/rules/mapping/discriminator/ListToArrayCollectionDiscriminatorTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         ArrayContainer array = new ArrayContainer();
         A a1 = new A();
@@ -70,9 +70,9 @@ public class CollectionDiscriminatorTest {
     }
     
     @Test
-    public void listToArrayDiscriminatorSupportTest() {
+    public void listToArrayDiscriminatorSupportTest() throws Exception {
         File source = new File("src/test/resources/org/openl/rules/mapping/discriminator/ListToArrayCollectionDiscriminatorTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         ArrayContainer array = new ArrayContainer();
         A a1 = new A();
@@ -127,9 +127,9 @@ public class CollectionDiscriminatorTest {
     }
     
     @Test
-    public void arrayToSetDiscriminatorSupportTest() {
+    public void arrayToSetDiscriminatorSupportTest() throws Exception {
         File source = new File("src/test/resources/org/openl/rules/mapping/discriminator/SetToArrayCollectionDiscriminatorTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         ArrayContainer array = new ArrayContainer();
         A a1 = new A();
@@ -173,9 +173,9 @@ public class CollectionDiscriminatorTest {
     }
     
     @Test
-    public void setToArrayDiscriminatorSupportTest() {
+    public void setToArrayDiscriminatorSupportTest() throws Exception {
         File source = new File("src/test/resources/org/openl/rules/mapping/discriminator/SetToArrayCollectionDiscriminatorTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         ArrayContainer array = new ArrayContainer();
         A a1 = new A();
@@ -230,9 +230,9 @@ public class CollectionDiscriminatorTest {
     }
 
     @Test
-    public void arrayToArrayDiscriminatorSupportTest() {
+    public void arrayToArrayDiscriminatorSupportTest() throws Exception {
         File source = new File("src/test/resources/org/openl/rules/mapping/discriminator/ArrayToArrayCollectionDiscriminatorTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         ArrayContainer array = new ArrayContainer();
         A a1 = new A();
@@ -272,9 +272,9 @@ public class CollectionDiscriminatorTest {
     }
     
     @Test
-    public void primArrayToPrimArrayDiscriminatorSupportTest() {
+    public void primArrayToPrimArrayDiscriminatorSupportTest() throws Exception {
         File sourceFile = new File("src/test/resources/org/openl/rules/mapping/discriminator/PrimitiveArrayToPrimitiveArrayCollectionDiscriminatorTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(sourceFile);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(sourceFile.toURI().toURL());
 
         IntArrayContainer source = new IntArrayContainer(); 
         source.setArray(new int[] { 1, 2, 15 });
@@ -294,9 +294,9 @@ public class CollectionDiscriminatorTest {
     }
 
     @Test
-    public void discriminatorSupportTest() {
+    public void discriminatorSupportTest() throws Exception {
         File source = new File("src/test/resources/org/openl/rules/mapping/discriminator/CollectionDiscriminatorSupportTest.xlsx");
-        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source);
+        Mapper mapper = RulesBeanMapperFactory.createMapperInstance(source.toURI().toURL());
 
         A a1 = new A();
         E e1 = new E();
