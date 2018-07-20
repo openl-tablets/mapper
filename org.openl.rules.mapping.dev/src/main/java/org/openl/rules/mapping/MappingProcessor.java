@@ -47,34 +47,10 @@ class MappingProcessor {
      * @param instance instance object
      * @param typeResolver type resolver
      * @param customConvertersWithId user custom converters
-     * @param factories custom bean factories
-     */
-    public MappingProcessor(Class<?> instanceClass,
-            Object instance,
-            TypeResolver typeResolver,
-            Map<String, CustomConverter> customConvertersWithId,
-            Map<String, FieldMappingCondition> conditionsWithId,
-            Map<String, BeanFactory> factories) {
-        this.mappingsLoader = new RulesMappingsLoader(instanceClass, instance, typeResolver);
-        this.customConvertersWithId = customConvertersWithId;
-        this.conditionsWithId = conditionsWithId;
-	    this.factories = factories;
-
-        init();
-    }
-    
-    /**
-     * Creates new instance of mappings processor using OpenL Rules project
-     * instance information.
-     * 
-     * @param instanceClass class definition
-     * @param instance instance object
-     * @param typeResolver type resolver
-     * @param customConvertersWithId user custom converters
      * @param eventListeners event listeners
      * @param factories custom bean factories
      */
-    public MappingProcessor(Class<?> instanceClass,
+    MappingProcessor(Class<?> instanceClass,
             Object instance,
             TypeResolver typeResolver,
             Map<String, CustomConverter> customConvertersWithId,
