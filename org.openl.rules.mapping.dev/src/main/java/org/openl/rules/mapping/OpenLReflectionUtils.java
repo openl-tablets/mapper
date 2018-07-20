@@ -15,6 +15,7 @@ import org.openl.types.IOpenClass;
 import org.openl.types.IOpenMethod;
 import org.openl.types.java.OpenClassHelper;
 
+@Deprecated
 public class OpenLReflectionUtils {
 
     private static final String DEFAULT_OPENL_CONFIGURATION_PREFIX = "org.openl.rules.java::";

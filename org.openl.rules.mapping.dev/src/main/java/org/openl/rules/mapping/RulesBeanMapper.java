@@ -16,6 +16,7 @@ import org.dozer.MappingContext;
  * bean mapping will be invoked.
  * 
  */
+@Deprecated
 public class RulesBeanMapper implements Mapper {
 
     private MappingProcessor mappingProcessor;

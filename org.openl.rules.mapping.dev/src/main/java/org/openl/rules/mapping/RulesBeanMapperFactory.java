@@ -223,7 +223,9 @@ public final class RulesBeanMapperFactory {
      * @param eventListeners dozer event listeners
      * @param executionMode execution mode flag
      * @return mapper instance
+     * @deprecated Use {@link #createMapperInstance(URL, Map, Map, Map, List)}
      */
+    @Deprecated
     public static Mapper createMapperInstance(URL source,
             Map<String, CustomConverter> customConvertersWithId,
             Map<String, FieldMappingCondition> conditionsWithId,
@@ -273,7 +275,10 @@ public final class RulesBeanMapperFactory {
      * @param source OpenL project source file
      * @param executionMode execution mode flag
      * @return rules engine instance
+     *
+     * @deprecated No replacement. Candidate for deletion.
      */
+    @Deprecated
     public static RulesEngineFactory initEngine(URL source, boolean executionMode) {
 
         RulesEngineFactory factory = new RulesEngineFactory(source);
