@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openl.classloader.SimpleBundleClassLoader;
 import org.openl.conf.IOpenLConfiguration;
 import org.openl.conf.IUserContext;

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dozer.*;
 import org.openl.rules.mapping.definition.BeanMap;
 import org.openl.rules.mapping.definition.BeanMapConfiguration;

@@ -2,7 +2,7 @@ package org.openl.rules.mapping.loader.discriminator;
 
 import java.lang.reflect.Proxy;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.dozer.CollectionItemDiscriminator;
 
 public class CollectionItemDiscriminatorFactory {
