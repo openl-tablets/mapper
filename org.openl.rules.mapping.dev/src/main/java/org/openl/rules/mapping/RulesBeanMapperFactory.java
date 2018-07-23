@@ -9,12 +9,10 @@ import org.dozer.BeanFactory;
 import org.dozer.CustomConverter;
 import org.dozer.DozerEventListener;
 import org.dozer.FieldMappingCondition;
+import org.openl.conf.IOpenLConfiguration;
+import org.openl.conf.OpenLConfiguration;
 import org.openl.rules.mapping.exception.RulesMappingException;
-import org.openl.rules.mapping.validation.MappingBeanValidator;
-import org.openl.rules.mapping.validation.OpenLDataBeanValidator;
 import org.openl.rules.runtime.RulesEngineFactory;
-import org.openl.runtime.AOpenLEngineFactory;
-import org.openl.validation.IOpenLValidator;
 
 /**
  * The factory class which provides methods to create mapper instance.
@@ -136,7 +134,7 @@ public final class RulesBeanMapperFactory {
         } catch (Exception e) {
             throw new RulesMappingException("Cannot get the URL for file: " + source.getAbsolutePath(), e);
         }
-        return createMapperInstance(url, customConvertersWithId, conditionsWithId, factories, eventListeners, executionMode);
+        return createMapperInstance(url, customConvertersWithId, conditionsWithId, factories, eventListeners);
     }
 
     /**
@@ -160,7 +158,7 @@ public final class RulesBeanMapperFactory {
     public static Mapper createMapperInstance(URL source,
             Map<String, CustomConverter> customConvertersWithId,
             Map<String, FieldMappingCondition> conditionsWithId) {
-        return createMapperInstance(source, customConvertersWithId, conditionsWithId, null, null, true);
+        return createMapperInstance(source, customConvertersWithId, conditionsWithId, null, null);
     }
 
     /**
@@ -176,7 +174,7 @@ public final class RulesBeanMapperFactory {
             Map<String, CustomConverter> customConvertersWithId,
             Map<String, FieldMappingCondition> conditionsWithId,
             List<DozerEventListener> eventListeners) {
-        return createMapperInstance(source, customConvertersWithId, conditionsWithId, null, eventListeners, true);
+        return createMapperInstance(source, customConvertersWithId, conditionsWithId, null, eventListeners);
     }
 
     /**
@@ -192,7 +190,7 @@ public final class RulesBeanMapperFactory {
             Map<String, CustomConverter> customConvertersWithId,
             Map<String, FieldMappingCondition> conditionsWithId,
             Map<String, BeanFactory> factories) {
-        return createMapperInstance(source, customConvertersWithId, conditionsWithId, factories, null, true);
+        return createMapperInstance(source, customConvertersWithId, conditionsWithId, factories, null);
     }
 
     /**
@@ -210,31 +208,13 @@ public final class RulesBeanMapperFactory {
             Map<String, FieldMappingCondition> conditionsWithId,
             Map<String, BeanFactory> factories,
             List<DozerEventListener> eventListeners) {
-        return createMapperInstance(source, customConvertersWithId, conditionsWithId, factories, eventListeners, true);
-    }
-
-    /**
-     * Creates mapper instance using input stream with mapping rule definitions.
-     *
-     * @param source input stream with mapping rule definitions
-     * @param customConvertersWithId external custom converters
-     * @param conditionsWithId external conditions
-     * @param factories custom bean factories
-     * @param eventListeners dozer event listeners
-     * @param executionMode execution mode flag
-     * @return mapper instance
-     * @deprecated Use {@link #createMapperInstance(URL, Map, Map, Map, List)}
-     */
-    @Deprecated
-    public static Mapper createMapperInstance(URL source,
-            Map<String, CustomConverter> customConvertersWithId,
-            Map<String, FieldMappingCondition> conditionsWithId,
-            Map<String, BeanFactory> factories,
-            List<DozerEventListener> eventListeners,
-            boolean executionMode) {
 
         try {
-            RulesEngineFactory factory = initEngine(source, executionMode);
+
+            RulesEngineFactory factory1 = new RulesEngineFactory(source);
+            factory1.setExecutionMode(true);
+
+            RulesEngineFactory factory = factory1;
 
             Class<?> instanceClass = factory.getInterfaceClass();
             Object instance = factory.newInstance();
@@ -251,11 +231,10 @@ public final class RulesBeanMapperFactory {
             // information to get convert method.
             //
             TypeResolver typeResolver;
-            if (executionMode) {
-                typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getSourceCode().getUri(), factory.getUserContext());
-            } else {
-                typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getCompiledOpenClass().getOpenClass(), factory.getUserContext());
-            }
+            String name = "org.openl.rules.java::" + factory.getSourceCode().getUri();
+            IOpenLConfiguration config = OpenLConfiguration.getInstance(name, factory.getUserContext());
+
+            typeResolver = config != null ? new RulesTypeResolver(config) : null;
 
             return new RulesBeanMapper(instanceClass,
                 instance,
@@ -269,36 +248,4 @@ public final class RulesBeanMapperFactory {
         }
     }
 
-    /**
-     * Initializes OpenL engine.
-     * 
-     * @param source OpenL project source file
-     * @param executionMode execution mode flag
-     * @return rules engine instance
-     *
-     * @deprecated No replacement. Candidate for deletion.
-     */
-    @Deprecated
-    public static RulesEngineFactory initEngine(URL source, boolean executionMode) {
-
-        RulesEngineFactory factory = new RulesEngineFactory(source);
-        factory.setExecutionMode(executionMode);
-
-        if (!executionMode) {
-            registerTypeValidator(factory, new MappingBeanValidator(factory.getUserContext()));
-        }
-
-        return factory;
-    }
-
-    private synchronized static void registerTypeValidator(AOpenLEngineFactory factory,
-            OpenLDataBeanValidator<?> validator) {
-
-        for (IOpenLValidator regValidator : factory.getOpenL().getCompileContext().getValidators()) {
-            if (regValidator.getClass() == validator.getClass()) {
-                return;
-            }
-        }
-        factory.getOpenL().getCompileContext().addValidator(validator);
-    }
 }
