@@ -1,6 +1,5 @@
 package org.openl.rules.mapping;
 
-import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -20,121 +19,6 @@ import org.openl.rules.runtime.RulesEngineFactory;
 public final class RulesBeanMapperFactory {
 
     private RulesBeanMapperFactory() {
-    }
-
-    /**
-     * Creates mapper instance using file with mapping rule definitions.
-     * 
-     * @param source file with mapping rule definitions
-     * @return mapper instance
-     * @deprecated Use {@link #createMapperInstance(URL)}
-     */
-    @Deprecated
-    public static Mapper createMapperInstance(File source) {
-        return createMapperInstance(source, null, null);
-    }
-
-    /**
-     * Creates mapper instance using file with mapping rule definitions.
-     * 
-     * @param source file with mapping rule definitions
-     * @param customConvertersWithId external custom converters
-     * @param conditionsWithId external conditions
-     * @return mapper instance
-     * @deprecated Use {@link #createMapperInstance(URL, Map, Map)}
-     */
-    @Deprecated
-    public static Mapper createMapperInstance(File source,
-            Map<String, CustomConverter> customConvertersWithId,
-            Map<String, FieldMappingCondition> conditionsWithId) {
-        return createMapperInstance(source, customConvertersWithId, conditionsWithId, null, null, true);
-    }
-
-    /**
-     * Creates mapper instance using file with mapping rule definitions.
-     * 
-     * @param source file with mapping rule definitions
-     * @param customConvertersWithId external custom converters
-     * @param conditionsWithId external conditions
-     * @param eventListeners dozer event listeners
-     * @return mapper instance
-     * @deprecated Use {@link #createMapperInstance(URL, Map, Map, List)}
-     */
-    @Deprecated
-    public static Mapper createMapperInstance(File source,
-            Map<String, CustomConverter> customConvertersWithId,
-            Map<String, FieldMappingCondition> conditionsWithId,
-            List<DozerEventListener> eventListeners) {
-        return createMapperInstance(source, customConvertersWithId, conditionsWithId, null, eventListeners, true);
-    }
-
-    /**
-     * Creates mapper instance using file with mapping rule definitions.
-     *
-     * @param source file with mapping rule definitions
-     * @param customConvertersWithId external custom converters
-     * @param conditionsWithId external conditions
-     * @param factories custom bean factories
-     * @return mapper instance
-     * @deprecated Use {@link #createMapperInstance(URL, Map, Map, Map)}
-     */
-    @Deprecated
-    public static Mapper createMapperInstance(File source,
-            Map<String, CustomConverter> customConvertersWithId,
-            Map<String, FieldMappingCondition> conditionsWithId,
-            Map<String, BeanFactory> factories) {
-        return createMapperInstance(source, customConvertersWithId, conditionsWithId, factories, null, true);
-    }
-
-    /**
-     * Creates mapper instance using file with mapping rule definitions.
-     *
-     * @param source file with mapping rule definitions
-     * @param customConvertersWithId external custom converters
-     * @param conditionsWithId external conditions
-     * @param factories custom bean factories
-     * @param eventListeners dozer event listeners
-     * @return mapper instance
-     *
-     * @deprecated Use {@link #createMapperInstance(URL, Map, Map, Map, List)}
-     */
-    @Deprecated
-    public static Mapper createMapperInstance(File source,
-            Map<String, CustomConverter> customConvertersWithId,
-            Map<String, FieldMappingCondition> conditionsWithId,
-            Map<String, BeanFactory> factories,
-            List<DozerEventListener> eventListeners) {
-        return createMapperInstance(source, customConvertersWithId, conditionsWithId, factories, eventListeners, true);
-    }
-
-    /**
-     * Creates mapper instance using file with mapping rule definitions.
-     * 
-     * @param source file with mapping rule definitions
-     * @param customConvertersWithId external custom converters
-     * @param conditionsWithId external conditions
-     * @param factories custom bean factories
-     * @param eventListeners dozer event listeners
-     * @param executionMode execution mode flag
-     * @return mapper instance
-     *
-     * @deprecated Use {@link #createMapperInstance(URL, Map, Map, Map, List)}
-     */
-    @Deprecated
-    public static Mapper createMapperInstance(File source,
-            Map<String, CustomConverter> customConvertersWithId,
-            Map<String, FieldMappingCondition> conditionsWithId,
-            Map<String, BeanFactory> factories,
-            List<DozerEventListener> eventListeners,
-            boolean executionMode) {
-
-        URL url;
-        try {
-            url = source.toURI().toURL();
-        } catch (Exception e) {
-            throw new RulesMappingException("Cannot get the URL for file: " + source.getAbsolutePath(), e);
-        }
-        return createMapperInstance(url, customConvertersWithId, conditionsWithId, factories, eventListeners);
     }
 
     /**
@@ -236,13 +120,7 @@ public final class RulesBeanMapperFactory {
 
             typeResolver = config != null ? new RulesTypeResolver(config) : null;
 
-            return new RulesBeanMapper(instanceClass,
-                instance,
-                typeResolver,
-                customConvertersWithId,
-                conditionsWithId,
-                factories,
-                eventListeners);
+            return new MappingProcessor(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId, factories, eventListeners);
         } catch (Exception e) {
             throw new RulesMappingException("Cannot load mapping definitions from the URL: " + source, e);
         }

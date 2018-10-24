@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * definitions source and Dozer bean mapping framework with some modifications
  * as a mapping tool. Not intended for direct use by Application code.
  */
-class MappingProcessor {
+class MappingProcessor implements Mapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(MappingProcessor.class);
 
