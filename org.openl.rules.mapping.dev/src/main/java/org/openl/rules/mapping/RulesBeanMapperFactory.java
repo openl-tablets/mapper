@@ -1,14 +1,10 @@
 package org.openl.rules.mapping;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
-import org.apache.commons.lang3.StringUtils;
 import org.dozer.BeanFactory;
 import org.dozer.CustomConverter;
 import org.dozer.DozerBeanMapper;
@@ -28,15 +24,11 @@ import org.openl.rules.mapping.loader.dozer.DozerConfigContainer;
 import org.openl.rules.mapping.loader.dozer.DozerMappingBuilder;
 import org.openl.rules.mapping.loader.dozer.DozerMappingsContainer;
 import org.openl.rules.runtime.RulesEngineFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The factory class which provides methods to create mapper instance.
  */
 public final class RulesBeanMapperFactory {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RulesBeanMapperFactory.class);
 
     private RulesBeanMapperFactory() {
     }
@@ -115,10 +107,8 @@ public final class RulesBeanMapperFactory {
 
         try {
 
-            RulesEngineFactory factory1 = new RulesEngineFactory(source);
-            factory1.setExecutionMode(true);
-
-            RulesEngineFactory factory = factory1;
+            RulesEngineFactory factory = new RulesEngineFactory(source);
+            factory.setExecutionMode(true);
 
             Class<?> instanceClass = factory.getInterfaceClass();
             Object instance = factory.newInstance();
@@ -140,7 +130,13 @@ public final class RulesBeanMapperFactory {
 
             typeResolver = config != null ? new RulesTypeResolver(config) : null;
 
-            org.dozer.Mapper dozerMapper = init(instanceClass, instance, typeResolver, customConvertersWithId, conditionsWithId, factories, eventListeners);
+            org.dozer.Mapper dozerMapper = init(instanceClass,
+                instance,
+                typeResolver,
+                customConvertersWithId,
+                conditionsWithId,
+                factories,
+                eventListeners);
             return new MappingProxy(dozerMapper);
         } catch (Exception e) {
             throw new RulesMappingException("Cannot load mapping definitions from the URL: " + source, e);
@@ -149,12 +145,12 @@ public final class RulesBeanMapperFactory {
 
     @SuppressWarnings("unchecked")
     private static org.dozer.Mapper init(Class<?> instanceClass,
-                                         Object instance,
-                                         TypeResolver typeResolver,
-                                         Map<String, CustomConverter> customConvertersWithId,
-                                         Map<String, FieldMappingCondition> conditionsWithId,
-                                         Map<String, BeanFactory> factories,
-                                         List<DozerEventListener> eventListeners) {
+            Object instance,
+            TypeResolver typeResolver,
+            Map<String, CustomConverter> customConvertersWithId,
+            Map<String, FieldMappingCondition> conditionsWithId,
+            Map<String, BeanFactory> factories,
+            List<DozerEventListener> eventListeners) {
 
         RulesMappingsLoader mappingsLoader = new RulesMappingsLoader(instanceClass, instance, typeResolver);
         DozerMappingBuilder mappingBuilder = new DozerMappingBuilder();
@@ -171,27 +167,6 @@ public final class RulesBeanMapperFactory {
             configBuilder.defaultConverter(converter);
         }
 
-        if (LOG.isDebugEnabled()) {
-            Collection<String> defaultConverterLogEntries = CollectionUtils.collect(defaultConverters,
-                    new Transformer() {
-
-                        @Override
-                        public String transform(Object arg) {
-                            ConverterDescriptor descriptor = (ConverterDescriptor) arg;
-                            return descriptor.getConverterId();
-                        }
-
-                    });
-
-            LOG.debug("Default converters:\n" + StringUtils.join(defaultConverterLogEntries, "\n"));
-            LOG.debug("External converters: " + StringUtils.join(customConvertersWithId == null ? new ArrayList<Object>(0)
-                            : customConvertersWithId.keySet(),
-                    ", "));
-            LOG.debug("External conditions: " + StringUtils.join(conditionsWithId == null ? new ArrayList<Object>(0)
-                            : conditionsWithId.keySet(),
-                    ", "));
-        }
-
         Configuration globalConfiguration = mappingsLoader.loadConfiguration();
 
         configBuilder.dateFormat(globalConfiguration.getDateFormat());
@@ -202,42 +177,8 @@ public final class RulesBeanMapperFactory {
         configBuilder.requiredFields(globalConfiguration.isRequiredFields());
         configBuilder.beanFactory(globalConfiguration.getBeanFactory());
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(String.format("Global configuration: dateFormat=%s, wildcard=%s, trimStrings=%s, mapNulls=%s, mapEmptyStrings=%s, requiredFields=%s, beanFactory=%s",
-                    globalConfiguration.getDateFormat(),
-                    globalConfiguration.isWildcard(),
-                    globalConfiguration.isTrimStrings(),
-                    globalConfiguration.isMapNulls(),
-                    globalConfiguration.isMapEmptyStrings(),
-                    globalConfiguration.isRequiredFields(),
-                    globalConfiguration.getBeanFactory()));
-        }
-
-        Map<String, BeanMapConfiguration> mappingConfigurations = mappingsLoader.loadBeanMapConfiguraitons(globalConfiguration);
-
-        if (LOG.isDebugEnabled()) {
-            Collection<String> beanConfigLogEntries = CollectionUtils.collect(mappingConfigurations.values(),
-                    new Transformer() {
-
-                        @Override
-                        public String transform(Object arg) {
-                            BeanMapConfiguration conf = (BeanMapConfiguration) arg;
-                            return String.format("[classA=%s, classB=%s, classABeanFactory=%s, classBBeanFactory=%s, mapNulls=%s, mapEmptyStrings=%s, trimStrings=%s, requiredFields=%s, wildcard=%s, dateFormat=%s]",
-                                    conf.getClassA(),
-                                    conf.getClassB(),
-                                    conf.getClassABeanFactory(),
-                                    conf.getClassBBeanFactory(),
-                                    conf.isMapNulls(),
-                                    conf.isMapEmptyStrings(),
-                                    conf.isTrimStrings(),
-                                    conf.isRequiredFields(),
-                                    conf.isWildcard(),
-                                    conf.getDateFormat());
-                        }
-                    });
-
-            LOG.debug("Bean level configurations:\n" + StringUtils.join(beanConfigLogEntries, "\n"));
-        }
+        Map<String, BeanMapConfiguration> mappingConfigurations = mappingsLoader
+            .loadBeanMapConfiguraitons(globalConfiguration);
 
         Collection<BeanMap> mappings = mappingsLoader.loadMappings(mappingConfigurations, globalConfiguration);
 
