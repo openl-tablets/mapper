@@ -254,7 +254,7 @@ public final class RulesBeanMapperFactory {
             if (executionMode) {
                 typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getSourceCode().getUri(), factory.getUserContext());
             } else {
-                typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getCompiledOpenClass().getOpenClass());
+                typeResolver = OpenLReflectionUtils.getTypeResolver(factory.getCompiledOpenClass().getOpenClass(), factory.getUserContext());
             }
 
             return new RulesBeanMapper(instanceClass,
@@ -285,7 +285,7 @@ public final class RulesBeanMapperFactory {
         factory.setExecutionMode(executionMode);
 
         if (!executionMode) {
-            registerTypeValidator(factory, new MappingBeanValidator());
+            registerTypeValidator(factory, new MappingBeanValidator(factory.getUserContext()));
         }
 
         return factory;

@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;
+import org.openl.conf.IUserContext;
 import org.openl.rules.mapping.MappingParameters;
 import org.dozer.util.MappingUtils;
 import org.openl.rules.mapping.Mapping;
@@ -30,6 +31,12 @@ import org.openl.validation.ValidationStatus;
  * data for validation process manually, for example, get field types.
  */
 public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
+
+    private final IUserContext userContext;
+
+    public MappingBeanValidator(IUserContext userContext) {
+        this.userContext = userContext;
+    }
 
     @Override
     public BeanValidationResult validateBean(Mapping beanToValidate, IOpenClass openClass) {
@@ -191,7 +198,7 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         String convertMethodName = MappingDefinitionUtils.getMethodName(convertMethod);
         Class<?> convertMethodClass = null;
 
-        TypeResolver typeResolver = OpenLReflectionUtils.getTypeResolver(openClass);
+        TypeResolver typeResolver = OpenLReflectionUtils.getTypeResolver(openClass, userContext);
 
         if (StringUtils.isNotBlank(convertMethodClassName)) {
             convertMethodClass = typeResolver.findClass(convertMethodClassName);
@@ -257,7 +264,7 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         String conditionMethodName = MappingDefinitionUtils.getMethodName(conditionMethod);
         Class<?> conditionMethodClass = null;
 
-        TypeResolver typeResolver = OpenLReflectionUtils.getTypeResolver(openClass);
+        TypeResolver typeResolver = OpenLReflectionUtils.getTypeResolver(openClass, userContext);
 
         if (StringUtils.isNotBlank(conditionMethodClassName)) {
             conditionMethodClass = typeResolver.findClass(conditionMethodClassName);
@@ -321,7 +328,7 @@ public class MappingBeanValidator extends OpenLDataBeanValidator<Mapping> {
         String discriminatorMethodName = MappingDefinitionUtils.getMethodName(methodName);
         Class<?> discriminatorMethodClass = null;
 
-        TypeResolver typeResolver = OpenLReflectionUtils.getTypeResolver(openClass);
+        TypeResolver typeResolver = OpenLReflectionUtils.getTypeResolver(openClass, userContext);
 
         if (StringUtils.isNotBlank(discriminatorMethodClassName)) {
             discriminatorMethodClass = typeResolver.findClass(discriminatorMethodClassName);

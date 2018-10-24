@@ -19,21 +19,13 @@ import org.openl.types.java.OpenClassHelper;
 public class OpenLReflectionUtils {
 
     private static final String DEFAULT_OPENL_CONFIGURATION_PREFIX = "org.openl.rules.java::";
-    private static final String DEFAULT_USER_HOME = ".";
 
     private OpenLReflectionUtils() {
     }
 
-    public static TypeResolver getTypeResolver(IOpenClass openClass) {
+    public static TypeResolver getTypeResolver(IOpenClass openClass, IUserContext userContext) {
         if (openClass.getMetaInfo() != null && StringUtils.isNotBlank(openClass.getMetaInfo().getSourceUrl())) {
-            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-            UserContext userContext = new UserContext(contextClassLoader, DEFAULT_USER_HOME);
-            TypeResolver typeResolver = getTypeResolver(openClass.getMetaInfo().getSourceUrl(), userContext);
-            if (typeResolver == null && contextClassLoader instanceof SimpleBundleClassLoader){
-                SimpleBundleClassLoader simpleBundleClassLoader = (SimpleBundleClassLoader) contextClassLoader;
-                userContext = new UserContext(simpleBundleClassLoader.getParent(), DEFAULT_USER_HOME);
                 return getTypeResolver(openClass.getMetaInfo().getSourceUrl(), userContext);
-            }
         }
 
         return null;
