@@ -14,6 +14,7 @@ import org.dozer.CustomConverter;
 import org.dozer.DozerBeanMapper;
 import org.dozer.DozerEventListener;
 import org.dozer.FieldMappingCondition;
+import org.dozer.loader.api.BeanMappingBuilder;
 import org.openl.conf.IOpenLConfiguration;
 import org.openl.conf.OpenLConfiguration;
 import org.openl.rules.mapping.definition.BeanMap;
@@ -22,7 +23,10 @@ import org.openl.rules.mapping.definition.Configuration;
 import org.openl.rules.mapping.definition.ConverterDescriptor;
 import org.openl.rules.mapping.exception.RulesMappingException;
 import org.openl.rules.mapping.loader.RulesMappingsLoader;
-import org.openl.rules.mapping.loader.dozer.DozerBuilder;
+import org.openl.rules.mapping.loader.dozer.DozerConfigBuilder;
+import org.openl.rules.mapping.loader.dozer.DozerConfigContainer;
+import org.openl.rules.mapping.loader.dozer.DozerMappingBuilder;
+import org.openl.rules.mapping.loader.dozer.DozerMappingsContainer;
 import org.openl.rules.runtime.RulesEngineFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,16 +157,18 @@ public final class RulesBeanMapperFactory {
                                          List<DozerEventListener> eventListeners) {
 
         RulesMappingsLoader mappingsLoader = new RulesMappingsLoader(instanceClass, instance, typeResolver);
-        DozerBuilder dozerBuilder = new DozerBuilder();
-        dozerBuilder.mappingBuilder().customConvertersWithId(customConvertersWithId);
-        dozerBuilder.mappingBuilder().conditionsWithId(conditionsWithId);
+        DozerMappingBuilder mappingBuilder = new DozerMappingBuilder();
+        DozerConfigBuilder configBuilder = new DozerConfigBuilder();
 
-        dozerBuilder.mappingBuilder().eventListeners(eventListeners);
+        mappingBuilder.customConvertersWithId(customConvertersWithId);
+        mappingBuilder.conditionsWithId(conditionsWithId);
+
+        mappingBuilder.eventListeners(eventListeners);
 
         Collection<ConverterDescriptor> defaultConverters = mappingsLoader.loadDefaultConverters();
 
         for (ConverterDescriptor converter : defaultConverters) {
-            dozerBuilder.configBuilder().defaultConverter(converter);
+            configBuilder.defaultConverter(converter);
         }
 
         if (LOG.isDebugEnabled()) {
@@ -188,13 +194,13 @@ public final class RulesBeanMapperFactory {
 
         Configuration globalConfiguration = mappingsLoader.loadConfiguration();
 
-        dozerBuilder.configBuilder().dateFormat(globalConfiguration.getDateFormat());
-        dozerBuilder.configBuilder().wildcard(globalConfiguration.isWildcard());
-        dozerBuilder.configBuilder().trimStrings(globalConfiguration.isTrimStrings());
-        dozerBuilder.configBuilder().mapNulls(globalConfiguration.isMapNulls());
-        dozerBuilder.configBuilder().mapEmptyStrings(globalConfiguration.isMapEmptyStrings());
-        dozerBuilder.configBuilder().requiredFields(globalConfiguration.isRequiredFields());
-        dozerBuilder.configBuilder().beanFactory(globalConfiguration.getBeanFactory());
+        configBuilder.dateFormat(globalConfiguration.getDateFormat());
+        configBuilder.wildcard(globalConfiguration.isWildcard());
+        configBuilder.trimStrings(globalConfiguration.isTrimStrings());
+        configBuilder.mapNulls(globalConfiguration.isMapNulls());
+        configBuilder.mapEmptyStrings(globalConfiguration.isMapEmptyStrings());
+        configBuilder.requiredFields(globalConfiguration.isRequiredFields());
+        configBuilder.beanFactory(globalConfiguration.getBeanFactory());
 
         if (LOG.isDebugEnabled()) {
             LOG.debug(String.format("Global configuration: dateFormat=%s, wildcard=%s, trimStrings=%s, mapNulls=%s, mapEmptyStrings=%s, requiredFields=%s, beanFactory=%s",
@@ -236,14 +242,32 @@ public final class RulesBeanMapperFactory {
         Collection<BeanMap> mappings = mappingsLoader.loadMappings(mappingConfigurations, globalConfiguration);
 
         for (BeanMap mapping : mappings) {
-            dozerBuilder.mappingBuilder().mapping(mapping);
+            mappingBuilder.mapping(mapping);
         }
 
-        DozerBeanMapper beanMapper = dozerBuilder.buildMapper();
+        DozerBeanMapper mapper = new DozerBeanMapper();
+
+        DozerConfigContainer configContainer = configBuilder.build();
+
+        for (BeanMappingBuilder config : configContainer.getMappingBuilders()) {
+            mapper.addMapping(config);
+        }
+
+        DozerMappingsContainer mappingsContainer = mappingBuilder.build();
+
+        mapper.setCustomConvertersWithId(mappingsContainer.getConverters());
+        mapper.setMappingConditionsWithId(mappingsContainer.getConditions());
+        mapper.setCollectionItemDiscriminatorsWithId(mappingsContainer.getCollectionItemDiscriminators());
+        mapper.setEventListeners(mappingsContainer.getEventListeners());
+
+        for (BeanMappingBuilder mapping : mappingsContainer.getMappingBuilders()) {
+            mapper.addMapping(mapping);
+        }
 
         if (factories != null) {
-            beanMapper.setFactories(factories);
+            mapper.setFactories(factories);
         }
-        return beanMapper;
+        return mapper;
     }
+
 }
