@@ -12,7 +12,6 @@ import org.dozer.DozerEventListener;
 import org.dozer.FieldMappingCondition;
 import org.dozer.loader.api.BeanMappingBuilder;
 import org.openl.conf.IOpenLConfiguration;
-import org.openl.conf.OpenLConfiguration;
 import org.openl.rules.mapping.definition.BeanMap;
 import org.openl.rules.mapping.definition.BeanMapConfiguration;
 import org.openl.rules.mapping.definition.Configuration;
@@ -126,7 +125,7 @@ public final class RulesBeanMapperFactory {
             //
             TypeResolver typeResolver;
             String name = "org.openl.rules.java::" + factory.getSourceCode().getUri();
-            IOpenLConfiguration config = OpenLConfiguration.getInstance(name, factory.getUserContext());
+            IOpenLConfiguration config = factory.getUserContext().getOpenLConfiguration(name);
 
             typeResolver = config != null ? new RulesTypeResolver(config) : null;
 
