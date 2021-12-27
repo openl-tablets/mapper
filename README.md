@@ -1,3 +1,5 @@
+# This repository has been archived. It is now read-only.
+
 # Mapper Framework
 
 A Mapping framework (MF) recursively copies data from one object to another. Typically, these data objects will be of different complex types.
@@ -30,10 +32,10 @@ To start using Mapping Framework add dependency to your maven pom:
 
 |OpenL Tablets | Mapping framework |
 | ------------ | ----------------- |
-| 5.22.0 	     | 1.2.2             |
-| 5.21.7 	     | 1.1.21 - 1.2.2    |
-| 5.20.0 	     | 1.1.17 - 1.2.1    |
-| 5.19.1 	     | 1.1.16            |
-| 5.19.0 	     | 1.1.15            |
-| 5.17.2 	     | 1.1.14            |
+| 5.22.0 	   | 1.2.2             |
+| 5.21.7 	   | 1.1.21 - 1.2.2    |
+| 5.20.0 	   | 1.1.17 - 1.2.1    |
+| 5.19.1 	   | 1.1.16            |
+| 5.19.0 	   | 1.1.15            |
+| 5.17.2 	   | 1.1.14            |
 
