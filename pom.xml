@@ -33,7 +33,7 @@
         <staging.hg.repo.url>https://vno-hg.exigengroup.com/hg/openl-mapper</staging.hg.repo.url>
         <org.openl.version>[5.21.7,)</org.openl.version>
         <org.slf4j.version>1.7.25</org.slf4j.version>
-        <org.springframework.version>4.3.19.RELEASE</org.springframework.version>
+        <org.springframework.version>4.3.21.RELEASE</org.springframework.version>
     </properties>
     <developers>
         <developer>
